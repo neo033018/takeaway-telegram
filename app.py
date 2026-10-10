@@ -21,9 +21,12 @@ TOKEN = os.environ.get("BOT_TOKEN", "")
 URL = os.environ.get("APP_URL", "").rstrip("/")
 ADMIN = os.environ.get("ADMIN_CHAT_ID", "")
 DB = os.environ.get("DATABASE_PATH", "orders.db")
-
 TZ = ZoneInfo("Europe/Belgrade")
 
+
+# =========================
+# MENU
+# =========================
 
 MENU = {
     "espresso": ("Espresso", 200, "coffee", False),
@@ -41,6 +44,10 @@ MENU = {
     "bumble": ("Bumble Coffee", 450, "special", False),
 }
 
+
+# =========================
+# DATABASE
+# =========================
 
 def db():
     connection = sqlite3.connect(DB, timeout=15)
@@ -64,6 +71,10 @@ def db():
     return connection
 
 
+# =========================
+# TELEGRAM
+# =========================
+
 def tg(method, payload):
     if not TOKEN:
         return None
@@ -83,6 +94,10 @@ def tg(method, payload):
         return None
 
 
+# =========================
+# VERIFY TELEGRAM WEB APP
+# =========================
+
 def verify(init_data):
     if not TOKEN or not init_data or len(init_data) > 8192:
         return None
@@ -96,7 +111,7 @@ def verify(init_data):
             )
         )
 
-        their_hash = data.pop("hash", "")
+        received_hash = data.pop("hash", "")
 
         secret = hmac.new(
             b"WebAppData",
@@ -115,7 +130,7 @@ def verify(init_data):
             hashlib.sha256,
         ).hexdigest()
 
-        if not hmac.compare_digest(expected_hash, their_hash):
+        if not hmac.compare_digest(expected_hash, received_hash):
             return None
 
         auth_date = int(data.get("auth_date", "0"))
@@ -134,26 +149,42 @@ def verify(init_data):
         return None
 
 
+# =========================
+# HOME
+# =========================
+
 @app.get("/")
 def index():
     return render_template("index.html")
 
 
+# =========================
+# MENU API
+# =========================
+
 @app.get("/api/menu")
 def menu():
-    return jsonify(
-        [
-            {
-                "id": key,
-                "name": value[0],
-                "price": value[1],
-                "category": value[2],
-                "boba": value[3],
-            }
-            for key, value in MENU.items()
-        ]
-    )
+    result = []
 
+    for item_id, item in MENU.items():
+        name, price, category, allow_boba = item
+
+        result.append(
+            {
+                "id": item_id,
+                "name": name,
+                "price": price,
+                "category": category,
+                "boba": allow_boba,
+            }
+        )
+
+    return jsonify(result)
+
+
+# =========================
+# CREATE ORDER
+# =========================
 
 @app.post("/api/order")
 def order():
@@ -176,10 +207,7 @@ def order():
     now = datetime.now(TZ)
 
     try:
-        pickup = datetime.fromisoformat(
-            data.get("pickup", "")
-        )
-
+        pickup = datetime.fromisoformat(data.get("pickup", ""))
     except (ValueError, TypeError):
         return jsonify(
             error="Choose a pickup time."
@@ -192,11 +220,7 @@ def order():
 
     pickup = pickup.astimezone(TZ)
 
-    if not (
-        now + timedelta(minutes=8)
-        <= pickup
-        <= now + timedelta(hours=6)
-    ):
+    if not now + timedelta(minutes=8) <= pickup <= now + timedelta(hours=6):
         return jsonify(
             error="Choose a pickup time 10 minutes to 6 hours ahead."
         ), 400
@@ -206,52 +230,46 @@ def order():
 
     for item in items:
 
-        if (
-            not isinstance(item, dict)
-            or item.get("id") not in MENU
-        ):
-            return jsonify(
-                error="Invalid drink."
-            ), 400
+        if not isinstance(item, dict):
+            return jsonify(error="Invalid drink."), 400
 
-        name, price, category, allow_boba = MENU[item["id"]]
+        item_id = item.get("id")
+
+        if item_id not in MENU:
+            return jsonify(error="Invalid drink."), 400
+
+        name, price, category, allow_boba = MENU[item_id]
+
+        qty = item.get("qty", 1)
+
+        if type(qty) is not int or not 1 <= qty <= 10:
+            return jsonify(
+                error="Invalid quantity."
+            ), 400
 
         boba = item.get("boba", False)
 
-        if (
-            type(boba) is not bool
-            or (boba and not allow_boba)
-        ):
+        if type(boba) is not bool:
             return jsonify(
                 error="Invalid topping."
             ), 400
 
-        extra_shot = item.get(
-            "extra_shot",
-            False,
-        )
+        if boba and not allow_boba:
+            return jsonify(
+                error="Boba is not available for this drink."
+            ), 400
+
+        extra_shot = item.get("extra_shot", False)
 
         if type(extra_shot) is not bool:
             return jsonify(
                 error="Invalid extra shot."
             ), 400
 
-        if (
-            extra_shot
-            and category != "coffee"
-        ):
+        # Extra espresso shot is available for coffee drinks.
+        if extra_shot and category != "coffee":
             return jsonify(
                 error="Extra shot is only available for coffee."
-            ), 400
-
-        qty = item.get("qty", 1)
-
-        if (
-            type(qty) is not int
-            or not 1 <= qty <= 10
-        ):
-            return jsonify(
-                error="Invalid quantity."
             ), 400
 
         unit_price = price
@@ -265,17 +283,17 @@ def order():
             unit_price += 150
             extras.append("extra shot")
 
-        line_total = qty * unit_price
-        total += line_total
+        item_total = unit_price * qty
+        total += item_total
 
         description = f"{qty}× {name}"
 
         if extras:
             description += " + " + ", ".join(extras)
 
-        lines.append(
-            f"{description} ({line_total} RSD)"
-        )
+        description += f" ({item_total} RSD)"
+
+        lines.append(description)
 
     if total > 100000:
         return jsonify(
@@ -310,10 +328,7 @@ def order():
                 user["id"],
                 customer,
                 pickup.isoformat(),
-                json.dumps(
-                    lines,
-                    ensure_ascii=False,
-                ),
+                json.dumps(lines, ensure_ascii=False),
                 total,
                 now.isoformat(),
             ),
@@ -350,7 +365,7 @@ def order():
 
     if not sent or not sent.get("ok"):
         logging.error(
-            "Order %s saved but admin notification failed.",
+            "Order %s saved but admin notification failed",
             order_id,
         )
 
@@ -362,7 +377,7 @@ def order():
                 f"✅ Take Away order #{order_id} received!\n"
                 f"Pickup: {pickup:%H:%M}\n"
                 f"Total: {total} RSD\n"
-                "Pay at pickup."
+                f"Pay at pickup."
             ),
         },
     )
@@ -377,10 +392,18 @@ def order():
     )
 
 
+# =========================
+# HEALTH CHECK
+# =========================
+
 @app.get("/health")
 def health():
     return jsonify(status="ok")
 
+
+# =========================
+# TELEGRAM WEBHOOK
+# =========================
 
 @app.post("/api/bot-webhook")
 def webhook():
@@ -394,16 +417,17 @@ def webhook():
         "",
     )
 
-    if (
-        not secret
-        or not hmac.compare_digest(
-            received_secret,
-            secret,
-        )
+    if not secret:
+        return "", 403
+
+    if not hmac.compare_digest(
+        received_secret,
+        secret,
     ):
         return "", 403
 
     data = request.get_json(silent=True) or {}
+
     message = data.get("message") or {}
     chat = message.get("chat", {})
 
@@ -440,6 +464,7 @@ def webhook():
             )
 
         else:
+
             tg(
                 "sendMessage",
                 {
@@ -454,6 +479,10 @@ def webhook():
     return "", 200
 
 
+# =========================
+# START
+# =========================
+
 if __name__ == "__main__":
     db().close()
 
@@ -465,4 +494,4 @@ if __name__ == "__main__":
                 5000,
             )
         ),
-    )imp
+    )
