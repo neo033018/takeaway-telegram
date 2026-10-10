@@ -18,7 +18,7 @@ MENU={
  'flatwhite':('Flat White',400,'coffee',False), 'icedlatte':('Iced Latte',380,'coffee',False),
  'thai':('Thai Classic Milk Tea',450,'tea',True), 'green':('Thai Green Milk Tea',450,'tea',True),
  'lime':('Iced Lime Tea',480,'tea',False), 'bumble':('Bumble Coffee',490,'special',False),
- 'icecream':('Thai Tea with Ice Cream',600,'special',False), 'scoop':('Thai Ice Cream',350,'special',False)
+
 }
 
 def db():
