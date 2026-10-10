@@ -13,11 +13,21 @@ ADMIN=os.environ.get('ADMIN_CHAT_ID','')
 DB=os.environ.get('DATABASE_PATH','orders.db')
 TZ=ZoneInfo('Europe/Belgrade')
 MENU={
- 'espresso':('Espresso',200,'coffee',False), 'americano':('Americano',250,'coffee',False),
- 'cappuccino':('Cappuccino',320,'coffee',False), 'latte':('Latte',350,'coffee',False),
- 'flatwhite':('Flat White',400,'coffee',False), 'icedlatte':('Iced Latte',380,'coffee',False),
- 'thai':('Thai Classic Milk Tea',450,'tea',True), 'green':('Thai Green Milk Tea',450,'tea',True),
- 'lime':('Iced Lime Tea',480,'tea',False), 'bumble':('Bumble Coffee',490,'special',False),
+MENU={
+ 'espresso':('Espresso',200,'coffee',False),
+ 'americano':('Americano',250,'coffee',False),
+ 'cappuccino':('Cappuccino',320,'coffee',False),
+ 'latte':('Latte',350,'coffee',False),
+ 'flatwhite':('Flat White',400,'coffee',False),
+ 'icedlatte':('Iced Latte',380,'coffee',False),
+
+ 'thai':('Thai Classic Milk Tea',450,'tea',True),
+ 'green':('Thai Green Milk Tea',450,'tea',True),
+ 'lime':('Iced Lime Tea',480,'tea',False),
+
+ 'tonic':('Espresso Tonic',420,'special',False),
+ 'bumble':('Bumble Coffee',450,'special',False)
+}
 
 }
 
