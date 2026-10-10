@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <title>Take Away</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f1e9;
+      color: #171717;
+      padding-bottom: 110px;
+    }
+
+    .hero {
+      background: #202820;
+      color: white;
+      padding: 32px 20px 26px;
+      border-radius: 0 0 28px 28px;
+    }
+
+    .brand {
+      font-size: 13px;
+      letter-spacing: 3px;
+      opacity: 0.7;
+      margin-bottom: 10px;
+    }
+
+    .hero h1 {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .hero p {
+      opacity: 0.75;
+      font-size: 15px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      padding: 18px 16px 8px;
+      overflow-x: auto;
+    }
+
+    .tab {
+      border: none;
+      background: white;
+      padding: 10px 16px;
+      border-radius: 20px;
+      white-space: nowrap;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: #202820;
+      color: white;
+    }
+
+    .section {
+      padding: 16px;
+    }
+
+    .section h2 {
+      font-size: 21px;
+      margin-bottom: 14px;
+    }
+
+    .product {
+      background: white;
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    }
+
+    .product-info h3 {
+      font-size: 17px;
+      margin-bottom: 5px;
+    }
+
+    .price {
+      font-size: 15px;
+      color: #6c6c6c;
+    }
+
+    .add {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background: #202820;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .pickup {
+      background: white;
+      margin: 5px 16px 18px;
+      padding: 18px;
+      border-radius: 20px;
+    }
+
+    .pickup h2 {
+      font-size: 19px;
+      margin-bottom: 12px;
+    }
+
+    .times {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .time {
+      border: 1px solid #ddd;
+      background: white;
+      padding: 9px 12px;
+      border-radius: 14px;
+      cursor: pointer;
+    }
+
+    .time.selected {
+      background: #202820;
+      color: white;
+      border-color: #202820;
+    }
+
+    .cart {
+      position: fixed;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      background: #202820;
+      color: white;
+      border-radius: 22px;
+      padding: 15px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 8px 30px rgba(0,0,0,.25);
+    }
+
+    .cart small {
+      display: block;
+      opacity: .65;
+      margin-bottom: 3px;
+    }
+
+    .cart-total {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .order-button {
+      border: none;
+      background: #f5f1e9;
+      color: #202820;
+      padding: 13px 18px;
+      border-radius: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="hero">
+    <div class="brand">TAKE AWAY · BELGRADE</div>
+    <h1>Your coffee, ready.</h1>
+    <p>Order ahead. Skip the wait. Pay at pickup.</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active">Coffee</button>
+    <button class="tab">Thai Tea</button>
+    <button class="tab">Specials</button>
+  </div>
+
+  <div class="section">
+    <h2>Coffee</h2>
+
+    <div class="product">
+      <div class="product-info">
+        <h3>Espresso</h3>
+        <div class="price">200 RSD</div>
+      </div>
+      <button class="add" onclick="addItem('Espresso',200)">+</button>
+    </div>
+
+    <div class="product">
+      <div class="product-info">
+        <h3>Americano</h3>
+        <div class="price">250 RSD</div>
+      </div>
+      <button class="add" onclick="addItem('Americano',250)">+</button>
+    </div>
+
+    <div class="product">
+      <div class="product-info">
+        <h3>Cappuccino</h3>
+        <div class="price">320 RSD</div>
+      </div>
+      <button class="add" onclick="addItem('Cappuccino',320)">+</button>
+    </div>
+
+    <div class="product">
+      <div class="product-info">
+        <h3>Latte</h3>
+        <div class="price">350 RSD</div>
+      </div>
+      <button class="add" onclick="addItem('Latte',350)">+</button>
+    </div>
+
+    <div class="product">
+      <div class="product-info">
+        <h3>Flat White</h3>
+        <div class="price">400 RSD</div>
+      </div>
+      <button class="add" onclick="addItem('Flat White',400)">+</button>
+    </div>
+
+  </div>
+
+  <div class="pickup">
+    <h2>When should we make it?</h2>
+
+    <div class="times">
+      <button class="time selected" onclick="selectTime(this,'10 min')">
+        10 min
+      </button>
+
+      <button class="time" onclick="selectTime(this,'15 min')">
+        15 min
+      </button>
+
+      <button class="time" onclick="selectTime(this,'20 min')">
+        20 min
+      </button>
+
+      <button class="time" onclick="selectTime(this,'30 min')">
+        30 min
+      </button>
+    </div>
+  </div>
+
+  <div class="cart">
+    <div>
+      <small id="items">0 items</small>
+      <div class="cart-total" id="total">0 RSD</div>
+    </div>
+
+    <button class="order-button" onclick="sendOrder()">
+      Order →
+    </button>
+  </div>
+
+<script>
+
+  const tg = window.Telegram.WebApp;
+  tg.expand();
+
+  let cart = [];
+  let pickupTime = "10 min";
+
+  function addItem(name, price) {
+
+    cart.push({
+      name: name,
+      price: price
+    });
+
+    updateCart();
+
+    if (tg.HapticFeedback) {
+      tg.HapticFeedback.impactOccurred("light");
+    }
+  }
+
+  function updateCart() {
+
+    let total = 0;
+
+    cart.forEach(item => {
+      total += item.price;
+    });
+
+    document.getElementById("items").innerText =
+      cart.length + (cart.length === 1 ? " item" : " items");
+
+    document.getElementById("total").innerText =
+      total + " RSD";
+  }
+
+  function selectTime(button, time) {
+
+    document.querySelectorAll(".time")
+      .forEach(btn => btn.classList.remove("selected"));
+
+    button.classList.add("selected");
+
+    pickupTime = time;
+  }
+
+  function sendOrder() {
+
+    if (cart.length === 0) {
+      alert("Please add something to your order.");
+      return;
+    }
+
+    let total = cart.reduce(
+      (sum, item) => sum + item.price,
+      0
+    );
+
+    const order = {
+      items: cart,
+      pickup: pickupTime,
+      total: total
+    };
+
+    tg.sendData(JSON.stringify(order));
+  }
+
+</script>
+
+</body>
+</html>
