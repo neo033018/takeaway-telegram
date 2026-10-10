@@ -3,47 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
   <title>Take Away</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: #f5f1e9;
       color: #171717;
-      padding-bottom: 110px;
+      padding-bottom: 120px;
     }
 
     .hero {
       background: #202820;
       color: white;
-      padding: 32px 20px 26px;
+      padding: 30px 20px 25px;
       border-radius: 0 0 28px 28px;
     }
 
     .brand {
-      font-size: 13px;
+      font-size: 12px;
       letter-spacing: 3px;
-      opacity: 0.7;
+      opacity: .65;
       margin-bottom: 10px;
     }
 
     .hero h1 {
-      font-size: 32px;
-      margin-bottom: 8px;
+      font-size: 31px;
+      margin-bottom: 7px;
     }
 
     .hero p {
-      opacity: 0.75;
-      font-size: 15px;
+      opacity: .72;
+      font-size: 14px;
     }
 
     .tabs {
@@ -54,12 +48,12 @@
     }
 
     .tab {
-      border: none;
+      border: 0;
       background: white;
       padding: 10px 16px;
       border-radius: 20px;
+      font-weight: 650;
       white-space: nowrap;
-      font-weight: 600;
       cursor: pointer;
     }
 
@@ -69,56 +63,82 @@
     }
 
     .section {
-      padding: 16px;
+      padding: 12px 16px;
     }
 
-    .section h2 {
+    .section-title {
       font-size: 21px;
-      margin-bottom: 14px;
+      margin: 4px 0 13px;
     }
 
     .product {
       background: white;
       border-radius: 20px;
       padding: 16px;
-      margin-bottom: 12px;
+      margin-bottom: 11px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.04);
+    }
+
+    .product-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+      gap: 15px;
     }
 
-    .product-info h3 {
+    .product h3 {
       font-size: 17px;
       margin-bottom: 5px;
     }
 
     .price {
-      font-size: 15px;
-      color: #6c6c6c;
+      color: #707070;
+      font-size: 14px;
     }
 
     .add {
-      width: 40px;
-      height: 40px;
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+      border: 0;
       border-radius: 50%;
-      border: none;
       background: #202820;
       color: white;
-      font-size: 24px;
+      font-size: 25px;
       cursor: pointer;
+    }
+
+    .options {
+      display: flex;
+      gap: 7px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .option {
+      border: 1px solid #dedbd3;
+      background: #faf9f6;
+      border-radius: 12px;
+      padding: 7px 10px;
+      font-size: 12px;
     }
 
     .pickup {
       background: white;
-      margin: 5px 16px 18px;
-      padding: 18px;
+      margin: 10px 16px 20px;
+      padding: 17px;
       border-radius: 20px;
     }
 
     .pickup h2 {
-      font-size: 19px;
-      margin-bottom: 12px;
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+
+    .pickup p {
+      color: #777;
+      font-size: 13px;
+      margin-bottom: 13px;
     }
 
     .times {
@@ -130,7 +150,7 @@
     .time {
       border: 1px solid #ddd;
       background: white;
-      padding: 9px 12px;
+      padding: 9px 13px;
       border-radius: 14px;
       cursor: pointer;
     }
@@ -146,14 +166,15 @@
       left: 12px;
       right: 12px;
       bottom: 12px;
+      z-index: 10;
       background: #202820;
       color: white;
       border-radius: 22px;
-      padding: 15px 18px;
+      padding: 14px 17px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      box-shadow: 0 8px 30px rgba(0,0,0,.25);
+      justify-content: space-between;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
     }
 
     .cart small {
@@ -162,183 +183,375 @@
       margin-bottom: 3px;
     }
 
-    .cart-total {
+    .total {
       font-size: 20px;
-      font-weight: 700;
+      font-weight: 750;
     }
 
-    .order-button {
-      border: none;
+    .order {
+      border: 0;
       background: #f5f1e9;
       color: #202820;
-      padding: 13px 18px;
-      border-radius: 16px;
-      font-weight: 700;
+      padding: 13px 17px;
+      border-radius: 15px;
+      font-weight: 750;
       cursor: pointer;
+    }
+
+    .order:disabled {
+      opacity: .55;
+    }
+
+    .cart-items {
+      padding: 0 16px 5px;
+    }
+
+    .cart-line {
+      background: #e9e5dc;
+      border-radius: 14px;
+      padding: 10px 12px;
+      margin-bottom: 7px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .remove {
+      border: 0;
+      background: transparent;
+      font-size: 18px;
+      padding: 3px 7px;
+      cursor: pointer;
+    }
+
+    .hidden { display: none; }
+
+    .message {
+      margin: 10px 16px;
+      padding: 12px;
+      border-radius: 14px;
+      background: white;
+      display: none;
+      font-size: 14px;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="hero">
-    <div class="brand">TAKE AWAY · BELGRADE</div>
-    <h1>Your coffee, ready.</h1>
-    <p>Order ahead. Skip the wait. Pay at pickup.</p>
+<div class="hero">
+  <div class="brand">TAKE AWAY · BELGRADE</div>
+  <h1>Your coffee, ready.</h1>
+  <p>Order ahead · Pay when you collect</p>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showCategory('coffee',this)">Coffee</button>
+  <button class="tab" onclick="showCategory('tea',this)">Thai Tea</button>
+  <button class="tab" onclick="showCategory('special',this)">Specials</button>
+</div>
+
+<div id="menu"></div>
+
+<div id="cartItems" class="cart-items"></div>
+
+<div class="pickup">
+  <h2>Pickup time</h2>
+  <p>When should we have your order ready?</p>
+
+  <div class="times">
+    <button class="time selected" onclick="chooseTime(this,10)">10 min</button>
+    <button class="time" onclick="chooseTime(this,15)">15 min</button>
+    <button class="time" onclick="chooseTime(this,20)">20 min</button>
+    <button class="time" onclick="chooseTime(this,30)">30 min</button>
+  </div>
+</div>
+
+<div id="message" class="message"></div>
+
+<div class="cart">
+  <div>
+    <small id="itemCount">0 items</small>
+    <div id="total" class="total">0 RSD</div>
   </div>
 
-  <div class="tabs">
-    <button class="tab active">Coffee</button>
-    <button class="tab">Thai Tea</button>
-    <button class="tab">Specials</button>
-  </div>
-
-  <div class="section">
-    <h2>Coffee</h2>
-
-    <div class="product">
-      <div class="product-info">
-        <h3>Espresso</h3>
-        <div class="price">200 RSD</div>
-      </div>
-      <button class="add" onclick="addItem('Espresso',200)">+</button>
-    </div>
-
-    <div class="product">
-      <div class="product-info">
-        <h3>Americano</h3>
-        <div class="price">250 RSD</div>
-      </div>
-      <button class="add" onclick="addItem('Americano',250)">+</button>
-    </div>
-
-    <div class="product">
-      <div class="product-info">
-        <h3>Cappuccino</h3>
-        <div class="price">320 RSD</div>
-      </div>
-      <button class="add" onclick="addItem('Cappuccino',320)">+</button>
-    </div>
-
-    <div class="product">
-      <div class="product-info">
-        <h3>Latte</h3>
-        <div class="price">350 RSD</div>
-      </div>
-      <button class="add" onclick="addItem('Latte',350)">+</button>
-    </div>
-
-    <div class="product">
-      <div class="product-info">
-        <h3>Flat White</h3>
-        <div class="price">400 RSD</div>
-      </div>
-      <button class="add" onclick="addItem('Flat White',400)">+</button>
-    </div>
-
-  </div>
-
-  <div class="pickup">
-    <h2>When should we make it?</h2>
-
-    <div class="times">
-      <button class="time selected" onclick="selectTime(this,'10 min')">
-        10 min
-      </button>
-
-      <button class="time" onclick="selectTime(this,'15 min')">
-        15 min
-      </button>
-
-      <button class="time" onclick="selectTime(this,'20 min')">
-        20 min
-      </button>
-
-      <button class="time" onclick="selectTime(this,'30 min')">
-        30 min
-      </button>
-    </div>
-  </div>
-
-  <div class="cart">
-    <div>
-      <small id="items">0 items</small>
-      <div class="cart-total" id="total">0 RSD</div>
-    </div>
-
-    <button class="order-button" onclick="sendOrder()">
-      Order →
-    </button>
-  </div>
+  <button id="orderButton" class="order" onclick="placeOrder()">
+    Place order →
+  </button>
+</div>
 
 <script>
+const tg = window.Telegram.WebApp;
+tg.ready();
+tg.expand();
 
-  const tg = window.Telegram.WebApp;
-  tg.expand();
+let menu = [];
+let cart = [];
+let category = "coffee";
+let pickupMinutes = 10;
 
-  let cart = [];
-  let pickupTime = "10 min";
+async function loadMenu() {
+  try {
+    const response = await fetch("/api/menu");
+    menu = await response.json();
+    renderMenu();
+  } catch (e) {
+    showMessage("Could not load the menu.");
+  }
+}
 
-  function addItem(name, price) {
+function showCategory(cat, button) {
+  category = cat;
 
+  document.querySelectorAll(".tab").forEach(x =>
+    x.classList.remove("active")
+  );
+
+  button.classList.add("active");
+  renderMenu();
+}
+
+function renderMenu() {
+  const box = document.getElementById("menu");
+
+  const names = {
+    coffee: "Coffee",
+    tea: "Thai Tea",
+    special: "Specials"
+  };
+
+  const products = menu.filter(x => x.category === category);
+
+  box.innerHTML = `
+    <div class="section">
+      <h2 class="section-title">${names[category]}</h2>
+
+      ${products.map(p => `
+        <div class="product">
+          <div class="product-top">
+
+            <div>
+              <h3>${p.name}</h3>
+              <div class="price">${p.price} RSD</div>
+            </div>
+
+            <button class="add"
+              onclick="addItem('${p.id}')">+</button>
+
+          </div>
+
+          <div class="options">
+
+            ${p.category === "coffee"
+              ? `<span class="option">Extra shot +150 RSD</span>`
+              : ""}
+
+            ${p.boba
+              ? `<span class="option">Boba +100 RSD</span>`
+              : ""}
+
+          </div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function addItem(id) {
+  const product = menu.find(x => x.id === id);
+  if (!product) return;
+
+  let extraShot = false;
+  let boba = false;
+
+  if (product.category === "coffee") {
+    extraShot = confirm(
+      product.name + "\n\nAdd extra espresso shot for 150 RSD?"
+    );
+  }
+
+  if (product.boba) {
+    boba = confirm(
+      product.name + "\n\nAdd boba for 100 RSD?"
+    );
+  }
+
+  const existing = cart.find(x =>
+    x.id === id &&
+    x.extra_shot === extraShot &&
+    x.boba === boba
+  );
+
+  if (existing) {
+    existing.qty++;
+  } else {
     cart.push({
-      name: name,
-      price: price
+      id: id,
+      qty: 1,
+      extra_shot: extraShot,
+      boba: boba
+    });
+  }
+
+  if (tg.HapticFeedback) {
+    tg.HapticFeedback.impactOccurred("light");
+  }
+
+  updateCart();
+}
+
+function itemPrice(item) {
+  const product = menu.find(x => x.id === item.id);
+  if (!product) return 0;
+
+  let price = product.price;
+
+  if (item.extra_shot) price += 150;
+  if (item.boba) price += 100;
+
+  return price * item.qty;
+}
+
+function updateCart() {
+  const count = cart.reduce((sum,x) => sum + x.qty, 0);
+  const total = cart.reduce((sum,x) => sum + itemPrice(x), 0);
+
+  document.getElementById("itemCount").innerText =
+    count + (count === 1 ? " item" : " items");
+
+  document.getElementById("total").innerText =
+    total + " RSD";
+
+  const box = document.getElementById("cartItems");
+
+  box.innerHTML = cart.map((item,index) => {
+    const p = menu.find(x => x.id === item.id);
+
+    let extras = [];
+
+    if (item.extra_shot) extras.push("extra shot");
+    if (item.boba) extras.push("boba");
+
+    return `
+      <div class="cart-line">
+
+        <div>
+          <strong>${item.qty}× ${p.name}</strong>
+          ${extras.length
+            ? `<br><span>${extras.join(", ")}</span>`
+            : ""}
+        </div>
+
+        <div>
+          ${itemPrice(item)} RSD
+          <button class="remove"
+            onclick="removeItem(${index})">×</button>
+        </div>
+
+      </div>
+    `;
+  }).join("");
+}
+
+function removeItem(index) {
+  if (cart[index].qty > 1) {
+    cart[index].qty--;
+  } else {
+    cart.splice(index,1);
+  }
+
+  updateCart();
+}
+
+function chooseTime(button, minutes) {
+  pickupMinutes = minutes;
+
+  document.querySelectorAll(".time").forEach(x =>
+    x.classList.remove("selected")
+  );
+
+  button.classList.add("selected");
+}
+
+function pickupISO() {
+  const date = new Date(
+    Date.now() + pickupMinutes * 60 * 1000
+  );
+
+  return date.toISOString();
+}
+
+function showMessage(text) {
+  const el = document.getElementById("message");
+  el.style.display = "block";
+  el.innerText = text;
+}
+
+async function placeOrder() {
+
+  if (!cart.length) {
+    showMessage("Please add a drink first.");
+    return;
+  }
+
+  const button = document.getElementById("orderButton");
+
+  button.disabled = true;
+  button.innerText = "Sending...";
+
+  try {
+
+    const response = await fetch("/api/order", {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify({
+        initData: tg.initData,
+        pickup: pickupISO(),
+        items: cart
+      })
     });
 
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || "Order failed.");
+    }
+
+    cart = [];
     updateCart();
 
-    if (tg.HapticFeedback) {
-      tg.HapticFeedback.impactOccurred("light");
-    }
-  }
-
-  function updateCart() {
-
-    let total = 0;
-
-    cart.forEach(item => {
-      total += item.price;
-    });
-
-    document.getElementById("items").innerText =
-      cart.length + (cart.length === 1 ? " item" : " items");
-
-    document.getElementById("total").innerText =
-      total + " RSD";
-  }
-
-  function selectTime(button, time) {
-
-    document.querySelectorAll(".time")
-      .forEach(btn => btn.classList.remove("selected"));
-
-    button.classList.add("selected");
-
-    pickupTime = time;
-  }
-
-  function sendOrder() {
-
-    if (cart.length === 0) {
-      alert("Please add something to your order.");
-      return;
-    }
-
-    let total = cart.reduce(
-      (sum, item) => sum + item.price,
-      0
+    showMessage(
+      "✅ Order #" +
+      result.order_id +
+      " received! Pickup at " +
+      result.pickup +
+      ". Total: " +
+      result.total +
+      " RSD."
     );
 
-    const order = {
-      items: cart,
-      pickup: pickupTime,
-      total: total
-    };
+    if (tg.HapticFeedback) {
+      tg.HapticFeedback.notificationOccurred("success");
+    }
 
-    tg.sendData(JSON.stringify(order));
+  } catch (e) {
+
+    showMessage(e.message);
+
+  } finally {
+
+    button.disabled = false;
+    button.innerText = "Place order →";
   }
+}
 
+loadMenu();
+updateCart();
 </script>
 
 </body>
