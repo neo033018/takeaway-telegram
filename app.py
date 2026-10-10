@@ -81,13 +81,39 @@ def order():
  for x in items:
   if not isinstance(x,dict) or x.get('id') not in MENU:return jsonify(error='Invalid drink.'),400
   name,price,cat,allow_boba=MENU[x['id']]
-  sugar=x.get('sugar','Normal')
-  if sugar not in ('Normal','Less','No sugar'):return jsonify(error='Invalid sugar choice.'),400
-  boba=x.get('boba',False)
-  if type(boba) is not bool or (boba and not allow_boba):return jsonify(error='Invalid topping.'),400
+    boba=x.get('boba',False)
+  if type(boba) is not bool or (boba and not allow_boba):
+   return jsonify(error='Invalid topping.'),400
+
+  extra_shot=x.get('extra_shot',False)
+  if type(extra_shot) is not bool:
+   return jsonify(error='Invalid extra shot.'),400
+
+  if extra_shot and cat != 'coffee':
+   return jsonify(error='Extra shot is only available for coffee.'),400
+
   qty=x.get('qty',1)
-  if type(qty) is not int or not 1<=qty<=10:return jsonify(error='Invalid quantity.'),400
-  unit=price+(100 if boba else 0);total+=qty*unit
+  if type(qty) is not int or not 1<=qty<=10:
+   return jsonify(error='Invalid quantity.'),400
+
+  unit=price
+  extras=[]
+
+  if boba:
+   unit+=100
+   extras.append('boba')
+
+  if extra_shot:
+   unit+=150
+   extras.append('extra shot')
+
+  total+=qty*unit
+
+  description=f'{qty}× {name}'
+  if extras:
+   description+=' + '+', '.join(extras)
+
+  lines.append(description+f' ({qty*unit} RSD)')
   lines.append(f'{qty}× {name} — {sugar}'+(' + boba' if boba else '')+f' ({qty*unit} RSD)')
  if total>100000:return jsonify(error='Order too large.'),400
  customer=(user.get('first_name','')+' '+user.get('last_name','')).strip()[:80] or 'Telegram customer'
