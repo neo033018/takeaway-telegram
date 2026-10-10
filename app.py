@@ -28,6 +28,10 @@ DB = os.environ.get("DATABASE_PATH", "orders.db")
 
 TZ = ZoneInfo("Europe/Belgrade")
 
+OPEN_HOUR = 7
+CLOSE_HOUR = 17
+MIN_PREP_MINUTES = 10
+
 
 # =========================================================
 # MENU
@@ -103,6 +107,18 @@ MENU = {
 }
 
 
+COFFEE_IDS = {
+    "espresso",
+    "americano",
+    "cappuccino",
+    "latte",
+    "flatwhite",
+    "icedlatte",
+    "tonic",
+    "bumble",
+}
+
+
 # =========================================================
 # DATABASE
 # =========================================================
@@ -148,7 +164,12 @@ def tg(method, payload):
         response.raise_for_status()
 
         result = response.json()
-        logging.info("Telegram %s response: %s", method, result)
+
+        logging.info(
+            "Telegram %s response: %s",
+            method,
+            result,
+        )
 
         return result
 
@@ -163,9 +184,11 @@ def tg(method, payload):
 
 def verify(init_data):
     if not TOKEN or not init_data:
+        logging.warning("Missing TOKEN or initData")
         return None
 
     if len(init_data) > 8192:
+        logging.warning("initData is too large")
         return None
 
     try:
@@ -173,11 +196,16 @@ def verify(init_data):
             parse_qsl(
                 init_data,
                 keep_blank_values=True,
-                strict_parsing=True,
             )
         )
 
         received_hash = data.pop("hash", "")
+
+        if not received_hash:
+            logging.warning(
+                "Telegram initData has no hash"
+            )
+            return None
 
         secret_key = hmac.new(
             b"WebAppData",
@@ -200,22 +228,57 @@ def verify(init_data):
             calculated_hash,
             received_hash,
         ):
+            logging.warning(
+                "Telegram initData hash mismatch"
+            )
             return None
 
-        auth_date = int(data.get("auth_date", "0"))
+        # Telegram Desktop may keep the Mini App open
+        # for a while. Accept initData for 24 hours.
+        auth_date = int(
+            data.get("auth_date", "0")
+        )
 
-        if abs(time.time() - auth_date) > 3600:
+        if auth_date <= 0:
+            logging.warning(
+                "Invalid Telegram auth_date"
+            )
             return None
 
-        user = json.loads(data["user"])
+        age = time.time() - auth_date
 
-        if not isinstance(user.get("id"), int):
+        if age < -300 or age > 86400:
+            logging.warning(
+                "Telegram initData expired. Age: %s",
+                age,
+            )
+            return None
+
+        user_raw = data.get("user")
+
+        if not user_raw:
+            logging.warning(
+                "Telegram initData has no user"
+            )
+            return None
+
+        user = json.loads(user_raw)
+
+        if not isinstance(
+            user.get("id"),
+            int,
+        ):
+            logging.warning(
+                "Invalid Telegram user ID"
+            )
             return None
 
         return user
 
     except Exception:
-        logging.exception("Telegram initData verification failed")
+        logging.exception(
+            "Telegram initData verification failed"
+        )
         return None
 
 
@@ -234,6 +297,7 @@ def health():
         status="ok",
         telegram_token=bool(TOKEN),
         app_url=bool(URL),
+        admin_chat=bool(ADMIN),
     )
 
 
@@ -267,22 +331,43 @@ def menu():
 def order():
     data = request.get_json(silent=True) or {}
 
-    user = verify(data.get("initData", ""))
+    init_data = data.get("initData", "")
+
+    logging.info(
+        "Order request received. initData present: %s",
+        bool(init_data),
+    )
+
+    user = verify(init_data)
 
     if not user:
         return jsonify(
-            error="Open the ordering app from Telegram."
+            error=(
+                "Telegram session could not be verified. "
+                "Close the ordering window and open it "
+                "again from the bot."
+            )
         ), 401
+
+    # -----------------------------------------------------
+    # ITEMS
+    # -----------------------------------------------------
 
     items = data.get("items", [])
 
     if not isinstance(items, list):
-        return jsonify(error="Invalid order."), 400
+        return jsonify(
+            error="Invalid order."
+        ), 400
 
     if not 1 <= len(items) <= 20:
         return jsonify(
             error="Select between 1 and 20 drinks."
         ), 400
+
+    # -----------------------------------------------------
+    # PICKUP TIME
+    # -----------------------------------------------------
 
     now = datetime.now(TZ)
 
@@ -303,15 +388,60 @@ def order():
 
     pickup = pickup.astimezone(TZ)
 
-    if pickup < now + timedelta(minutes=8):
+    minimum_pickup = (
+        now + timedelta(
+            minutes=MIN_PREP_MINUTES
+        )
+    )
+
+    if pickup < minimum_pickup:
         return jsonify(
-            error="Pickup must be at least 10 minutes from now."
+            error=(
+                "Pickup must be at least "
+                f"{MIN_PREP_MINUTES} minutes "
+                "from now."
+            )
         ), 400
 
-    if pickup > now + timedelta(hours=6):
+    # Orders are for today only.
+    if pickup.date() != now.date():
         return jsonify(
-            error="Pickup can be maximum 6 hours ahead."
+            error=(
+                "Please choose a pickup time "
+                "for today."
+            )
         ), 400
+
+    opening = now.replace(
+        hour=OPEN_HOUR,
+        minute=0,
+        second=0,
+        microsecond=0,
+    )
+
+    closing = now.replace(
+        hour=CLOSE_HOUR,
+        minute=0,
+        second=0,
+        microsecond=0,
+    )
+
+    if pickup < opening:
+        return jsonify(
+            error="Pickup starts from 07:00."
+        ), 400
+
+    if pickup >= closing:
+        return jsonify(
+            error=(
+                "Last pickup must be "
+                "before 17:00."
+            )
+        ), 400
+
+    # -----------------------------------------------------
+    # CALCULATE ORDER
+    # -----------------------------------------------------
 
     total = 0
     lines = []
@@ -319,18 +449,21 @@ def order():
     for selected in items:
 
         if not isinstance(selected, dict):
-            return jsonify(error="Invalid drink."), 400
+            return jsonify(
+                error="Invalid drink."
+            ), 400
 
         item_id = selected.get("id")
 
         if item_id not in MENU:
-            return jsonify(error="Invalid drink."), 400
+            return jsonify(
+                error="Invalid drink."
+            ), 400
 
         item = MENU[item_id]
 
         name = item["name"]
         price = item["price"]
-        category = item["category"]
         allow_boba = item["boba"]
 
         qty = selected.get("qty", 1)
@@ -345,7 +478,10 @@ def order():
                 error="Invalid quantity."
             ), 400
 
-        boba = selected.get("boba", False)
+        boba = selected.get(
+            "boba",
+            False,
+        )
 
         if type(boba) is not bool:
             return jsonify(
@@ -354,7 +490,10 @@ def order():
 
         if boba and not allow_boba:
             return jsonify(
-                error="Boba is not available for this drink."
+                error=(
+                    "Boba is not available "
+                    "for this drink."
+                )
             ), 400
 
         extra_shot = selected.get(
@@ -367,22 +506,15 @@ def order():
                 error="Invalid extra shot."
             ), 400
 
-        # Espresso Tonic and Bumble also contain coffee,
-        # so extra shot is allowed for them.
-        coffee_ids = {
-            "espresso",
-            "americano",
-            "cappuccino",
-            "latte",
-            "flatwhite",
-            "icedlatte",
-            "tonic",
-            "bumble",
-        }
-
-        if extra_shot and item_id not in coffee_ids:
+        if (
+            extra_shot
+            and item_id not in COFFEE_IDS
+        ):
             return jsonify(
-                error="Extra shot is not available for this drink."
+                error=(
+                    "Extra shot is not available "
+                    "for this drink."
+                )
             ), 400
 
         unit_price = price
@@ -399,12 +531,19 @@ def order():
         item_total = unit_price * qty
         total += item_total
 
-        description = f"{qty}× {name}"
+        description = (
+            f"{qty}× {name}"
+        )
 
         if extras:
-            description += " + " + ", ".join(extras)
+            description += (
+                " + "
+                + ", ".join(extras)
+            )
 
-        description += f" — {item_total} RSD"
+        description += (
+            f" — {item_total} RSD"
+        )
 
         lines.append(description)
 
@@ -412,6 +551,10 @@ def order():
         return jsonify(
             error="Order is too large."
         ), 400
+
+    # -----------------------------------------------------
+    # CUSTOMER
+    # -----------------------------------------------------
 
     customer = (
         (
@@ -422,6 +565,10 @@ def order():
         .strip()[:80]
         or "Telegram customer"
     )
+
+    # -----------------------------------------------------
+    # SAVE ORDER
+    # -----------------------------------------------------
 
     connection = db()
 
@@ -452,18 +599,25 @@ def order():
         )
 
         connection.commit()
+
         order_id = cursor.lastrowid
 
     finally:
         connection.close()
 
+    # -----------------------------------------------------
+    # TELEGRAM MESSAGES
+    # -----------------------------------------------------
+
     username = ""
 
     if user.get("username"):
-        username = f' (@{user["username"]})'
+        username = (
+            f' (@{user["username"]})'
+        )
 
     admin_message = (
-        f"☕ NEW ORDER #{order_id}\n\n"
+        f"🔔 NEW ORDER #{order_id}\n\n"
         f"👤 {customer}{username}\n"
         f"🕒 Pickup: {pickup:%H:%M}\n\n"
         + "\n".join(lines)
@@ -479,21 +633,30 @@ def order():
                 "text": admin_message,
             },
         )
+    else:
+        logging.warning(
+            "ADMIN_CHAT_ID is not configured"
+        )
 
     tg(
         "sendMessage",
         {
             "chat_id": user["id"],
             "text": (
-                f"✅ Take Away order #{order_id} received!\n\n"
-                f"🕒 Pickup: {pickup:%H:%M}\n"
-                f"💵 Total: {total} RSD\n\n"
-                f"Pay when you collect your order. ☕"
+                f"✅ Take Away order "
+                f"#{order_id} confirmed!\n\n"
+                f"🕒 Pickup: "
+                f"{pickup:%H:%M}\n"
+                f"💵 Total: "
+                f"{total} RSD\n\n"
+                f"Pay when you collect "
+                f"your order. ☕"
             ),
         },
     )
 
     return jsonify(
+        success=True,
         order_id=order_id,
         total=total,
         pickup=pickup.strftime("%H:%M"),
@@ -507,21 +670,31 @@ def order():
 @app.post("/api/bot-webhook")
 def webhook():
 
-    # For now we deliberately do not block the webhook
-    # with WEBHOOK_SECRET verification.
-    # First we make sure the bot works correctly.
+    data = request.get_json(
+        silent=True
+    ) or {}
 
-    data = request.get_json(silent=True) or {}
+    logging.info(
+        "Telegram update received: %s",
+        data,
+    )
 
-    logging.info("Telegram update received: %s", data)
+    message = (
+        data.get("message")
+        or {}
+    )
 
-    message = data.get("message") or {}
-
-    chat = message.get("chat") or {}
+    chat = (
+        message.get("chat")
+        or {}
+    )
 
     chat_id = chat.get("id")
 
-    text = message.get("text", "")
+    text = message.get(
+        "text",
+        "",
+    )
 
     if not chat_id:
         return "", 200
@@ -534,22 +707,28 @@ def webhook():
                 "sendMessage",
                 {
                     "chat_id": chat_id,
+
                     "text": (
                         "Welcome to Take Away ☕\n\n"
-                        "Pre-order your drinks and "
-                        "pay when you collect them."
+                        "Pre-order your drinks "
+                        "and pay when you "
+                        "collect them."
                     ),
+
                     "reply_markup": {
                         "keyboard": [
                             [
                                 {
-                                    "text": "☕ Order drinks",
+                                    "text":
+                                        "☕ Order drinks",
+
                                     "web_app": {
                                         "url": URL
                                     },
                                 }
                             ]
                         ],
+
                         "resize_keyboard": True,
                         "is_persistent": True,
                     },
@@ -562,9 +741,11 @@ def webhook():
                 "sendMessage",
                 {
                     "chat_id": chat_id,
+
                     "text": (
-                        "Take Away ordering app "
-                        "is being configured. ☕"
+                        "Take Away ordering "
+                        "app is being "
+                        "configured. ☕"
                     ),
                 },
             )
@@ -577,6 +758,7 @@ def webhook():
 # =========================================================
 
 if __name__ == "__main__":
+
     db().close()
 
     port = int(
