@@ -3,286 +3,654 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#17231c">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <title>Take Away</title>
 
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f5f1e9;
-      color: #171717;
-      padding-bottom: 120px;
+    :root {
+      --green: #17231c;
+      --green-2: #243429;
+      --cream: #f4f0e7;
+      --card: #fffdf8;
+      --muted: #7b7b73;
+      --line: #e5dfd3;
+      --accent: #d6b77a;
+      --soft: #ebe5da;
     }
 
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                   Helvetica, Arial, sans-serif;
+      background: var(--cream);
+      color: #171a17;
+      padding-bottom: 125px;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    /* HERO */
+
     .hero {
-      background: #202820;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 90% 10%, #344a39 0, transparent 34%),
+        linear-gradient(145deg, #18241d, #101711);
       color: white;
-      padding: 30px 20px 25px;
-      border-radius: 0 0 28px 28px;
+      padding: 32px 20px 29px;
+      border-radius: 0 0 34px 34px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 160px;
+      height: 160px;
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 50%;
+      right: -55px;
+      bottom: -75px;
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
     }
 
     .brand {
-      font-size: 12px;
+      font-size: 11px;
+      font-weight: 700;
       letter-spacing: 3px;
-      opacity: .65;
-      margin-bottom: 10px;
+      opacity: .72;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,.09);
+      padding: 7px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      color: rgba(255,255,255,.85);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #7bd28c;
+      box-shadow: 0 0 0 3px rgba(123,210,140,.12);
+    }
+
+    .hero-label {
+      color: #d9c18f;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 8px;
     }
 
     .hero h1 {
-      font-size: 31px;
-      margin-bottom: 7px;
+      font-size: 36px;
+      line-height: 1.02;
+      letter-spacing: -1.3px;
+      max-width: 300px;
+      margin-bottom: 12px;
     }
 
     .hero p {
-      opacity: .72;
       font-size: 14px;
+      line-height: 1.5;
+      color: rgba(255,255,255,.65);
+      max-width: 290px;
+    }
+
+    /* CATEGORY TABS */
+
+    .tabs-wrap {
+      position: sticky;
+      top: 0;
+      z-index: 8;
+      background: rgba(244,240,231,.94);
+      backdrop-filter: blur(12px);
+      padding: 15px 14px 9px;
     }
 
     .tabs {
       display: flex;
-      gap: 8px;
-      padding: 18px 16px 8px;
-      overflow-x: auto;
+      background: #e9e3d8;
+      padding: 4px;
+      border-radius: 17px;
+      gap: 3px;
     }
 
     .tab {
+      flex: 1;
       border: 0;
-      background: white;
-      padding: 10px 16px;
-      border-radius: 20px;
-      font-weight: 650;
-      white-space: nowrap;
+      background: transparent;
+      padding: 10px 8px;
+      border-radius: 13px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #77746d;
       cursor: pointer;
+      transition: .2s ease;
     }
 
     .tab.active {
-      background: #202820;
-      color: white;
+      background: var(--card);
+      color: var(--green);
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
     }
 
+    /* MENU */
+
     .section {
-      padding: 12px 16px;
+      padding: 15px 15px 5px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      margin-bottom: 14px;
+    }
+
+    .section-eyebrow {
+      color: #a17d43;
+      font-size: 10px;
+      letter-spacing: 1.8px;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 4px;
     }
 
     .section-title {
-      font-size: 21px;
-      margin: 4px 0 13px;
+      font-size: 25px;
+      letter-spacing: -.7px;
+    }
+
+    .section-count {
+      color: #99958d;
+      font-size: 12px;
     }
 
     .product {
-      background: white;
-      border-radius: 20px;
-      padding: 16px;
+      position: relative;
+      background: var(--card);
+      border: 1px solid rgba(30,40,32,.04);
+      border-radius: 22px;
+      padding: 17px;
       margin-bottom: 11px;
-      box-shadow: 0 4px 16px rgba(0,0,0,.04);
+      box-shadow: 0 7px 22px rgba(42,37,27,.045);
     }
 
     .product-top {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 15px;
+      gap: 13px;
+    }
+
+    .drink-icon {
+      width: 48px;
+      height: 48px;
+      flex: 0 0 48px;
+      border-radius: 15px;
+      background: #f0ebe1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .product-info {
+      flex: 1;
+      min-width: 0;
     }
 
     .product h3 {
-      font-size: 17px;
+      font-size: 16px;
       margin-bottom: 5px;
+      letter-spacing: -.2px;
     }
 
     .price {
-      color: #707070;
-      font-size: 14px;
+      color: #77736b;
+      font-size: 13px;
+      font-weight: 550;
     }
 
     .add {
-      width: 42px;
-      height: 42px;
-      flex: 0 0 42px;
+      width: 43px;
+      height: 43px;
+      flex: 0 0 43px;
       border: 0;
-      border-radius: 50%;
-      background: #202820;
+      border-radius: 14px;
+      background: var(--green);
       color: white;
-      font-size: 25px;
+      font-size: 24px;
+      font-weight: 300;
       cursor: pointer;
+      box-shadow: 0 5px 12px rgba(23,35,28,.15);
+    }
+
+    .add:active {
+      transform: scale(.94);
     }
 
     .options {
       display: flex;
       gap: 7px;
-      margin-top: 12px;
+      margin-top: 13px;
       flex-wrap: wrap;
     }
 
     .option {
-      border: 1px solid #dedbd3;
-      background: #faf9f6;
-      border-radius: 12px;
-      padding: 7px 10px;
-      font-size: 12px;
+      border: 1px solid var(--line);
+      background: #faf7f1;
+      border-radius: 10px;
+      padding: 7px 9px;
+      color: #716d65;
+      font-size: 11px;
+      font-weight: 600;
     }
 
-    .pickup {
-      background: white;
-      margin: 10px 16px 20px;
-      padding: 17px;
-      border-radius: 20px;
+    /* CART ITEMS */
+
+    .cart-items {
+      padding: 8px 15px 0;
     }
 
-    .pickup h2 {
-      font-size: 18px;
-      margin-bottom: 5px;
+    .cart-title {
+      font-size: 19px;
+      margin-bottom: 10px;
     }
 
-    .pickup p {
-      color: #777;
-      font-size: 13px;
-      margin-bottom: 13px;
-    }
-
-    .times {
+    .cart-line {
+      background: #e8e2d7;
+      border-radius: 16px;
+      padding: 12px 13px;
+      margin-bottom: 7px;
       display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
     }
 
-    .time {
-      border: 1px solid #ddd;
-      background: white;
-      padding: 9px 13px;
-      border-radius: 14px;
+    .cart-line strong {
+      font-size: 13px;
+    }
+
+    .extras-text {
+      display: inline-block;
+      color: #77736c;
+      margin-top: 3px;
+      font-size: 11px;
+    }
+
+    .cart-right {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 650;
+    }
+
+    .remove {
+      width: 29px;
+      height: 29px;
+      border: 0;
+      border-radius: 9px;
+      background: rgba(255,255,255,.55);
+      font-size: 17px;
       cursor: pointer;
     }
 
-    .time.selected {
-      background: #202820;
-      color: white;
-      border-color: #202820;
+    /* PICKUP */
+
+    .pickup {
+      background: var(--card);
+      margin: 13px 15px 20px;
+      padding: 18px;
+      border-radius: 22px;
+      box-shadow: 0 7px 22px rgba(42,37,27,.04);
     }
+
+    .pickup-top {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      margin-bottom: 15px;
+    }
+
+    .clock {
+      width: 40px;
+      height: 40px;
+      background: #eee8dc;
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .pickup h2 {
+      font-size: 17px;
+      margin-bottom: 3px;
+    }
+
+    .pickup p {
+      color: #817d75;
+      font-size: 12px;
+    }
+
+    .times {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+    }
+
+    .time {
+      border: 1px solid var(--line);
+      background: #faf8f3;
+      padding: 10px 4px;
+      border-radius: 12px;
+      cursor: pointer;
+      color: #55524c;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .time.selected {
+      background: var(--green);
+      color: white;
+      border-color: var(--green);
+    }
+
+    /* MESSAGES */
+
+    .message {
+      margin: 12px 15px;
+      padding: 14px;
+      border-radius: 16px;
+      background: #e1ebdf;
+      color: #263c2a;
+      display: none;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    /* BOTTOM CART */
 
     .cart {
       position: fixed;
-      left: 12px;
-      right: 12px;
-      bottom: 12px;
-      z-index: 10;
-      background: #202820;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      z-index: 20;
+      background: rgba(22,34,27,.97);
+      backdrop-filter: blur(15px);
       color: white;
       border-radius: 22px;
-      padding: 14px 17px;
+      padding: 11px 12px 11px 17px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      box-shadow: 0 13px 35px rgba(0,0,0,.28);
     }
 
     .cart small {
       display: block;
-      opacity: .65;
+      color: rgba(255,255,255,.55);
+      font-size: 11px;
       margin-bottom: 3px;
     }
 
     .total {
       font-size: 20px;
-      font-weight: 750;
+      font-weight: 800;
+      letter-spacing: -.3px;
     }
 
     .order {
       border: 0;
-      background: #f5f1e9;
-      color: #202820;
-      padding: 13px 17px;
-      border-radius: 15px;
-      font-weight: 750;
+      background: var(--cream);
+      color: var(--green);
+      min-width: 130px;
+      padding: 13px 15px;
+      border-radius: 14px;
+      font-weight: 800;
       cursor: pointer;
+    }
+
+    .order:active {
+      transform: scale(.97);
     }
 
     .order:disabled {
       opacity: .55;
     }
 
-    .cart-items {
-      padding: 0 16px 5px;
+    /* ADD-ON MODAL */
+
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      background: rgba(8,12,9,.48);
+      z-index: 50;
+      display: none;
+      align-items: flex-end;
+      backdrop-filter: blur(4px);
     }
 
-    .cart-line {
-      background: #e9e5dc;
-      border-radius: 14px;
-      padding: 10px 12px;
-      margin-bottom: 7px;
+    .modal-bg.open {
+      display: flex;
+    }
+
+    .modal {
+      width: 100%;
+      background: var(--cream);
+      border-radius: 28px 28px 0 0;
+      padding: 22px 17px 28px;
+      animation: slideUp .22s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .modal-bar {
+      width: 38px;
+      height: 4px;
+      background: #cbc6bc;
+      border-radius: 10px;
+      margin: -8px auto 19px;
+    }
+
+    .modal h2 {
+      font-size: 23px;
+      letter-spacing: -.5px;
+      margin-bottom: 5px;
+    }
+
+    .modal-price {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
+    .addon {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: var(--card);
+      padding: 14px;
+      border-radius: 15px;
+      margin-bottom: 8px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 13px;
-    }
-
-    .remove {
-      border: 0;
-      background: transparent;
-      font-size: 18px;
-      padding: 3px 7px;
       cursor: pointer;
     }
 
-    .hidden { display: none; }
+    .addon.selected {
+      border-color: var(--green);
+      background: #e7ece7;
+    }
 
-    .message {
-      margin: 10px 16px;
-      padding: 12px;
-      border-radius: 14px;
-      background: white;
-      display: none;
+    .addon strong {
       font-size: 14px;
+    }
+
+    .addon span {
+      font-size: 12px;
+      color: #777;
+    }
+
+    .modal-add {
+      width: 100%;
+      margin-top: 11px;
+      border: 0;
+      background: var(--green);
+      color: white;
+      border-radius: 16px;
+      padding: 15px;
+      font-weight: 800;
+      font-size: 15px;
+      cursor: pointer;
     }
   </style>
 </head>
 
 <body>
 
-<div class="hero">
-  <div class="brand">TAKE AWAY · BELGRADE</div>
-  <h1>Your coffee, ready.</h1>
-  <p>Order ahead · Pay when you collect</p>
-</div>
+  <div class="hero">
+    <div class="brand-row">
+      <div class="brand">TAKE AWAY</div>
 
-<div class="tabs">
-  <button class="tab active" onclick="showCategory('coffee',this)">Coffee</button>
-  <button class="tab" onclick="showCategory('tea',this)">Thai Tea</button>
-  <button class="tab" onclick="showCategory('special',this)">Specials</button>
-</div>
+      <div class="status">
+        <span class="status-dot"></span>
+        Open today
+      </div>
+    </div>
 
-<div id="menu"></div>
-
-<div id="cartItems" class="cart-items"></div>
-
-<div class="pickup">
-  <h2>Pickup time</h2>
-  <p>When should we have your order ready?</p>
-
-  <div class="times">
-    <button class="time selected" onclick="chooseTime(this,10)">10 min</button>
-    <button class="time" onclick="chooseTime(this,15)">15 min</button>
-    <button class="time" onclick="chooseTime(this,20)">20 min</button>
-    <button class="time" onclick="chooseTime(this,30)">30 min</button>
-  </div>
-</div>
-
-<div id="message" class="message"></div>
-
-<div class="cart">
-  <div>
-    <small id="itemCount">0 items</small>
-    <div id="total" class="total">0 RSD</div>
+    <div class="hero-label">BELGRADE · SAVSKI TRG</div>
+    <h1>Good coffee.<br>Ready when you are.</h1>
+    <p>Order ahead and skip the wait. Pay when you collect.</p>
   </div>
 
-  <button id="orderButton" class="order" onclick="placeOrder()">
-    Place order →
-  </button>
-</div>
+  <div class="tabs-wrap">
+    <div class="tabs">
+      <button class="tab active"
+              onclick="showCategory('coffee',this)">Coffee</button>
+
+      <button class="tab"
+              onclick="showCategory('tea',this)">Thai Tea</button>
+
+      <button class="tab"
+              onclick="showCategory('special',this)">Specials</button>
+    </div>
+  </div>
+
+  <div id="menu"></div>
+
+  <div id="cartItems" class="cart-items"></div>
+
+  <div class="pickup">
+    <div class="pickup-top">
+      <div class="clock">◷</div>
+
+      <div>
+        <h2>When do you want it?</h2>
+        <p>Choose when we'll have your order ready.</p>
+      </div>
+    </div>
+
+    <div class="times">
+      <button class="time selected"
+              onclick="chooseTime(this,10)">10 min</button>
+
+      <button class="time"
+              onclick="chooseTime(this,15)">15 min</button>
+
+      <button class="time"
+              onclick="chooseTime(this,20)">20 min</button>
+
+      <button class="time"
+              onclick="chooseTime(this,30)">30 min</button>
+    </div>
+  </div>
+
+  <div id="message" class="message"></div>
+
+  <div class="cart">
+    <div>
+      <small id="itemCount">0 items</small>
+      <div id="total" class="total">0 RSD</div>
+    </div>
+
+    <button id="orderButton"
+            class="order"
+            onclick="placeOrder()">
+      Place order →
+    </button>
+  </div>
+
+
+  <!-- ADD-ON MODAL -->
+
+  <div id="modalBg" class="modal-bg"
+       onclick="closeModalBackground(event)">
+
+    <div class="modal">
+
+      <div class="modal-bar"></div>
+
+      <h2 id="modalName"></h2>
+      <div id="modalPrice" class="modal-price"></div>
+
+      <div id="extraShotOption"
+           class="addon"
+           onclick="toggleAddon('extra')">
+
+        <strong>Extra espresso shot</strong>
+        <span>+150 RSD</span>
+
+      </div>
+
+      <div id="bobaOption"
+           class="addon"
+           onclick="toggleAddon('boba')">
+
+        <strong>Add boba</strong>
+        <span>+100 RSD</span>
+
+      </div>
+
+      <button class="modal-add"
+              onclick="confirmAdd()">
+        Add to order
+      </button>
+
+    </div>
+  </div>
+
 
 <script>
+
 const tg = window.Telegram.WebApp;
+
 tg.ready();
 tg.expand();
 
@@ -291,17 +659,34 @@ let cart = [];
 let category = "coffee";
 let pickupMinutes = 10;
 
+let selectedProduct = null;
+let modalExtra = false;
+let modalBoba = false;
+
+
+/* LOAD MENU */
+
 async function loadMenu() {
+
   try {
+
     const response = await fetch("/api/menu");
     menu = await response.json();
+
     renderMenu();
+
   } catch (e) {
+
     showMessage("Could not load the menu.");
+
   }
 }
 
+
+/* CATEGORY */
+
 function showCategory(cat, button) {
+
   category = cat;
 
   document.querySelectorAll(".tab").forEach(x =>
@@ -309,10 +694,33 @@ function showCategory(cat, button) {
   );
 
   button.classList.add("active");
+
   renderMenu();
 }
 
+
+/* ICON */
+
+function drinkIcon(product) {
+
+  const name = product.name.toLowerCase();
+
+  if (name.includes("tea")) return "🧋";
+
+  if (
+    name.includes("iced") ||
+    name.includes("bumble") ||
+    name.includes("tonic")
+  ) return "🥤";
+
+  return "☕";
+}
+
+
+/* MENU */
+
 function renderMenu() {
+
   const box = document.getElementById("menu");
 
   const names = {
@@ -321,223 +729,485 @@ function renderMenu() {
     special: "Specials"
   };
 
-  const products = menu.filter(x => x.category === category);
+  const products =
+    menu.filter(x => x.category === category);
 
   box.innerHTML = `
     <div class="section">
-      <h2 class="section-title">${names[category]}</h2>
+
+      <div class="section-head">
+
+        <div>
+          <div class="section-eyebrow">
+            Made fresh
+          </div>
+
+          <h2 class="section-title">
+            ${names[category]}
+          </h2>
+        </div>
+
+        <div class="section-count">
+          ${products.length} drinks
+        </div>
+
+      </div>
 
       ${products.map(p => `
+
         <div class="product">
+
           <div class="product-top">
 
-            <div>
+            <div class="drink-icon">
+              ${drinkIcon(p)}
+            </div>
+
+            <div class="product-info">
+
               <h3>${p.name}</h3>
-              <div class="price">${p.price} RSD</div>
+
+              <div class="price">
+                ${p.price} RSD
+              </div>
+
             </div>
 
             <button class="add"
-              onclick="addItem('${p.id}')">+</button>
+                    onclick="openProduct('${p.id}')">
+              +
+            </button>
 
           </div>
 
           <div class="options">
 
             ${p.category === "coffee"
-              ? `<span class="option">Extra shot +150 RSD</span>`
+              ? `<span class="option">
+                   Extra shot +150
+                 </span>`
               : ""}
 
             ${p.boba
-              ? `<span class="option">Boba +100 RSD</span>`
+              ? `<span class="option">
+                   Boba +100
+                 </span>`
               : ""}
 
           </div>
+
         </div>
+
       `).join("")}
+
     </div>
   `;
 }
 
-function addItem(id) {
-  const product = menu.find(x => x.id === id);
-  if (!product) return;
 
-  let extraShot = false;
-  let boba = false;
+/* PRODUCT MODAL */
 
-  if (product.category === "coffee") {
-    extraShot = confirm(
-      product.name + "\n\nAdd extra espresso shot for 150 RSD?"
-    );
+function openProduct(id) {
+
+  selectedProduct =
+    menu.find(x => x.id === id);
+
+  if (!selectedProduct) return;
+
+  modalExtra = false;
+  modalBoba = false;
+
+  document.getElementById("modalName").innerText =
+    selectedProduct.name;
+
+  document.getElementById("modalPrice").innerText =
+    selectedProduct.price + " RSD";
+
+  const extra =
+    document.getElementById("extraShotOption");
+
+  const boba =
+    document.getElementById("bobaOption");
+
+  extra.style.display =
+    selectedProduct.category === "coffee"
+      ? "flex"
+      : "none";
+
+  boba.style.display =
+    selectedProduct.boba
+      ? "flex"
+      : "none";
+
+  extra.classList.remove("selected");
+  boba.classList.remove("selected");
+
+  /*
+    If there are no options, add immediately.
+  */
+
+  if (
+    selectedProduct.category !== "coffee" &&
+    !selectedProduct.boba
+  ) {
+
+    confirmAdd();
+    return;
   }
 
-  if (product.boba) {
-    boba = confirm(
-      product.name + "\n\nAdd boba for 100 RSD?"
-    );
+  document.getElementById("modalBg")
+    .classList.add("open");
+}
+
+
+function toggleAddon(type) {
+
+  if (type === "extra") {
+
+    modalExtra = !modalExtra;
+
+    document.getElementById("extraShotOption")
+      .classList.toggle(
+        "selected",
+        modalExtra
+      );
+
   }
 
-  const existing = cart.find(x =>
-    x.id === id &&
-    x.extra_shot === extraShot &&
-    x.boba === boba
-  );
+  if (type === "boba") {
+
+    modalBoba = !modalBoba;
+
+    document.getElementById("bobaOption")
+      .classList.toggle(
+        "selected",
+        modalBoba
+      );
+
+  }
+}
+
+
+function confirmAdd() {
+
+  if (!selectedProduct) return;
+
+  const existing =
+    cart.find(x =>
+      x.id === selectedProduct.id &&
+      x.extra_shot === modalExtra &&
+      x.boba === modalBoba
+    );
 
   if (existing) {
+
     existing.qty++;
+
   } else {
+
     cart.push({
-      id: id,
+      id: selectedProduct.id,
       qty: 1,
-      extra_shot: extraShot,
-      boba: boba
+      extra_shot: modalExtra,
+      boba: modalBoba
     });
+
   }
 
+  document.getElementById("modalBg")
+    .classList.remove("open");
+
   if (tg.HapticFeedback) {
-    tg.HapticFeedback.impactOccurred("light");
+
+    tg.HapticFeedback
+      .impactOccurred("light");
+
   }
 
   updateCart();
 }
 
+
+function closeModalBackground(event) {
+
+  if (event.target.id === "modalBg") {
+
+    document.getElementById("modalBg")
+      .classList.remove("open");
+
+  }
+}
+
+
+/* PRICE */
+
 function itemPrice(item) {
-  const product = menu.find(x => x.id === item.id);
+
+  const product =
+    menu.find(x => x.id === item.id);
+
   if (!product) return 0;
 
   let price = product.price;
 
-  if (item.extra_shot) price += 150;
-  if (item.boba) price += 100;
+  if (item.extra_shot)
+    price += 150;
+
+  if (item.boba)
+    price += 100;
 
   return price * item.qty;
 }
 
+
+/* CART */
+
 function updateCart() {
-  const count = cart.reduce((sum,x) => sum + x.qty, 0);
-  const total = cart.reduce((sum,x) => sum + itemPrice(x), 0);
 
-  document.getElementById("itemCount").innerText =
-    count + (count === 1 ? " item" : " items");
+  const count =
+    cart.reduce(
+      (sum,x) => sum + x.qty,
+      0
+    );
 
-  document.getElementById("total").innerText =
-    total + " RSD";
+  const total =
+    cart.reduce(
+      (sum,x) => sum + itemPrice(x),
+      0
+    );
 
-  const box = document.getElementById("cartItems");
+  document.getElementById("itemCount")
+    .innerText =
+      count +
+      (count === 1
+        ? " item"
+        : " items");
 
-  box.innerHTML = cart.map((item,index) => {
-    const p = menu.find(x => x.id === item.id);
+  document.getElementById("total")
+    .innerText =
+      total + " RSD";
 
-    let extras = [];
 
-    if (item.extra_shot) extras.push("extra shot");
-    if (item.boba) extras.push("boba");
+  const box =
+    document.getElementById("cartItems");
 
-    return `
-      <div class="cart-line">
 
-        <div>
-          <strong>${item.qty}× ${p.name}</strong>
-          ${extras.length
-            ? `<br><span>${extras.join(", ")}</span>`
-            : ""}
+  if (!cart.length) {
+
+    box.innerHTML = "";
+    return;
+
+  }
+
+
+  box.innerHTML = `
+
+    <h3 class="cart-title">
+      Your order
+    </h3>
+
+    ${cart.map((item,index) => {
+
+      const p =
+        menu.find(x => x.id === item.id);
+
+      let extras = [];
+
+      if (item.extra_shot)
+        extras.push("extra shot");
+
+      if (item.boba)
+        extras.push("boba");
+
+      return `
+
+        <div class="cart-line">
+
+          <div>
+
+            <strong>
+              ${item.qty}× ${p.name}
+            </strong>
+
+            ${extras.length
+              ? `<br>
+                 <span class="extras-text">
+                   ${extras.join(" · ")}
+                 </span>`
+              : ""}
+
+          </div>
+
+          <div class="cart-right">
+
+            ${itemPrice(item)} RSD
+
+            <button class="remove"
+                    onclick="removeItem(${index})">
+              ×
+            </button>
+
+          </div>
+
         </div>
 
-        <div>
-          ${itemPrice(item)} RSD
-          <button class="remove"
-            onclick="removeItem(${index})">×</button>
-        </div>
+      `;
 
-      </div>
-    `;
-  }).join("");
+    }).join("")}
+
+  `;
 }
 
+
 function removeItem(index) {
+
   if (cart[index].qty > 1) {
+
     cart[index].qty--;
+
   } else {
+
     cart.splice(index,1);
+
   }
 
   updateCart();
 }
 
+
+/* PICKUP TIME */
+
 function chooseTime(button, minutes) {
+
   pickupMinutes = minutes;
 
-  document.querySelectorAll(".time").forEach(x =>
-    x.classList.remove("selected")
-  );
+  document.querySelectorAll(".time")
+    .forEach(x =>
+      x.classList.remove("selected")
+    );
 
   button.classList.add("selected");
+
+  if (tg.HapticFeedback) {
+
+    tg.HapticFeedback
+      .selectionChanged();
+
+  }
 }
 
+
 function pickupISO() {
-  const date = new Date(
-    Date.now() + pickupMinutes * 60 * 1000
-  );
+
+  const date =
+    new Date(
+      Date.now() +
+      pickupMinutes * 60 * 1000
+    );
 
   return date.toISOString();
 }
 
+
+/* MESSAGE */
+
 function showMessage(text) {
-  const el = document.getElementById("message");
+
+  const el =
+    document.getElementById("message");
+
   el.style.display = "block";
   el.innerText = text;
+
+  el.scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
 }
+
+
+/* PLACE ORDER */
 
 async function placeOrder() {
 
   if (!cart.length) {
-    showMessage("Please add a drink first.");
+
+    showMessage(
+      "Please add a drink first."
+    );
+
     return;
   }
 
-  const button = document.getElementById("orderButton");
+  const button =
+    document.getElementById("orderButton");
 
   button.disabled = true;
   button.innerText = "Sending...";
 
   try {
 
-    const response = await fetch("/api/order", {
-      method: "POST",
+    const response =
+      await fetch("/api/order", {
 
-      headers: {
-        "Content-Type": "application/json"
-      },
+        method: "POST",
 
-      body: JSON.stringify({
-        initData: tg.initData,
-        pickup: pickupISO(),
-        items: cart
-      })
-    });
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
 
-    const result = await response.json();
+        body: JSON.stringify({
+
+          initData: tg.initData,
+
+          pickup: pickupISO(),
+
+          items: cart
+
+        })
+
+      });
+
+
+    const result =
+      await response.json();
+
 
     if (!response.ok) {
-      throw new Error(result.error || "Order failed.");
+
+      throw new Error(
+        result.error ||
+        "Order failed."
+      );
+
     }
+
 
     cart = [];
     updateCart();
 
+
     showMessage(
-      "✅ Order #" +
+      "✓ Order #" +
       result.order_id +
-      " received! Pickup at " +
+      " confirmed! Ready at " +
       result.pickup +
       ". Total: " +
       result.total +
       " RSD."
     );
 
+
     if (tg.HapticFeedback) {
-      tg.HapticFeedback.notificationOccurred("success");
+
+      tg.HapticFeedback
+        .notificationOccurred(
+          "success"
+        );
+
     }
+
 
   } catch (e) {
 
@@ -546,12 +1216,19 @@ async function placeOrder() {
   } finally {
 
     button.disabled = false;
-    button.innerText = "Place order →";
+
+    button.innerText =
+      "Place order →";
+
   }
 }
 
+
+/* START */
+
 loadMenu();
 updateCart();
+
 </script>
 
 </body>
