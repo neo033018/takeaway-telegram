@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"
+>
 <meta name="theme-color" content="#043923">
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -46,9 +49,9 @@ button,select{
   cursor:pointer;
 }
 
-/* ==========================================
+/* =========================
    HEADER
-========================================== */
+========================= */
 
 .header{
   padding:12px 17px 23px;
@@ -97,56 +100,52 @@ button,select{
   background:white;
 }
 
-/* ==========================================
-   ORIGINAL-STYLE TAKE AWAY LOGO
-========================================== */
+/* =========================
+   BRAND / LOGO
+========================= */
 
 .brand{
   position:relative;
   z-index:1;
-  margin-top:-2px;
+  margin-top:-4px;
 }
 
 .walking-logo{
-  width:105px;
-  height:118px;
-  margin:-2px auto 1px;
+  width:125px;
+  height:125px;
+  margin:-2px auto 0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
-.walking-logo svg{
+.walking-logo img{
   width:100%;
   height:100%;
+  object-fit:contain;
   display:block;
-  overflow:visible;
-  filter:drop-shadow(0 4px 6px rgba(0,0,0,.2));
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,.18));
 }
 
 .logo{
-  margin-top:4px;
+  margin-top:1px;
   margin-left:9px;
-
   font-family:Georgia,"Times New Roman",serif;
   font-size:31px;
   font-weight:600;
   line-height:1;
-
   letter-spacing:9px;
-
   color:#fff;
-
   text-shadow:0 2px 5px rgba(0,0,0,.25);
 }
 
 .subtitle{
   margin-top:10px;
   margin-left:5px;
-
   font-family:Georgia,"Times New Roman",serif;
   font-size:11px;
   font-weight:500;
-
   letter-spacing:5px;
-
   color:rgba(255,255,255,.94);
 }
 
@@ -159,28 +158,22 @@ button,select{
 
 .tagline{
   margin-top:14px;
-
   color:var(--gold);
-
   font-family:Georgia,"Times New Roman",serif;
   font-size:9px;
-
   letter-spacing:3px;
 }
 
-/* ==========================================
+/* =========================
    TABS
-========================================== */
+========================= */
 
 .tabs-wrap{
   position:sticky;
   top:0;
   z-index:20;
-
   padding:8px 12px 9px;
-
   background:rgba(3,44,27,.94);
-
   backdrop-filter:blur(15px);
   -webkit-backdrop-filter:blur(15px);
 }
@@ -189,22 +182,17 @@ button,select{
   display:grid;
   grid-template-columns:repeat(3,1fr);
   gap:5px;
-
   padding:4px;
-
   border-radius:16px;
   background:rgba(0,0,0,.18);
 }
 
 .tab{
   min-height:42px;
-
   border:0;
   border-radius:12px;
-
   background:transparent;
   color:rgba(255,255,255,.65);
-
   font-size:13px;
   font-weight:700;
 }
@@ -214,9 +202,9 @@ button,select{
   color:var(--green);
 }
 
-/* ==========================================
+/* =========================
    MENU
-========================================== */
+========================= */
 
 .section{
   padding:18px 13px 5px;
@@ -226,7 +214,6 @@ button,select{
   display:flex;
   align-items:center;
   gap:10px;
-
   margin:0 4px 15px;
 }
 
@@ -253,101 +240,78 @@ button,select{
   gap:10px;
 }
 
-/* ==========================================
+/* =========================
    PRODUCT
-========================================== */
+========================= */
 
 .product{
   position:relative;
   overflow:hidden;
-
   min-height:260px;
-
   padding:13px 12px 14px;
-
   border:1px solid rgba(255,255,255,.10);
   border-radius:22px;
-
   background:
     linear-gradient(
       145deg,
       rgba(255,255,255,.09),
       rgba(255,255,255,.035)
     );
-
   box-shadow:0 10px 30px rgba(0,0,0,.12);
 }
 
 .product:before{
   content:"";
   position:absolute;
-
   width:100px;
   height:100px;
-
   top:-45px;
   right:-45px;
-
   border-radius:50%;
   background:rgba(255,255,255,.035);
 }
 
-/* ==========================================
-   DRINKS
-========================================== */
+/* =========================
+   DRINK VISUALS
+========================= */
 
 .drink{
   position:relative;
-
   height:108px;
-
   display:flex;
   align-items:center;
   justify-content:center;
-
   margin-bottom:6px;
 }
 
 .cup{
   position:relative;
-
   width:72px;
   height:88px;
-
   border:2px solid rgba(255,255,255,.72);
   border-radius:8px 8px 20px 20px;
-
   overflow:visible;
-
   box-shadow:0 10px 20px rgba(0,0,0,.18);
 }
 
 .cup:before{
   content:"";
-
   position:absolute;
   z-index:4;
-
   top:0;
   left:0;
   right:0;
-
   height:9px;
-
   background:rgba(255,255,255,.65);
 }
 
 .liquid{
   position:absolute;
-
   left:3px;
   right:3px;
   bottom:3px;
-
   height:72px;
-
   overflow:hidden;
-
   border-radius:4px 4px 15px 15px;
 }
 
@@ -414,12 +378,9 @@ button,select{
 .ice{
   position:absolute;
   z-index:3;
-
   top:27px;
   left:14px;
-
   color:rgba(255,255,255,.72);
-
   font-size:21px;
   letter-spacing:-5px;
 }
@@ -427,16 +388,12 @@ button,select{
 .lime{
   position:absolute;
   z-index:10;
-
   width:32px;
   height:32px;
-
   right:-12px;
   top:14px;
-
   border:3px solid #b9d83f;
   border-radius:50%;
-
   background:
     radial-gradient(
       circle,
@@ -449,106 +406,79 @@ button,select{
 
 .coffee-cup{
   position:relative;
-
   width:78px;
   height:55px;
-
   border-radius:6px 6px 28px 28px;
-
   background:white;
-
   box-shadow:0 11px 20px rgba(0,0,0,.2);
 }
 
 .coffee-cup:before{
   content:"";
-
   position:absolute;
-
   left:7px;
   right:7px;
   top:6px;
-
   height:15px;
-
   border-radius:50%;
-
   background:#512412;
 }
 
 .coffee-cup:after{
   content:"";
-
   position:absolute;
-
   right:-18px;
   top:12px;
-
   width:23px;
   height:25px;
-
   border:6px solid white;
   border-left:0;
-
   border-radius:0 18px 18px 0;
 }
 
-/* ==========================================
+/* =========================
    PRODUCT TEXT
-========================================== */
+========================= */
 
 .product-name{
   min-height:38px;
-
   text-align:center;
-
   font-family:Georgia,"Times New Roman",serif;
   font-size:15px;
-
   line-height:1.15;
 }
 
 .product-desc{
   min-height:40px;
-
   margin-top:3px;
-
   text-align:center;
-
   color:rgba(255,255,255,.60);
-
   font-size:10px;
   line-height:1.3;
 }
 
 .product-price{
   margin-top:7px;
-
   text-align:center;
-
   font-family:Georgia,"Times New Roman",serif;
   font-size:19px;
 }
 
 .add{
   width:100%;
-
   margin-top:10px;
   padding:10px 7px;
-
   border:0;
   border-radius:12px;
-
   background:white;
   color:var(--green);
-
   font-size:12px;
   font-weight:800;
 }
 
-/* ==========================================
+/* =========================
    CART
-========================================== */
+========================= */
 
 .cart-section{
   margin:12px 13px;
@@ -569,53 +499,40 @@ button,select{
   display:flex;
   justify-content:space-between;
   align-items:center;
-
   gap:8px;
-
   margin-bottom:6px;
   padding:11px;
-
   border-radius:13px;
-
   background:rgba(255,255,255,.08);
-
   font-size:12px;
 }
 
 .cart-extra{
   margin-top:3px;
-
   color:rgba(255,255,255,.55);
-
   font-size:10px;
 }
 
 .remove{
   width:28px;
   height:28px;
-
   border:0;
   border-radius:8px;
-
   margin-left:5px;
-
   background:rgba(255,255,255,.15);
   color:white;
-
   font-size:17px;
 }
 
-/* ==========================================
+/* =========================
    PICKUP
-========================================== */
+========================= */
 
 .pickup{
   margin:18px 13px 12px;
   padding:17px;
-
   border:1px solid rgba(255,255,255,.12);
   border-radius:22px;
-
   background:rgba(255,255,255,.07);
 }
 
@@ -634,9 +551,7 @@ button,select{
 .pickup-modes{
   display:grid;
   grid-template-columns:1fr 1fr;
-
   gap:6px;
-
   margin-bottom:9px;
 }
 
@@ -644,10 +559,8 @@ button,select{
 .time{
   border:1px solid rgba(255,255,255,.15);
   border-radius:12px;
-
   background:rgba(0,0,0,.15);
   color:white;
-
   font-size:12px;
   font-weight:700;
 }
@@ -683,41 +596,31 @@ button,select{
 .exact-select{
   width:100%;
   height:47px;
-
   border:0;
   border-radius:12px;
-
   padding:0 13px;
-
   background:white;
   color:var(--green);
-
   font-weight:700;
 }
 
 .pickup-info{
   margin-top:10px;
-
   color:rgba(255,255,255,.7);
-
   font-size:11px;
 }
 
-/* ==========================================
+/* =========================
    MESSAGE
-========================================== */
+========================= */
 
 .message{
   display:none;
-
   margin:12px 13px;
   padding:13px;
-
   border-radius:14px;
-
   font-size:12px;
   line-height:1.5;
-
   white-space:pre-line;
 }
 
@@ -733,64 +636,48 @@ button,select{
   color:#244c2b;
 }
 
-/* ==========================================
+/* =========================
    BOTTOM
-========================================== */
+========================= */
 
 .bottom{
   position:fixed;
-
   z-index:30;
-
   left:9px;
   right:9px;
   bottom:9px;
-
   display:flex;
   align-items:center;
   justify-content:space-between;
-
   gap:10px;
-
   padding:10px 10px 10px 15px;
-
   border:1px solid rgba(255,255,255,.14);
   border-radius:20px;
-
   background:rgba(3,28,19,.96);
-
   backdrop-filter:blur(15px);
   -webkit-backdrop-filter:blur(15px);
-
   box-shadow:0 15px 35px rgba(0,0,0,.35);
 }
 
 .bottom small{
   display:block;
-
   color:rgba(255,255,255,.55);
-
   font-size:10px;
 }
 
 .total{
   margin-top:2px;
-
   font-size:19px;
   font-weight:800;
 }
 
 .order{
   min-width:135px;
-
   border:0;
   padding:13px 12px;
-
   border-radius:13px;
-
   background:white;
   color:var(--green);
-
   font-size:12px;
   font-weight:800;
 }
@@ -799,21 +686,17 @@ button,select{
   opacity:.5;
 }
 
-/* ==========================================
+/* =========================
    MODAL
-========================================== */
+========================= */
 
 .modal-bg{
   position:fixed;
   inset:0;
-
   z-index:50;
-
   display:none;
   align-items:flex-end;
-
   background:rgba(0,0,0,.55);
-
   backdrop-filter:blur(4px);
   -webkit-backdrop-filter:blur(4px);
 }
@@ -824,11 +707,8 @@ button,select{
 
 .modal{
   width:100%;
-
   padding:21px 17px 28px;
-
   border-radius:25px 25px 0 0;
-
   background:#f6f0e5;
   color:#13291f;
 }
@@ -845,16 +725,12 @@ button,select{
 
 .addon{
   width:100%;
-
   display:flex;
   justify-content:space-between;
-
   padding:14px;
   margin-bottom:7px;
-
   border:1px solid #ddd4c5;
   border-radius:13px;
-
   background:white;
   color:#183326;
 }
@@ -866,16 +742,12 @@ button,select{
 
 .modal-add{
   width:100%;
-
   margin-top:8px;
   padding:14px;
-
   border:0;
   border-radius:13px;
-
   background:var(--green);
   color:white;
-
   font-weight:800;
 }
 
@@ -907,180 +779,8 @@ button,select{
 
   <div class="brand">
 
-    <!-- =====================================
-         TAKE AWAY WALKING CUP
-         ===================================== -->
-
     <div class="walking-logo">
-
-      <svg viewBox="0 0 180 190"
-           xmlns="http://www.w3.org/2000/svg">
-
-        <!-- BENT STRAW -->
-
-        <path
-          d="
-          M105 46
-          C105 34 108 24 115 19
-          C121 14 129 14 133 18
-          C137 22 136 28 132 31
-          C129 34 124 35 120 34
-          "
-          fill="none"
-          stroke="#fff"
-          stroke-width="5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-
-        <!-- TOP OF LID -->
-
-        <path
-          d="
-          M57 54
-          Q90 47 123 54
-          "
-          fill="none"
-          stroke="#fff"
-          stroke-width="5"
-          stroke-linecap="round"
-        />
-
-        <!-- LID -->
-
-        <path
-          d="
-          M53 54
-          L127 54
-          L125 63
-          L55 63
-          Z
-          "
-          fill="none"
-          stroke="#fff"
-          stroke-width="5"
-          stroke-linejoin="round"
-        />
-
-        <!-- CUP BODY -->
-
-        <path
-          d="
-          M58 63
-          L122 63
-          L116 120
-          Q90 130 64 120
-          Z
-          "
-          fill="none"
-          stroke="#fff"
-          stroke-width="5"
-          stroke-linejoin="round"
-        />
-
-        <!-- LEFT HAPPY EYE -->
-
-        <path
-          d="
-          M71 84
-          Q77 90 83 84
-          "
-          fill="none"
-          stroke="#fff"
-          stroke-width="4"
-          stroke-linecap="round"
-        />
-
-        <!-- RIGHT HAPPY EYE -->
-
-        <path
-          d="
-          M97 84
-          Q103 90 109 84
-          "
-          fill="none"
-          stroke="#fff"
-          stroke-width="4"
-          stroke-linecap="round"
-        />
-
-        <!-- SMILE -->
-
-        <path
-          d="
-          M78 97
-          Q90 109 103 96
-          "
-          fill="none"
-          stroke="#fff"
-          stroke-width="4.5"
-          stroke-linecap="round"
-        />
-
-        <!-- LEG 1 CROSSING -->
-
-        <path
-          d="
-          M77 124
-          C80 134 90 142 102 151
-          L113 159
-          "
-          fill="none"
-          stroke="#fff"
-          stroke-width="5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-
-        <!-- LEG 2 CROSSING -->
-
-        <path
-          d="
-          M102 124
-          C99 135 90 143 79 152
-          L68 160
-          "
-          fill="none"
-          stroke="#fff"
-          stroke-width="5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-
-        <!-- LEFT SHOE -->
-
-        <path
-          d="
-          M68 160
-          L60 167
-          L72 172
-          L81 163
-          "
-          fill="none"
-          stroke="#fff"
-          stroke-width="5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-
-        <!-- RIGHT SHOE -->
-
-        <path
-          d="
-          M113 159
-          L121 166
-          L110 172
-          L101 163
-          "
-          fill="none"
-          stroke="#fff"
-          stroke-width="5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-
-      </svg>
-
+      <img src="/static/logo.png" alt="TAKE AWAY">
     </div>
 
     <div class="logo">TAKE AWAY</div>
@@ -1099,8 +799,6 @@ button,select{
 
 </header>
 
-
-<!-- TABS -->
 
 <div class="tabs-wrap">
   <div class="tabs">
@@ -1136,8 +834,6 @@ button,select{
 <div id="menu"></div>
 
 
-<!-- CART -->
-
 <div id="cartSection" class="cart-section">
 
   <div id="cartTitle" class="cart-title">
@@ -1148,8 +844,6 @@ button,select{
 
 </div>
 
-
-<!-- PICKUP -->
 
 <section class="pickup">
 
@@ -1183,31 +877,19 @@ button,select{
 
   <div id="asapTimes" class="times">
 
-    <button
-      class="time selected"
-      onclick="chooseTime(this,10)"
-    >
+    <button class="time selected" onclick="chooseTime(this,10)">
       10 min
     </button>
 
-    <button
-      class="time"
-      onclick="chooseTime(this,15)"
-    >
+    <button class="time" onclick="chooseTime(this,15)">
       15 min
     </button>
 
-    <button
-      class="time"
-      onclick="chooseTime(this,20)"
-    >
+    <button class="time" onclick="chooseTime(this,20)">
       20 min
     </button>
 
-    <button
-      class="time"
-      onclick="chooseTime(this,30)"
-    >
+    <button class="time" onclick="chooseTime(this,30)">
       30 min
     </button>
 
@@ -1223,10 +905,7 @@ button,select{
 
   </div>
 
-  <div
-    id="pickupInfo"
-    class="pickup-info"
-  ></div>
+  <div id="pickupInfo" class="pickup-info"></div>
 
 </section>
 
@@ -1234,11 +913,10 @@ button,select{
 <div id="message" class="message"></div>
 
 
-<!-- BOTTOM CART -->
-
 <div class="bottom">
 
   <div>
+
     <small id="itemCount">
       0 items
     </small>
@@ -1246,6 +924,7 @@ button,select{
     <div id="total" class="total">
       0 RSD
     </div>
+
   </div>
 
   <button
@@ -1258,8 +937,6 @@ button,select{
 
 </div>
 
-
-<!-- ADDON MODAL -->
 
 <div
   id="modalBg"
@@ -1309,24 +986,63 @@ button,select{
     </button>
 
   </div>
+
 </div>
 
 
 <script>
 
-/* ==========================================
-   TELEGRAM
-========================================== */
+/* =========================
+   TELEGRAM INITIALIZATION
+========================= */
 
-const tg = window.Telegram.WebApp;
+function getTelegramWebApp(){
 
-tg.ready();
-tg.expand();
+  if(
+    window.Telegram &&
+    window.Telegram.WebApp
+  ){
+    return window.Telegram.WebApp;
+  }
+
+  return null;
+}
 
 
-/* ==========================================
+function initializeTelegram(){
+
+  const telegram = getTelegramWebApp();
+
+  if(!telegram){
+    console.warn("Telegram WebApp API is not available.");
+    return;
+  }
+
+  try{
+    telegram.ready();
+    telegram.expand();
+
+    if(
+      typeof telegram.disableVerticalSwipes === "function"
+    ){
+      telegram.disableVerticalSwipes();
+    }
+
+  }catch(error){
+    console.warn(
+      "Telegram initialization error:",
+      error
+    );
+  }
+}
+
+
+initializeTelegram();
+
+
+/* =========================
    TRANSLATIONS
-========================================== */
+========================= */
 
 const TEXT = {
 
@@ -1340,7 +1056,6 @@ const TEXT = {
     specialTitle:"SPECIALS",
 
     add:"ADD",
-
     cart:"Your order",
 
     pickup:"Pickup time",
@@ -1366,14 +1081,15 @@ const TEXT = {
     addOrder:"Add to order",
 
     empty:"Please add a drink first.",
-
     choosePickup:"Please choose a pickup time.",
 
     success:"Order confirmed!",
-
     pay:"Pay when you collect.",
 
-    noTimes:"No pickup times available today."
+    noTimes:"No pickup times available today.",
+
+    telegramRequired:
+      "Please open TAKE AWAY from the Order drinks button inside our Telegram bot and try again."
   },
 
   sr:{
@@ -1386,7 +1102,6 @@ const TEXT = {
     specialTitle:"SPECIJALITETI",
 
     add:"DODAJ",
-
     cart:"Vaša porudžbina",
 
     pickup:"Vreme preuzimanja",
@@ -1412,14 +1127,15 @@ const TEXT = {
     addOrder:"Dodaj u porudžbinu",
 
     empty:"Prvo dodajte piće.",
-
     choosePickup:"Izaberite vreme preuzimanja.",
 
     success:"Porudžbina potvrđena!",
-
     pay:"Plaćanje prilikom preuzimanja.",
 
-    noTimes:"Danas nema dostupnih termina."
+    noTimes:"Danas nema dostupnih termina.",
+
+    telegramRequired:
+      "Otvorite TAKE AWAY preko dugmeta Order drinks u našem Telegram botu i pokušajte ponovo."
   },
 
   ru:{
@@ -1432,7 +1148,6 @@ const TEXT = {
     specialTitle:"СПЕШЛ",
 
     add:"ДОБАВИТЬ",
-
     cart:"Ваш заказ",
 
     pickup:"Время получения",
@@ -1458,21 +1173,23 @@ const TEXT = {
     addOrder:"Добавить в заказ",
 
     empty:"Сначала добавьте напиток.",
-
     choosePickup:"Выберите время получения.",
 
     success:"Заказ подтвержден!",
-
     pay:"Оплата при получении.",
 
-    noTimes:"На сегодня свободного времени нет."
+    noTimes:"На сегодня свободного времени нет.",
+
+    telegramRequired:
+      "Откройте TAKE AWAY через кнопку Order drinks внутри нашего Telegram-бота и попробуйте снова."
   }
+
 };
 
 
-/* ==========================================
-   PRODUCT TEXT
-========================================== */
+/* =========================
+   PRODUCT TRANSLATIONS
+========================= */
 
 const PRODUCT_TEXT = {
 
@@ -1631,12 +1348,13 @@ const PRODUCT_TEXT = {
       "Эспрессо + апельсиновый сок + лёд"
     ]
   }
+
 };
 
 
-/* ==========================================
+/* =========================
    STATE
-========================================== */
+========================= */
 
 let language="en";
 let menu=[];
@@ -1654,9 +1372,9 @@ let pickupMinutes=10;
 let exactPickupDate=null;
 
 
-/* ==========================================
+/* =========================
    LANGUAGE
-========================================== */
+========================= */
 
 function changeLanguage(lang){
 
@@ -1708,13 +1426,18 @@ function changeLanguage(lang){
 
   renderMenu();
   updateCart();
-  updatePickupInfo();
+
+  if(pickupMode==="exact"){
+    generateExactTimes();
+  }else{
+    updatePickupInfo();
+  }
 }
 
 
-/* ==========================================
+/* =========================
    LOAD MENU
-========================================== */
+========================= */
 
 async function loadMenu(){
 
@@ -1722,11 +1445,13 @@ async function loadMenu(){
 
     const response=await fetch(
       "/api/menu?ts="+Date.now(),
-      {cache:"no-store"}
+      {
+        cache:"no-store"
+      }
     );
 
     if(!response.ok){
-      throw new Error("Could not load menu");
+      throw new Error("Could not load menu.");
     }
 
     menu=await response.json();
@@ -1739,14 +1464,13 @@ async function loadMenu(){
       "Could not load menu.",
       "error"
     );
-
   }
 }
 
 
-/* ==========================================
+/* =========================
    CATEGORY
-========================================== */
+========================= */
 
 function showCategory(cat,button){
 
@@ -1762,9 +1486,9 @@ function showCategory(cat,button){
 }
 
 
-/* ==========================================
+/* =========================
    PRODUCT TEXT
-========================================== */
+========================= */
 
 function productText(id){
 
@@ -1775,25 +1499,24 @@ function productText(id){
     return PRODUCT_TEXT[id][language];
   }
 
-  const p=menu.find(
+  const product=menu.find(
     x=>x.id===id
   );
 
   return[
-    p ? p.name : id,
+    product ? product.name : id,
     ""
   ];
 }
 
 
-/* ==========================================
+/* =========================
    DRINK CLASS
-========================================== */
+========================= */
 
 function drinkClass(id){
 
   if(id==="espresso") return "espresso";
-
   if(id==="americano") return "americano";
 
   if(
@@ -1805,30 +1528,22 @@ function drinkClass(id){
   }
 
   if(id==="icedlatte") return "icedcoffee";
-
   if(id==="thai") return "thai";
-
   if(id==="green") return "greentea";
-
   if(id==="lime") return "limetea";
-
   if(id==="bumble") return "bumble";
-
   if(id==="tonic") return "tonic";
-
   if(id==="americanocream") return "americanocream";
-
   if(id==="strawberrymatcha") return "matcha";
-
   if(id==="peanutlatte") return "peanut";
 
   return "americano";
 }
 
 
-/* ==========================================
+/* =========================
    DRINK VISUAL
-========================================== */
+========================= */
 
 function drinkVisual(id){
 
@@ -1879,9 +1594,9 @@ function drinkVisual(id){
 }
 
 
-/* ==========================================
+/* =========================
    EXTRA SHOT
-========================================== */
+========================= */
 
 function canExtra(id){
 
@@ -1900,9 +1615,9 @@ function canExtra(id){
 }
 
 
-/* ==========================================
+/* =========================
    RENDER MENU
-========================================== */
+========================= */
 
 function renderMenu(){
 
@@ -1945,7 +1660,7 @@ function renderMenu(){
 
         ${filtered.map(p=>{
 
-          const text=productText(p.id);
+          const productCopy=productText(p.id);
 
           return`
 
@@ -1954,11 +1669,11 @@ function renderMenu(){
               ${drinkVisual(p.id)}
 
               <div class="product-name">
-                ${text[0]}
+                ${productCopy[0]}
               </div>
 
               <div class="product-desc">
-                ${text[1]}
+                ${productCopy[1]}
               </div>
 
               <div class="product-price">
@@ -1985,9 +1700,9 @@ function renderMenu(){
 }
 
 
-/* ==========================================
+/* =========================
    OPEN PRODUCT
-========================================== */
+========================= */
 
 function openProduct(id){
 
@@ -1995,21 +1710,26 @@ function openProduct(id){
     x=>x.id===id
   );
 
-  if(!selectedProduct) return;
+  if(!selectedProduct){
+    return;
+  }
 
   modalExtra=false;
   modalBoba=false;
 
-  const text=productText(id);
+  const productCopy=productText(id);
 
   document.getElementById("modalName").innerText=
-    text[0];
+    productCopy[0];
 
   document.getElementById("modalPrice").innerText=
     selectedProduct.price+" RSD";
 
-  const extra=document.getElementById("extraOption");
-  const boba=document.getElementById("bobaOption");
+  const extra=
+    document.getElementById("extraOption");
+
+  const boba=
+    document.getElementById("bobaOption");
 
   extra.style.display=
     canExtra(id)
@@ -2038,9 +1758,9 @@ function openProduct(id){
 }
 
 
-/* ==========================================
+/* =========================
    ADDONS
-========================================== */
+========================= */
 
 function toggleAddon(type){
 
@@ -2070,13 +1790,15 @@ function toggleAddon(type){
 }
 
 
-/* ==========================================
+/* =========================
    CONFIRM ADD
-========================================== */
+========================= */
 
 function confirmAdd(){
 
-  if(!selectedProduct) return;
+  if(!selectedProduct){
+    return;
+  }
 
   const existing=cart.find(
     x=>
@@ -2105,15 +1827,25 @@ function confirmAdd(){
 
   updateCart();
 
+  const telegram=getTelegramWebApp();
+
   try{
-    tg.HapticFeedback.impactOccurred("light");
+
+    if(
+      telegram &&
+      telegram.HapticFeedback
+    ){
+      telegram.HapticFeedback
+        .impactOccurred("light");
+    }
+
   }catch(e){}
 }
 
 
-/* ==========================================
+/* =========================
    CLOSE MODAL
-========================================== */
+========================= */
 
 function closeModal(event){
 
@@ -2122,14 +1854,13 @@ function closeModal(event){
     document
       .getElementById("modalBg")
       .classList.remove("open");
-
   }
 }
 
 
-/* ==========================================
+/* =========================
    PRICE
-========================================== */
+========================= */
 
 function itemPrice(item){
 
@@ -2137,7 +1868,9 @@ function itemPrice(item){
     x=>x.id===item.id
   );
 
-  if(!product) return 0;
+  if(!product){
+    return 0;
+  }
 
   let price=Number(product.price);
 
@@ -2153,9 +1886,9 @@ function itemPrice(item){
 }
 
 
-/* ==========================================
+/* =========================
    CART
-========================================== */
+========================= */
 
 function updateCart(){
 
@@ -2180,13 +1913,15 @@ function updateCart(){
   document.getElementById("total").innerText=
     total+" RSD";
 
-  const section=document.getElementById("cartSection");
-  const box=document.getElementById("cartItems");
+  const section=
+    document.getElementById("cartSection");
+
+  const box=
+    document.getElementById("cartItems");
 
   if(!cart.length){
 
     section.classList.remove("show");
-
     box.innerHTML="";
 
     return;
@@ -2197,13 +1932,16 @@ function updateCart(){
   box.innerHTML=cart.map(
     (item,index)=>{
 
-      const p=menu.find(
+      const product=menu.find(
         x=>x.id===item.id
       );
 
-      if(!p) return "";
+      if(!product){
+        return "";
+      }
 
-      const text=productText(item.id);
+      const productCopy=
+        productText(item.id);
 
       let extras=[];
 
@@ -2222,7 +1960,7 @@ function updateCart(){
           <div>
 
             <strong>
-              ${item.qty}× ${text[0]}
+              ${item.qty}× ${productCopy[0]}
             </strong>
 
             ${
@@ -2258,11 +1996,15 @@ function updateCart(){
 }
 
 
-/* ==========================================
-   REMOVE
-========================================== */
+/* =========================
+   REMOVE ITEM
+========================= */
 
 function removeItem(index){
+
+  if(!cart[index]){
+    return;
+  }
 
   if(cart[index].qty>1){
 
@@ -2271,35 +2013,38 @@ function removeItem(index){
   }else{
 
     cart.splice(index,1);
-
   }
 
   updateCart();
 }
 
 
-/* ==========================================
+/* =========================
    PICKUP MODE
-========================================== */
+========================= */
 
 function setPickupMode(mode){
 
   pickupMode=mode;
 
-  const asap=document.getElementById("asapMode");
-  const exact=document.getElementById("exactMode");
+  const asap=
+    document.getElementById("asapMode");
 
-  const times=document.getElementById("asapTimes");
-  const box=document.getElementById("exactBox");
+  const exact=
+    document.getElementById("exactMode");
+
+  const times=
+    document.getElementById("asapTimes");
+
+  const box=
+    document.getElementById("exactBox");
 
   if(mode==="asap"){
 
     asap.classList.add("active");
-
     exact.classList.remove("active");
 
     times.style.display="grid";
-
     box.classList.remove("show");
 
     exactPickupDate=null;
@@ -2307,11 +2052,9 @@ function setPickupMode(mode){
   }else{
 
     exact.classList.add("active");
-
     asap.classList.remove("active");
 
     times.style.display="none";
-
     box.classList.add("show");
 
     generateExactTimes();
@@ -2321,9 +2064,9 @@ function setPickupMode(mode){
 }
 
 
-/* ==========================================
+/* =========================
    ASAP
-========================================== */
+========================= */
 
 function chooseTime(button,minutes){
 
@@ -2340,13 +2083,14 @@ function chooseTime(button,minutes){
 }
 
 
-/* ==========================================
+/* =========================
    EXACT TIMES
-========================================== */
+========================= */
 
 function generateExactTimes(){
 
-  const select=document.getElementById("exactTime");
+  const select=
+    document.getElementById("exactTime");
 
   select.innerHTML="";
 
@@ -2415,7 +2159,6 @@ function generateExactTimes(){
       document.createElement("option");
 
     option.value="";
-
     option.textContent=
       TEXT[language].noTimes;
 
@@ -2433,9 +2176,9 @@ function generateExactTimes(){
 }
 
 
-/* ==========================================
-   EXACT CHANGE
-========================================== */
+/* =========================
+   EXACT TIME CHANGE
+========================= */
 
 function chooseExactTime(){
 
@@ -2453,9 +2196,9 @@ function chooseExactTime(){
 }
 
 
-/* ==========================================
+/* =========================
    PICKUP INFO
-========================================== */
+========================= */
 
 function updatePickupInfo(){
 
@@ -2499,9 +2242,9 @@ function updatePickupInfo(){
 }
 
 
-/* ==========================================
+/* =========================
    PICKUP ISO
-========================================== */
+========================= */
 
 function pickupISO(){
 
@@ -2521,9 +2264,9 @@ function pickupISO(){
 }
 
 
-/* ==========================================
+/* =========================
    MESSAGE
-========================================== */
+========================= */
 
 function showMessage(text,type){
 
@@ -2544,9 +2287,34 @@ function showMessage(text,type){
 }
 
 
-/* ==========================================
+/* =========================
+   GET TELEGRAM INIT DATA
+========================= */
+
+function getTelegramInitData(){
+
+  const telegram=
+    getTelegramWebApp();
+
+  if(!telegram){
+    return "";
+  }
+
+  const initData=
+    telegram.initData || "";
+
+  console.log(
+    "Telegram initData available:",
+    Boolean(initData)
+  );
+
+  return initData;
+}
+
+
+/* =========================
    PLACE ORDER
-========================================== */
+========================= */
 
 async function placeOrder(){
 
@@ -2560,7 +2328,8 @@ async function placeOrder(){
     return;
   }
 
-  const pickup=pickupISO();
+  const pickup=
+    pickupISO();
 
   if(!pickup){
 
@@ -2572,15 +2341,53 @@ async function placeOrder(){
     return;
   }
 
+  /*
+    IMPORTANT:
+    Read initData NOW, immediately before the order.
+    This avoids using an empty value captured too early.
+  */
+
+  const initData=
+    getTelegramInitData();
+
+  if(!initData){
+
+    console.error(
+      "Telegram initData is empty."
+    );
+
+    showMessage(
+      "❌ "+TEXT[language].telegramRequired,
+      "error"
+    );
+
+    return;
+  }
+
   const button=
     document.getElementById("orderButton");
 
   button.disabled=true;
-
   button.innerText=
     TEXT[language].sending;
 
   try{
+
+    const payload={
+      initData:initData,
+      pickup:pickup,
+      items:cart.map(item=>({
+        id:item.id,
+        qty:item.qty,
+        extra_shot:Boolean(item.extra_shot),
+        boba:Boolean(item.boba)
+      }))
+    };
+
+    console.log(
+      "Sending order. initData present:",
+      Boolean(payload.initData)
+    );
 
     const response=
       await fetch(
@@ -2592,11 +2399,11 @@ async function placeOrder(){
             "Content-Type":"application/json"
           },
 
-          body:JSON.stringify({
-            initData:tg.initData||"",
-            pickup:pickup,
-            items:cart
-          })
+          cache:"no-store",
+
+          credentials:"same-origin",
+
+          body:JSON.stringify(payload)
         }
       );
 
@@ -2605,24 +2412,27 @@ async function placeOrder(){
 
     let result={};
 
-    try{
+    if(raw){
 
-      result=
-        raw
-          ? JSON.parse(raw)
-          : {};
+      try{
+        result=JSON.parse(raw);
+      }catch(e){
 
-    }catch(e){
+        console.error(
+          "Invalid server response:",
+          raw
+        );
 
-      throw new Error(
-        "Invalid server response."
-      );
+        throw new Error(
+          "Invalid server response."
+        );
+      }
     }
 
     if(!response.ok){
 
       throw new Error(
-        result.error||
+        result.error ||
         "Order failed."
       );
     }
@@ -2649,44 +2459,75 @@ async function placeOrder(){
       "success"
     );
 
+    const telegram=
+      getTelegramWebApp();
+
     try{
 
-      tg.HapticFeedback
-        .notificationOccurred("success");
+      if(
+        telegram &&
+        telegram.HapticFeedback
+      ){
+        telegram.HapticFeedback
+          .notificationOccurred("success");
+      }
 
     }catch(e){}
 
   }catch(error){
+
+    console.error(
+      "Order error:",
+      error
+    );
 
     showMessage(
       "❌ "+error.message,
       "error"
     );
 
+    const telegram=
+      getTelegramWebApp();
+
     try{
 
-      tg.HapticFeedback
-        .notificationOccurred("error");
+      if(
+        telegram &&
+        telegram.HapticFeedback
+      ){
+        telegram.HapticFeedback
+          .notificationOccurred("error");
+      }
 
     }catch(e){}
 
   }finally{
 
     button.disabled=false;
-
     button.innerText=
       TEXT[language].order;
   }
 }
 
 
-/* ==========================================
+/* =========================
    START
-========================================== */
+========================= */
 
-loadMenu();
-updateCart();
-updatePickupInfo();
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    initializeTelegram();
+
+    loadMenu();
+
+    updateCart();
+
+    updatePickupInfo();
+
+  }
+);
 
 </script>
 
