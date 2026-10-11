@@ -1,23 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
+
 <meta
   name="viewport"
   content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"
 >
-<meta name="theme-color" content="#043923">
+
+<meta
+  name="theme-color"
+  content="#043923"
+>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <title>TAKE AWAY</title>
 
 <style>
+
 :root{
   --green:#043923;
   --green-dark:#032c1b;
   --green-light:#0b5136;
   --gold:#d6b36a;
+  --cream:#f6f0e5;
   --white:#fff;
   --muted:rgba(255,255,255,.65);
 }
@@ -41,7 +49,7 @@ body{
     linear-gradient(180deg,#063d27,#032c1b);
   color:white;
   min-height:100vh;
-  padding-bottom:120px;
+  padding-bottom:155px;
 }
 
 button,select{
@@ -49,27 +57,18 @@ button,select{
   cursor:pointer;
 }
 
-/* =========================
-   HEADER
-========================= */
+button{
+  -webkit-appearance:none;
+}
+
+
+/* HEADER */
 
 .header{
   padding:12px 17px 23px;
   text-align:center;
   position:relative;
   overflow:hidden;
-}
-
-.header:before{
-  content:"";
-  position:absolute;
-  width:260px;
-  height:260px;
-  border-radius:50%;
-  background:rgba(255,255,255,.025);
-  top:-150px;
-  left:-80px;
-  pointer-events:none;
 }
 
 .top{
@@ -100,13 +99,7 @@ button,select{
   background:white;
 }
 
-/* =========================
-   BRAND
-========================= */
-
 .brand{
-  position:relative;
-  z-index:1;
   margin-top:-4px;
 }
 
@@ -114,39 +107,30 @@ button,select{
   width:125px;
   height:125px;
   margin:-2px auto 0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
 }
 
 .walking-logo img{
   width:100%;
   height:100%;
   object-fit:contain;
-  display:block;
   filter:drop-shadow(0 4px 8px rgba(0,0,0,.18));
 }
 
 .logo{
   margin-top:1px;
   margin-left:9px;
-  font-family:Georgia,"Times New Roman",serif;
+  font-family:Georgia,serif;
   font-size:31px;
   font-weight:600;
-  line-height:1;
   letter-spacing:9px;
-  color:#fff;
-  text-shadow:0 2px 5px rgba(0,0,0,.25);
 }
 
 .subtitle{
   margin-top:10px;
   margin-left:5px;
-  font-family:Georgia,"Times New Roman",serif;
+  font-family:Georgia,serif;
   font-size:11px;
-  font-weight:500;
   letter-spacing:5px;
-  color:rgba(255,255,255,.94);
 }
 
 .brand-line{
@@ -159,14 +143,24 @@ button,select{
 .tagline{
   margin-top:14px;
   color:var(--gold);
-  font-family:Georgia,"Times New Roman",serif;
+  font-family:Georgia,serif;
   font-size:9px;
   letter-spacing:3px;
 }
 
-/* =========================
-   TABS
-========================= */
+
+/* PAGE */
+
+.page{
+  display:none;
+}
+
+.page.active{
+  display:block;
+}
+
+
+/* CATEGORY TABS */
 
 .tabs-wrap{
   position:sticky;
@@ -175,7 +169,6 @@ button,select{
   padding:8px 12px 9px;
   background:rgba(3,44,27,.94);
   backdrop-filter:blur(15px);
-  -webkit-backdrop-filter:blur(15px);
 }
 
 .tabs{
@@ -202,9 +195,8 @@ button,select{
   color:var(--green);
 }
 
-/* =========================
-   MENU
-========================= */
+
+/* MENU */
 
 .section{
   padding:18px 13px 5px;
@@ -223,7 +215,7 @@ button,select{
 }
 
 .section-title{
-  font-family:Georgia,"Times New Roman",serif;
+  font-family:Georgia,serif;
   font-size:24px;
   letter-spacing:4px;
 }
@@ -231,7 +223,7 @@ button,select{
 .section-line{
   height:1px;
   flex:1;
-  background:rgba(255,255,255,.30);
+  background:rgba(255,255,255,.3);
 }
 
 .products{
@@ -240,43 +232,23 @@ button,select{
   gap:10px;
 }
 
-/* =========================
-   PRODUCT
-========================= */
-
 .product{
-  position:relative;
-  overflow:hidden;
   min-height:260px;
   padding:13px 12px 14px;
   border:1px solid rgba(255,255,255,.10);
   border-radius:22px;
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255,255,255,.09),
-      rgba(255,255,255,.035)
-    );
+  background:linear-gradient(
+    145deg,
+    rgba(255,255,255,.09),
+    rgba(255,255,255,.035)
+  );
   box-shadow:0 10px 30px rgba(0,0,0,.12);
 }
 
-.product:before{
-  content:"";
-  position:absolute;
-  width:100px;
-  height:100px;
-  top:-45px;
-  right:-45px;
-  border-radius:50%;
-  background:rgba(255,255,255,.035);
-}
 
-/* =========================
-   DRINK VISUALS
-========================= */
+/* DRINKS */
 
 .drink{
-  position:relative;
   height:108px;
   display:flex;
   align-items:center;
@@ -352,27 +324,15 @@ button,select{
 }
 
 .americanocream .liquid{
-  background:linear-gradient(
-    #fff4e6 0 22%,
-    #e7d0ad 22% 28%,
-    #3b1d10 28% 100%
-  );
+  background:linear-gradient(#fff4e6 0 22%,#e7d0ad 22% 28%,#3b1d10 28%);
 }
 
 .matcha .liquid{
-  background:linear-gradient(
-    #6e954a 0 31%,
-    #f1e9da 31% 57%,
-    #df6074 57% 100%
-  );
+  background:linear-gradient(#6e954a 0 31%,#f1e9da 31% 57%,#df6074 57% 100%);
 }
 
 .peanut .liquid{
-  background:linear-gradient(
-    #f3e3c9 0 23%,
-    #bd824c 23% 66%,
-    #67351e 66% 100%
-  );
+  background:linear-gradient(#f3e3c9 0 23%,#bd824c 23% 66%,#67351e 66% 100%);
 }
 
 .ice{
@@ -394,14 +354,7 @@ button,select{
   top:14px;
   border:3px solid #b9d83f;
   border-radius:50%;
-  background:
-    radial-gradient(
-      circle,
-      #eef6b0 0 20%,
-      #9fc735 21% 28%,
-      #e9f3a6 29% 47%,
-      #a4cb38 48%
-    );
+  background:#a4cb38;
 }
 
 .coffee-cup{
@@ -436,14 +389,13 @@ button,select{
   border-radius:0 18px 18px 0;
 }
 
-/* =========================
-   PRODUCT TEXT
-========================= */
+
+/* PRODUCT */
 
 .product-name{
   min-height:38px;
   text-align:center;
-  font-family:Georgia,"Times New Roman",serif;
+  font-family:Georgia,serif;
   font-size:15px;
   line-height:1.15;
 }
@@ -460,7 +412,7 @@ button,select{
 .product-price{
   margin-top:7px;
   text-align:center;
-  font-family:Georgia,"Times New Roman",serif;
+  font-family:Georgia,serif;
   font-size:19px;
 }
 
@@ -476,9 +428,8 @@ button,select{
   font-weight:800;
 }
 
-/* =========================
-   CART
-========================= */
+
+/* CART */
 
 .cart-section{
   margin:12px 13px;
@@ -509,7 +460,6 @@ button,select{
 
 .cart-item-info{
   flex:1;
-  min-width:0;
 }
 
 .cart-extra{
@@ -521,9 +471,7 @@ button,select{
 .cart-right{
   display:flex;
   align-items:center;
-  justify-content:flex-end;
   gap:7px;
-  flex-wrap:wrap;
 }
 
 .cart-quantity{
@@ -532,7 +480,8 @@ button,select{
   gap:4px;
 }
 
-.cart-qty-btn{
+.cart-qty-btn,
+.remove{
   width:29px;
   height:29px;
   border:0;
@@ -540,13 +489,11 @@ button,select{
   background:rgba(255,255,255,.15);
   color:white;
   font-size:18px;
-  line-height:1;
 }
 
 .cart-qty-number{
   min-width:21px;
   text-align:center;
-  font-size:13px;
   font-weight:800;
 }
 
@@ -556,19 +503,8 @@ button,select{
   font-weight:800;
 }
 
-.remove{
-  width:29px;
-  height:29px;
-  border:0;
-  border-radius:8px;
-  background:rgba(255,255,255,.15);
-  color:white;
-  font-size:17px;
-}
 
-/* =========================
-   PICKUP
-========================= */
+/* PICKUP */
 
 .pickup{
   margin:18px 13px 12px;
@@ -652,9 +588,251 @@ button,select{
   font-size:11px;
 }
 
-/* =========================
-   MESSAGE
-========================= */
+
+/* APP PAGE */
+
+.app-page{
+  padding:15px 13px 20px;
+}
+
+.page-heading{
+  margin:5px 3px 18px;
+}
+
+.page-heading h1{
+  font-family:Georgia,serif;
+  font-size:29px;
+  letter-spacing:2px;
+}
+
+.page-heading p{
+  margin-top:6px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+
+/* ORDERS */
+
+.order-card{
+  margin-bottom:10px;
+  padding:16px;
+  border:1px solid rgba(255,255,255,.11);
+  border-radius:19px;
+  background:rgba(255,255,255,.075);
+}
+
+.order-card-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+}
+
+.order-number{
+  font-family:Georgia,serif;
+  font-size:18px;
+}
+
+.order-date{
+  margin-top:4px;
+  color:var(--muted);
+  font-size:10px;
+}
+
+.status{
+  padding:7px 9px;
+  border-radius:10px;
+  background:rgba(255,255,255,.12);
+  font-size:10px;
+  font-weight:800;
+  text-transform:uppercase;
+}
+
+.status.ready{
+  background:#e6f0df;
+  color:#234c2b;
+}
+
+.status.preparing{
+  background:#f1e4bd;
+  color:#6d5315;
+}
+
+.status.completed{
+  background:rgba(255,255,255,.14);
+}
+
+.status.cancelled{
+  background:#ead1ce;
+  color:#712e28;
+}
+
+.order-products{
+  margin-top:15px;
+  padding-top:12px;
+  border-top:1px solid rgba(255,255,255,.1);
+}
+
+.order-product-line{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:7px;
+  font-size:12px;
+}
+
+.order-card-bottom{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:13px;
+}
+
+.order-total{
+  font-family:Georgia,serif;
+  font-size:18px;
+}
+
+.reorder{
+  border:0;
+  border-radius:11px;
+  padding:10px 13px;
+  background:white;
+  color:var(--green);
+  font-size:11px;
+  font-weight:800;
+}
+
+
+/* PROFILE */
+
+.profile-card{
+  padding:24px 18px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:25px;
+  background:linear-gradient(
+    145deg,
+    rgba(255,255,255,.11),
+    rgba(255,255,255,.04)
+  );
+  text-align:center;
+}
+
+.avatar{
+  width:72px;
+  height:72px;
+  margin:0 auto 12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:50%;
+  background:rgba(255,255,255,.12);
+  font-family:Georgia,serif;
+  font-size:28px;
+}
+
+.profile-name{
+  font-family:Georgia,serif;
+  font-size:24px;
+}
+
+.profile-user{
+  margin-top:4px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.member{
+  display:inline-block;
+  margin-top:13px;
+  padding:7px 12px;
+  border:1px solid rgba(214,179,106,.45);
+  border-radius:20px;
+  color:var(--gold);
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:2px;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+  margin-top:13px;
+}
+
+.stat{
+  padding:18px 10px;
+  border-radius:18px;
+  background:rgba(255,255,255,.075);
+  text-align:center;
+}
+
+.stat-number{
+  font-family:Georgia,serif;
+  font-size:25px;
+}
+
+.stat-label{
+  margin-top:5px;
+  color:var(--muted);
+  font-size:10px;
+}
+
+.profile-info{
+  margin-top:13px;
+  padding:5px 16px;
+  border-radius:19px;
+  background:rgba(255,255,255,.075);
+}
+
+.profile-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:14px 0;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  font-size:12px;
+}
+
+.profile-row:last-child{
+  border-bottom:0;
+}
+
+.profile-row span:first-child{
+  color:var(--muted);
+}
+
+
+/* EMPTY / LOADING */
+
+.empty-state{
+  padding:40px 20px;
+  text-align:center;
+  color:var(--muted);
+}
+
+.empty-icon{
+  margin-bottom:12px;
+  font-size:35px;
+}
+
+.empty-title{
+  color:white;
+  font-family:Georgia,serif;
+  font-size:20px;
+}
+
+.empty-copy{
+  margin-top:7px;
+  font-size:11px;
+  line-height:1.5;
+}
+
+
+/* MESSAGE */
 
 .message{
   display:none;
@@ -678,30 +856,31 @@ button,select{
   color:#244c2b;
 }
 
-/* =========================
-   BOTTOM
-========================= */
 
-.bottom{
+/* ORDER BAR */
+
+.order-bar{
   position:fixed;
-  z-index:30;
+  z-index:35;
   left:9px;
   right:9px;
-  bottom:9px;
+  bottom:76px;
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:10px;
-  padding:10px 10px 10px 15px;
+  padding:9px 10px 9px 15px;
   border:1px solid rgba(255,255,255,.14);
-  border-radius:20px;
-  background:rgba(3,28,19,.96);
-  backdrop-filter:blur(15px);
-  -webkit-backdrop-filter:blur(15px);
-  box-shadow:0 15px 35px rgba(0,0,0,.35);
+  border-radius:18px;
+  background:rgba(3,28,19,.97);
+  box-shadow:0 12px 30px rgba(0,0,0,.3);
 }
 
-.bottom small{
+.order-bar.hidden{
+  display:none;
+}
+
+.order-bar small{
   display:block;
   color:rgba(255,255,255,.55);
   font-size:10px;
@@ -709,38 +888,81 @@ button,select{
 
 .total{
   margin-top:2px;
-  font-size:19px;
+  font-size:18px;
   font-weight:800;
 }
 
-.order{
+.order-button{
   min-width:135px;
   border:0;
-  padding:13px 12px;
-  border-radius:13px;
+  padding:12px;
+  border-radius:12px;
   background:white;
   color:var(--green);
   font-size:12px;
   font-weight:800;
 }
 
-.order:disabled{
+.order-button:disabled{
   opacity:.5;
 }
 
-/* =========================
-   MODAL
-========================= */
+
+/* BOTTOM NAVIGATION */
+
+.bottom-nav{
+  position:fixed;
+  z-index:40;
+  left:9px;
+  right:9px;
+  bottom:9px;
+  height:59px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:20px;
+  background:rgba(3,28,19,.98);
+  backdrop-filter:blur(15px);
+  box-shadow:0 15px 35px rgba(0,0,0,.35);
+  overflow:hidden;
+}
+
+.nav-button{
+  border:0;
+  background:transparent;
+  color:rgba(255,255,255,.48);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  font-size:9px;
+  font-weight:700;
+}
+
+.nav-icon{
+  font-size:18px;
+}
+
+.nav-button.active{
+  color:white;
+}
+
+.nav-button.active .nav-icon{
+  color:var(--gold);
+}
+
+
+/* MODAL */
 
 .modal-bg{
   position:fixed;
   inset:0;
-  z-index:50;
+  z-index:60;
   display:none;
   align-items:flex-end;
   background:rgba(0,0,0,.55);
   backdrop-filter:blur(4px);
-  -webkit-backdrop-filter:blur(4px);
 }
 
 .modal-bg.open{
@@ -751,7 +973,7 @@ button,select{
   width:100%;
   padding:21px 17px 28px;
   border-radius:25px 25px 0 0;
-  background:#f6f0e5;
+  background:var(--cream);
   color:#13291f;
 }
 
@@ -782,10 +1004,6 @@ button,select{
   background:#e5eee8;
 }
 
-/* =========================
-   QUANTITY
-========================= */
-
 .quantity-label{
   margin-top:18px;
   text-align:center;
@@ -812,13 +1030,6 @@ button,select{
   background:var(--green);
   color:white;
   font-size:25px;
-  font-weight:500;
-  line-height:1;
-  box-shadow:0 4px 10px rgba(4,57,35,.18);
-}
-
-.qty-btn:active{
-  transform:scale(.96);
 }
 
 .qty-number{
@@ -840,6 +1051,7 @@ button,select{
   font-weight:800;
 }
 
+
 @media(max-width:390px){
 
   .cart-item{
@@ -860,47 +1072,48 @@ button,select{
     margin:auto;
   }
 
-  .bottom{
+  .order-bar,
+  .bottom-nav{
     max-width:580px;
     margin:auto;
   }
 }
+
 </style>
 </head>
 
+
 <body>
+
 
 <header class="header">
 
   <div class="top">
+
     <div class="languages">
 
       <button
         id="lang-en"
         class="lang active"
         onclick="changeLanguage('en')"
-      >
-        🇬🇧
-      </button>
+      >🇬🇧</button>
 
       <button
         id="lang-sr"
         class="lang"
         onclick="changeLanguage('sr')"
-      >
-        🇷🇸
-      </button>
+      >🇷🇸</button>
 
       <button
         id="lang-ru"
         class="lang"
         onclick="changeLanguage('ru')"
-      >
-        🇷🇺
-      </button>
+      >🇷🇺</button>
 
     </div>
+
   </div>
+
 
   <div class="brand">
 
@@ -930,155 +1143,240 @@ button,select{
 </header>
 
 
-<div class="tabs-wrap">
-
-  <div class="tabs">
-
-    <button
-      id="tab-tea"
-      class="tab active"
-      onclick="showCategory('tea',this)"
-    >
-      Thai Tea
-    </button>
-
-    <button
-      id="tab-coffee"
-      class="tab"
-      onclick="showCategory('coffee',this)"
-    >
-      Coffee
-    </button>
-
-    <button
-      id="tab-special"
-      class="tab"
-      onclick="showCategory('special',this)"
-    >
-      Specials
-    </button>
-
-  </div>
-
-</div>
-
-
-<div id="menu"></div>
-
+<!-- MENU PAGE -->
 
 <div
-  id="cartSection"
-  class="cart-section"
+  id="menuPage"
+  class="page active"
 >
 
-  <div
-    id="cartTitle"
-    class="cart-title"
-  >
-    Your order
+  <div class="tabs-wrap">
+
+    <div class="tabs">
+
+      <button
+        id="tab-tea"
+        class="tab active"
+        onclick="showCategory('tea',this)"
+      >
+        Thai Tea
+      </button>
+
+      <button
+        id="tab-coffee"
+        class="tab"
+        onclick="showCategory('coffee',this)"
+      >
+        Coffee
+      </button>
+
+      <button
+        id="tab-special"
+        class="tab"
+        onclick="showCategory('special',this)"
+      >
+        Specials
+      </button>
+
+    </div>
+
   </div>
 
-  <div id="cartItems"></div>
+
+  <div id="menu"></div>
+
+
+  <div
+    id="cartSection"
+    class="cart-section"
+  >
+
+    <div
+      id="cartTitle"
+      class="cart-title"
+    >
+      Your order
+    </div>
+
+    <div id="cartItems"></div>
+
+  </div>
+
+
+  <section class="pickup">
+
+    <h2 id="pickupTitle">
+      Pickup time
+    </h2>
+
+    <div
+      id="pickupSubtitle"
+      class="pickup-subtitle"
+    >
+      When should we prepare your order?
+    </div>
+
+    <div class="pickup-modes">
+
+      <button
+        id="asapMode"
+        class="pickup-mode active"
+        onclick="setPickupMode('asap')"
+      >
+        ASAP
+      </button>
+
+      <button
+        id="exactMode"
+        class="pickup-mode"
+        onclick="setPickupMode('exact')"
+      >
+        Choose time
+      </button>
+
+    </div>
+
+
+    <div
+      id="asapTimes"
+      class="times"
+    >
+
+      <button
+        class="time selected"
+        onclick="chooseTime(this,10)"
+      >
+        10 min
+      </button>
+
+      <button
+        class="time"
+        onclick="chooseTime(this,15)"
+      >
+        15 min
+      </button>
+
+      <button
+        class="time"
+        onclick="chooseTime(this,20)"
+      >
+        20 min
+      </button>
+
+      <button
+        class="time"
+        onclick="chooseTime(this,30)"
+      >
+        30 min
+      </button>
+
+    </div>
+
+
+    <div
+      id="exactBox"
+      class="exact-box"
+    >
+
+      <select
+        id="exactTime"
+        class="exact-select"
+        onchange="chooseExactTime()"
+      ></select>
+
+    </div>
+
+
+    <div
+      id="pickupInfo"
+      class="pickup-info"
+    ></div>
+
+  </section>
+
+
+  <div
+    id="message"
+    class="message"
+  ></div>
 
 </div>
 
 
-<section class="pickup">
-
-  <h2 id="pickupTitle">
-    Pickup time
-  </h2>
-
-  <div
-    id="pickupSubtitle"
-    class="pickup-subtitle"
-  >
-    When should we prepare your order?
-  </div>
-
-  <div class="pickup-modes">
-
-    <button
-      id="asapMode"
-      class="pickup-mode active"
-      onclick="setPickupMode('asap')"
-    >
-      ASAP
-    </button>
-
-    <button
-      id="exactMode"
-      class="pickup-mode"
-      onclick="setPickupMode('exact')"
-    >
-      Choose time
-    </button>
-
-  </div>
-
-  <div
-    id="asapTimes"
-    class="times"
-  >
-
-    <button
-      class="time selected"
-      onclick="chooseTime(this,10)"
-    >
-      10 min
-    </button>
-
-    <button
-      class="time"
-      onclick="chooseTime(this,15)"
-    >
-      15 min
-    </button>
-
-    <button
-      class="time"
-      onclick="chooseTime(this,20)"
-    >
-      20 min
-    </button>
-
-    <button
-      class="time"
-      onclick="chooseTime(this,30)"
-    >
-      30 min
-    </button>
-
-  </div>
-
-  <div
-    id="exactBox"
-    class="exact-box"
-  >
-
-    <select
-      id="exactTime"
-      class="exact-select"
-      onchange="chooseExactTime()"
-    ></select>
-
-  </div>
-
-  <div
-    id="pickupInfo"
-    class="pickup-info"
-  ></div>
-
-</section>
-
+<!-- ORDERS PAGE -->
 
 <div
-  id="message"
-  class="message"
-></div>
+  id="ordersPage"
+  class="page"
+>
+
+  <div class="app-page">
+
+    <div class="page-heading">
+
+      <h1 id="ordersHeading">
+        My Orders
+      </h1>
+
+      <p id="ordersSub">
+        Your TAKE AWAY order history
+      </p>
+
+    </div>
+
+    <div id="ordersContent">
+
+      <div class="empty-state">
+        Loading...
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
 
 
-<div class="bottom">
+<!-- PROFILE PAGE -->
+
+<div
+  id="profilePage"
+  class="page"
+>
+
+  <div class="app-page">
+
+    <div class="page-heading">
+
+      <h1 id="profileHeading">
+        Profile
+      </h1>
+
+      <p id="profileSub">
+        Your TAKE AWAY account
+      </p>
+
+    </div>
+
+    <div id="profileContent">
+
+      <div class="empty-state">
+        Loading...
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ORDER BAR -->
+
+<div
+  id="orderBar"
+  class="order-bar"
+>
 
   <div>
 
@@ -1097,13 +1395,70 @@ button,select{
 
   <button
     id="orderButton"
-    class="order"
+    class="order-button"
     onclick="placeOrder()"
   >
     Place order →
   </button>
 
 </div>
+
+
+<!-- NAVIGATION -->
+
+<nav class="bottom-nav">
+
+  <button
+    id="nav-menu"
+    class="nav-button active"
+    onclick="showPage('menu')"
+  >
+
+    <span class="nav-icon">
+      ☕
+    </span>
+
+    <span id="navMenuText">
+      Menu
+    </span>
+
+  </button>
+
+
+  <button
+    id="nav-orders"
+    class="nav-button"
+    onclick="showPage('orders')"
+  >
+
+    <span class="nav-icon">
+      🧾
+    </span>
+
+    <span id="navOrdersText">
+      Orders
+    </span>
+
+  </button>
+
+
+  <button
+    id="nav-profile"
+    class="nav-button"
+    onclick="showPage('profile')"
+  >
+
+    <span class="nav-icon">
+      ♙
+    </span>
+
+    <span id="navProfileText">
+      Profile
+    </span>
+
+  </button>
+
+</nav>
 
 
 <!-- PRODUCT MODAL -->
@@ -1123,6 +1478,7 @@ button,select{
       class="modal-price"
     ></div>
 
+
     <button
       id="extraOption"
       class="addon"
@@ -1138,6 +1494,7 @@ button,select{
       </span>
 
     </button>
+
 
     <button
       id="bobaOption"
@@ -1155,12 +1512,14 @@ button,select{
 
     </button>
 
+
     <div
       id="quantityLabel"
       class="quantity-label"
     >
       Quantity
     </div>
+
 
     <div class="quantity-wrap">
 
@@ -1187,6 +1546,7 @@ button,select{
 
     </div>
 
+
     <button
       id="modalAdd"
       class="modal-add"
@@ -1202,9 +1562,8 @@ button,select{
 
 <script>
 
-/* =========================
-   TELEGRAM
-========================= */
+
+/* TELEGRAM */
 
 function getTelegramWebApp(){
 
@@ -1221,15 +1580,10 @@ function getTelegramWebApp(){
 
 function initializeTelegram(){
 
-  const telegram=
+  const telegram =
     getTelegramWebApp();
 
   if(!telegram){
-
-    console.warn(
-      "Telegram WebApp API is not available."
-    );
-
     return;
   }
 
@@ -1245,27 +1599,18 @@ function initializeTelegram(){
       telegram.disableVerticalSwipes();
     }
 
-  }catch(error){
-
-    console.warn(
-      "Telegram initialization error:",
-      error
-    );
-  }
+  }catch(e){}
 }
 
 
 initializeTelegram();
 
 
-/* =========================
-   TRANSLATIONS
-========================= */
+/* TEXT */
 
 const TEXT={
 
   en:{
-
     tea:"Thai Tea",
     coffee:"Coffee",
     specials:"Specials",
@@ -1278,19 +1623,17 @@ const TEXT={
     cart:"Your order",
 
     pickup:"Pickup time",
-    pickupSub:
-      "When should we prepare your order?",
+    pickupSub:"When should we prepare your order?",
 
     asap:"ASAP",
     choose:"Choose time",
 
     ready:"Ready in approximately",
     minutes:"minutes",
-
     pickupAt:"Pickup today at",
 
-    items:"items",
     item:"item",
+    items:"items",
 
     quantity:"Quantity",
 
@@ -1299,31 +1642,55 @@ const TEXT={
 
     extra:"Extra espresso shot",
     boba:"Add boba",
-
     addOrder:"Add to order",
 
-    empty:
-      "Please add a drink first.",
+    empty:"Please add a drink first.",
+    choosePickup:"Please choose a pickup time.",
 
-    choosePickup:
-      "Please choose a pickup time.",
+    success:"Order confirmed!",
+    pay:"Pay when you collect.",
 
-    success:
-      "Order confirmed!",
-
-    pay:
-      "Pay when you collect.",
-
-    noTimes:
-      "No pickup times available today.",
+    noTimes:"No pickup times available today.",
 
     telegramRequired:
-      "Please open TAKE AWAY from the Order drinks button inside our Telegram bot and try again."
+      "Please open TAKE AWAY from the Order button inside our Telegram bot.",
+
+    menuNav:"Menu",
+    ordersNav:"Orders",
+    profileNav:"Profile",
+
+    ordersTitle:"My Orders",
+    ordersSub:"Your TAKE AWAY order history",
+
+    profileTitle:"Profile",
+    profileSub:"Your TAKE AWAY account",
+
+    noOrders:"No orders yet",
+    noOrdersCopy:"Your orders will appear here after you place them.",
+
+    reorder:"Order again",
+
+    member:"TAKE AWAY MEMBER",
+
+    totalOrders:"Orders",
+    drinks:"Drinks",
+
+    favorite:"Favourite drink",
+    memberSince:"First order",
+
+    noFavorite:"Not yet",
+
+    newStatus:"Received",
+    preparingStatus:"Preparing",
+    readyStatus:"Ready",
+    completedStatus:"Completed",
+    cancelledStatus:"Cancelled",
+
+    maxOrder:"Maximum 30 drinks per order."
   },
 
 
   sr:{
-
     tea:"Tajlandski čaj",
     coffee:"Kafa",
     specials:"Specijaliteti",
@@ -1336,19 +1703,17 @@ const TEXT={
     cart:"Vaša porudžbina",
 
     pickup:"Vreme preuzimanja",
-    pickupSub:
-      "Kada želite da porudžbina bude spremna?",
+    pickupSub:"Kada želite da porudžbina bude spremna?",
 
     asap:"Što pre",
     choose:"Izaberi vreme",
 
     ready:"Spremno za približno",
     minutes:"minuta",
-
     pickupAt:"Preuzimanje danas u",
 
-    items:"stavki",
     item:"stavka",
+    items:"stavki",
 
     quantity:"Količina",
 
@@ -1357,31 +1722,55 @@ const TEXT={
 
     extra:"Dodatni espresso",
     boba:"Dodaj boba kuglice",
-
     addOrder:"Dodaj u porudžbinu",
 
-    empty:
-      "Prvo dodajte piće.",
+    empty:"Prvo dodajte piće.",
+    choosePickup:"Izaberite vreme preuzimanja.",
 
-    choosePickup:
-      "Izaberite vreme preuzimanja.",
+    success:"Porudžbina potvrđena!",
+    pay:"Plaćanje prilikom preuzimanja.",
 
-    success:
-      "Porudžbina potvrđena!",
-
-    pay:
-      "Plaćanje prilikom preuzimanja.",
-
-    noTimes:
-      "Danas nema dostupnih termina.",
+    noTimes:"Danas nema dostupnih termina.",
 
     telegramRequired:
-      "Otvorite TAKE AWAY preko dugmeta Order drinks u našem Telegram botu i pokušajte ponovo."
+      "Otvorite TAKE AWAY preko Order dugmeta u Telegram botu.",
+
+    menuNav:"Meni",
+    ordersNav:"Porudžbine",
+    profileNav:"Profil",
+
+    ordersTitle:"Moje porudžbine",
+    ordersSub:"Istorija TAKE AWAY porudžbina",
+
+    profileTitle:"Profil",
+    profileSub:"Vaš TAKE AWAY nalog",
+
+    noOrders:"Još nema porudžbina",
+    noOrdersCopy:"Vaše porudžbine će se pojaviti ovde.",
+
+    reorder:"Poruči ponovo",
+
+    member:"TAKE AWAY MEMBER",
+
+    totalOrders:"Porudžbine",
+    drinks:"Pića",
+
+    favorite:"Omiljeno piće",
+    memberSince:"Prva porudžbina",
+
+    noFavorite:"Još nema",
+
+    newStatus:"Primljeno",
+    preparingStatus:"Priprema",
+    readyStatus:"Spremno",
+    completedStatus:"Završeno",
+    cancelledStatus:"Otkazano",
+
+    maxOrder:"Maksimalno 30 pića po porudžbini."
   },
 
 
   ru:{
-
     tea:"Тайский чай",
     coffee:"Кофе",
     specials:"Спешл",
@@ -1394,62 +1783,74 @@ const TEXT={
     cart:"Ваш заказ",
 
     pickup:"Время получения",
-    pickupSub:
-      "Когда приготовить ваш заказ?",
+    pickupSub:"Когда приготовить ваш заказ?",
 
     asap:"Как можно скорее",
     choose:"Выбрать время",
 
-    ready:
-      "Будет готово примерно через",
-
+    ready:"Будет готово примерно через",
     minutes:"мин.",
+    pickupAt:"Получение сегодня в",
 
-    pickupAt:
-      "Получение сегодня в",
-
-    items:"позиций",
     item:"позиция",
+    items:"позиций",
 
     quantity:"Количество",
 
     order:"Заказать →",
     sending:"Отправляем...",
 
-    extra:
-      "Дополнительный эспрессо",
+    extra:"Дополнительный эспрессо",
+    boba:"Добавить боба",
+    addOrder:"Добавить в заказ",
 
-    boba:
-      "Добавить боба",
+    empty:"Сначала добавьте напиток.",
+    choosePickup:"Выберите время получения.",
 
-    addOrder:
-      "Добавить в заказ",
+    success:"Заказ подтвержден!",
+    pay:"Оплата при получении.",
 
-    empty:
-      "Сначала добавьте напиток.",
-
-    choosePickup:
-      "Выберите время получения.",
-
-    success:
-      "Заказ подтвержден!",
-
-    pay:
-      "Оплата при получении.",
-
-    noTimes:
-      "На сегодня свободного времени нет.",
+    noTimes:"На сегодня свободного времени нет.",
 
     telegramRequired:
-      "Откройте TAKE AWAY через кнопку Order drinks внутри нашего Telegram-бота и попробуйте снова."
+      "Откройте TAKE AWAY через кнопку Order внутри Telegram-бота.",
+
+    menuNav:"Меню",
+    ordersNav:"Заказы",
+    profileNav:"Профиль",
+
+    ordersTitle:"Мои заказы",
+    ordersSub:"История заказов TAKE AWAY",
+
+    profileTitle:"Профиль",
+    profileSub:"Ваш аккаунт TAKE AWAY",
+
+    noOrders:"Заказов пока нет",
+    noOrdersCopy:"Здесь появится история ваших заказов.",
+
+    reorder:"Повторить",
+
+    member:"TAKE AWAY MEMBER",
+
+    totalOrders:"Заказы",
+    drinks:"Напитки",
+
+    favorite:"Любимый напиток",
+    memberSince:"Первый заказ",
+
+    noFavorite:"Пока нет",
+
+    newStatus:"Получен",
+    preparingStatus:"Готовится",
+    readyStatus:"Готов",
+    completedStatus:"Завершён",
+    cancelledStatus:"Отменён",
+
+    maxOrder:"Максимум 30 напитков в одном заказе."
   }
 
 };
 
-
-/* =========================
-   PRODUCT TRANSLATIONS
-========================= */
 
 const PRODUCT_TEXT={
 
@@ -1490,131 +1891,57 @@ const PRODUCT_TEXT={
   },
 
   americanocream:{
-    en:[
-      "Iced Americano with Cream",
-      "Double espresso + water + ice + cream on top"
-    ],
-    sr:[
-      "Ledeni Amerikano sa kremom",
-      "Dupli espresso + voda + led + krem odozgo"
-    ],
-    ru:[
-      "Айс Американо с кремом",
-      "Двойной эспрессо + вода + лёд + крем сверху"
-    ]
+    en:["Iced Americano with Cream","Double espresso + water + ice + cream on top"],
+    sr:["Ledeni Amerikano sa kremom","Dupli espresso + voda + led + krem odozgo"],
+    ru:["Айс Американо с кремом","Двойной эспрессо + вода + лёд + крем сверху"]
   },
 
   strawberrymatcha:{
-    en:[
-      "Strawberry Matcha Latte",
-      "Strawberry + matcha + milk"
-    ],
-    sr:[
-      "Strawberry Matcha Latte",
-      "Jagoda + matcha + mleko"
-    ],
-    ru:[
-      "Клубничный матча латте",
-      "Клубника + матча + молоко"
-    ]
+    en:["Strawberry Matcha Latte","Strawberry + matcha + milk"],
+    sr:["Strawberry Matcha Latte","Jagoda + matcha + mleko"],
+    ru:["Клубничный матча латте","Клубника + матча + молоко"]
   },
 
   peanutlatte:{
-    en:[
-      "Peanut Latte",
-      "Double espresso + peanut + milk"
-    ],
-    sr:[
-      "Peanut Latte",
-      "Dupli espresso + kikiriki + mleko"
-    ],
-    ru:[
-      "Арахисовый латте",
-      "Двойной эспрессо + арахис + молоко"
-    ]
+    en:["Peanut Latte","Double espresso + peanut + milk"],
+    sr:["Peanut Latte","Dupli espresso + kikiriki + mleko"],
+    ru:["Арахисовый латте","Двойной эспрессо + арахис + молоко"]
   },
 
   thai:{
-    en:[
-      "Classic Thai Milk Tea",
-      "Thai tea + milk + cream on top"
-    ],
-    sr:[
-      "Klasični tajski mlečni čaj",
-      "Tajski čaj + mleko + krem odozgo"
-    ],
-    ru:[
-      "Классический тайский чай",
-      "Тайский чай + молоко + крем сверху"
-    ]
+    en:["Classic Thai Milk Tea","Thai tea + milk + cream on top"],
+    sr:["Klasični tajski mlečni čaj","Tajski čaj + mleko + krem odozgo"],
+    ru:["Классический тайский чай","Тайский чай + молоко + крем сверху"]
   },
 
   green:{
-    en:[
-      "Thai Green Milk Tea",
-      "Thai green tea + milk + cream on top"
-    ],
-    sr:[
-      "Tajski zeleni mlečni čaj",
-      "Zeleni čaj + mleko + krem odozgo"
-    ],
-    ru:[
-      "Тайский зелёный чай",
-      "Зелёный чай + молоко + крем сверху"
-    ]
+    en:["Thai Green Milk Tea","Thai green tea + milk + cream on top"],
+    sr:["Tajski zeleni mlečni čaj","Zeleni čaj + mleko + krem odozgo"],
+    ru:["Тайский зелёный чай","Зелёный чай + молоко + крем сверху"]
   },
 
   lime:{
-    en:[
-      "Thai Iced Lime Tea",
-      "Black tea + fresh lime + ice"
-    ],
-    sr:[
-      "Tajski ledeni čaj sa limetom",
-      "Crni čaj + sveža limeta + led"
-    ],
-    ru:[
-      "Тайский чай с лаймом",
-      "Чёрный чай + свежий лайм + лёд"
-    ]
+    en:["Thai Iced Lime Tea","Black tea + fresh lime + ice"],
+    sr:["Tajski ledeni čaj sa limetom","Crni čaj + sveža limeta + led"],
+    ru:["Тайский чай с лаймом","Чёрный чай + свежий лайм + лёд"]
   },
 
   tonic:{
-    en:[
-      "Tonic Coffee",
-      "Espresso + tonic + ice"
-    ],
-    sr:[
-      "Tonic Coffee",
-      "Espresso + tonik + led"
-    ],
-    ru:[
-      "Тоник кофе",
-      "Эспрессо + тоник + лёд"
-    ]
+    en:["Tonic Coffee","Espresso + tonic + ice"],
+    sr:["Tonic Coffee","Espresso + tonik + led"],
+    ru:["Тоник кофе","Эспрессо + тоник + лёд"]
   },
 
   bumble:{
-    en:[
-      "Bumble Coffee",
-      "Espresso + orange juice + ice"
-    ],
-    sr:[
-      "Bumble Coffee",
-      "Espresso + sok od pomorandže + led"
-    ],
-    ru:[
-      "Бамбл кофе",
-      "Эспрессо + апельсиновый сок + лёд"
-    ]
+    en:["Bumble Coffee","Espresso + orange juice + ice"],
+    sr:["Bumble Coffee","Espresso + sok od pomorandže + led"],
+    ru:["Бамбл кофе","Эспрессо + апельсиновый сок + лёд"]
   }
 
 };
 
 
-/* =========================
-   STATE
-========================= */
+/* STATE */
 
 let language="en";
 
@@ -1622,6 +1949,7 @@ let menu=[];
 let cart=[];
 
 let category="tea";
+let currentPage="menu";
 
 let selectedProduct=null;
 
@@ -1634,10 +1962,46 @@ let pickupMinutes=10;
 
 let exactPickupDate=null;
 
+let customerOrders=[];
+let customerProfile=null;
 
-/* =========================
-   LANGUAGE
-========================= */
+
+/* HELPERS */
+
+function getTelegramInitData(){
+
+  const telegram =
+    getTelegramWebApp();
+
+  if(!telegram){
+    return "";
+  }
+
+  return telegram.initData || "";
+}
+
+
+function totalCartQuantity(){
+
+  return cart.reduce(
+    (sum,item)=>sum+item.qty,
+    0
+  );
+}
+
+
+function escapeHtml(value){
+
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+
+/* LANGUAGE */
 
 function changeLanguage(lang){
 
@@ -1653,88 +2017,147 @@ function changeLanguage(lang){
     .getElementById("lang-"+lang)
     .classList.add("active");
 
-  document
-    .getElementById("tab-tea")
-    .innerText=
-      TEXT[lang].tea;
 
-  document
-    .getElementById("tab-coffee")
-    .innerText=
-      TEXT[lang].coffee;
+  document.getElementById("tab-tea").innerText=
+    TEXT[lang].tea;
 
-  document
-    .getElementById("tab-special")
-    .innerText=
-      TEXT[lang].specials;
+  document.getElementById("tab-coffee").innerText=
+    TEXT[lang].coffee;
 
-  document
-    .getElementById("cartTitle")
-    .innerText=
-      TEXT[lang].cart;
+  document.getElementById("tab-special").innerText=
+    TEXT[lang].specials;
 
-  document
-    .getElementById("pickupTitle")
-    .innerText=
-      TEXT[lang].pickup;
+  document.getElementById("cartTitle").innerText=
+    TEXT[lang].cart;
 
-  document
-    .getElementById("pickupSubtitle")
-    .innerText=
-      TEXT[lang].pickupSub;
+  document.getElementById("pickupTitle").innerText=
+    TEXT[lang].pickup;
 
-  document
-    .getElementById("asapMode")
-    .innerText=
-      TEXT[lang].asap;
+  document.getElementById("pickupSubtitle").innerText=
+    TEXT[lang].pickupSub;
 
-  document
-    .getElementById("exactMode")
-    .innerText=
-      TEXT[lang].choose;
+  document.getElementById("asapMode").innerText=
+    TEXT[lang].asap;
 
-  document
-    .getElementById("orderButton")
-    .innerText=
-      TEXT[lang].order;
+  document.getElementById("exactMode").innerText=
+    TEXT[lang].choose;
 
-  document
-    .getElementById("extraText")
-    .innerText=
-      TEXT[lang].extra;
+  document.getElementById("orderButton").innerText=
+    TEXT[lang].order;
 
-  document
-    .getElementById("bobaText")
-    .innerText=
-      TEXT[lang].boba;
+  document.getElementById("extraText").innerText=
+    TEXT[lang].extra;
 
-  document
-    .getElementById("quantityLabel")
-    .innerText=
-      TEXT[lang].quantity;
+  document.getElementById("bobaText").innerText=
+    TEXT[lang].boba;
+
+  document.getElementById("quantityLabel").innerText=
+    TEXT[lang].quantity;
+
+
+  document.getElementById("navMenuText").innerText=
+    TEXT[lang].menuNav;
+
+  document.getElementById("navOrdersText").innerText=
+    TEXT[lang].ordersNav;
+
+  document.getElementById("navProfileText").innerText=
+    TEXT[lang].profileNav;
+
+
+  document.getElementById("ordersHeading").innerText=
+    TEXT[lang].ordersTitle;
+
+  document.getElementById("ordersSub").innerText=
+    TEXT[lang].ordersSub;
+
+  document.getElementById("profileHeading").innerText=
+    TEXT[lang].profileTitle;
+
+  document.getElementById("profileSub").innerText=
+    TEXT[lang].profileSub;
+
 
   renderMenu();
-
   updateCart();
+  renderOrders();
+  renderProfile();
 
   if(selectedProduct){
     updateModalAddButton();
   }
 
   if(pickupMode==="exact"){
-
     generateExactTimes();
-
   }else{
-
     updatePickupInfo();
   }
 }
 
 
-/* =========================
-   LOAD MENU
-========================= */
+/* PAGES */
+
+function showPage(page){
+
+  currentPage=page;
+
+  document
+    .querySelectorAll(".page")
+    .forEach(
+      element=>
+        element.classList.remove("active")
+    );
+
+  document
+    .querySelectorAll(".nav-button")
+    .forEach(
+      element=>
+        element.classList.remove("active")
+    );
+
+
+  document
+    .getElementById(page+"Page")
+    .classList.add("active");
+
+  document
+    .getElementById("nav-"+page)
+    .classList.add("active");
+
+
+  const orderBar=
+    document.getElementById("orderBar");
+
+  if(page==="menu"){
+
+    orderBar.classList.remove(
+      "hidden"
+    );
+
+  }else{
+
+    orderBar.classList.add(
+      "hidden"
+    );
+  }
+
+
+  if(page==="orders"){
+    loadOrders();
+  }
+
+  if(page==="profile"){
+    loadProfile();
+  }
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+}
+
+
+/* LOAD MENU */
 
 async function loadMenu(){
 
@@ -1749,7 +2172,6 @@ async function loadMenu(){
       );
 
     if(!response.ok){
-
       throw new Error(
         "Could not load menu."
       );
@@ -1770,14 +2192,9 @@ async function loadMenu(){
 }
 
 
-/* =========================
-   CATEGORY
-========================= */
+/* CATEGORY */
 
-function showCategory(
-  cat,
-  button
-){
+function showCategory(cat,button){
 
   category=cat;
 
@@ -1793,9 +2210,7 @@ function showCategory(
 }
 
 
-/* =========================
-   PRODUCT TEXT
-========================= */
+/* PRODUCT COPY */
 
 function productText(id){
 
@@ -1803,37 +2218,25 @@ function productText(id){
     PRODUCT_TEXT[id] &&
     PRODUCT_TEXT[id][language]
   ){
-
     return PRODUCT_TEXT[id][language];
   }
 
   const product=
-    menu.find(
-      x=>x.id===id
-    );
+    menu.find(x=>x.id===id);
 
   return[
-    product
-      ? product.name
-      : id,
+    product ? product.name : id,
     ""
   ];
 }
 
 
-/* =========================
-   DRINK CLASS
-========================= */
+/* DRINK */
 
 function drinkClass(id){
 
-  if(id==="espresso"){
-    return "espresso";
-  }
-
-  if(id==="americano"){
-    return "americano";
-  }
+  if(id==="espresso") return "espresso";
+  if(id==="americano") return "americano";
 
   if(
     id==="cappuccino" ||
@@ -1843,49 +2246,19 @@ function drinkClass(id){
     return "milkcoffee";
   }
 
-  if(id==="icedlatte"){
-    return "icedcoffee";
-  }
-
-  if(id==="thai"){
-    return "thai";
-  }
-
-  if(id==="green"){
-    return "greentea";
-  }
-
-  if(id==="lime"){
-    return "limetea";
-  }
-
-  if(id==="bumble"){
-    return "bumble";
-  }
-
-  if(id==="tonic"){
-    return "tonic";
-  }
-
-  if(id==="americanocream"){
-    return "americanocream";
-  }
-
-  if(id==="strawberrymatcha"){
-    return "matcha";
-  }
-
-  if(id==="peanutlatte"){
-    return "peanut";
-  }
+  if(id==="icedlatte") return "icedcoffee";
+  if(id==="thai") return "thai";
+  if(id==="green") return "greentea";
+  if(id==="lime") return "limetea";
+  if(id==="bumble") return "bumble";
+  if(id==="tonic") return "tonic";
+  if(id==="americanocream") return "americanocream";
+  if(id==="strawberrymatcha") return "matcha";
+  if(id==="peanutlatte") return "peanut";
 
   return "americano";
 }
 
-
-/* =========================
-   DRINK VISUAL
-========================= */
 
 function drinkVisual(id){
 
@@ -1894,7 +2267,7 @@ function drinkVisual(id){
     id==="flatwhite"
   ){
 
-    return `
+    return`
       <div class="drink">
         <div class="coffee-cup"></div>
       </div>
@@ -1916,31 +2289,20 @@ function drinkVisual(id){
     "tonic",
     "strawberrymatcha"
   ].includes(id)
-
     ? `<span class="ice">◇ ◇</span>`
     : "";
 
-  return `
+  return`
     <div class="drink">
-
       <div class="cup ${drinkClass(id)}">
-
         <div class="liquid"></div>
-
         ${ice}
-
         ${lime}
-
       </div>
-
     </div>
   `;
 }
 
-
-/* =========================
-   EXTRA SHOT
-========================= */
 
 function canExtra(id){
 
@@ -1959,9 +2321,7 @@ function canExtra(id){
 }
 
 
-/* =========================
-   RENDER MENU
-========================= */
+/* RENDER MENU */
 
 function renderMenu(){
 
@@ -1976,91 +2336,80 @@ function renderMenu(){
   let icon="☕";
 
   if(category==="tea"){
-
-    title=
-      TEXT[language].teaTitle;
-
+    title=TEXT[language].teaTitle;
     icon="🍃";
   }
 
   if(category==="special"){
-
-    title=
-      TEXT[language].specialTitle;
-
+    title=TEXT[language].specialTitle;
     icon="✦";
   }
 
-  document
-    .getElementById("menu")
-    .innerHTML=`
+  document.getElementById("menu").innerHTML=`
 
-      <section class="section">
+    <section class="section">
 
-        <div class="section-header">
+      <div class="section-header">
 
-          <span class="section-icon">
-            ${icon}
-          </span>
+        <span class="section-icon">
+          ${icon}
+        </span>
 
-          <span class="section-title">
-            ${title}
-          </span>
+        <span class="section-title">
+          ${title}
+        </span>
 
-          <span class="section-line"></span>
+        <span class="section-line"></span>
 
-        </div>
+      </div>
 
-        <div class="products">
+      <div class="products">
 
-          ${
-            filtered.map(
-              p=>{
+        ${
+          filtered.map(p=>{
 
-                const productCopy=
-                  productText(p.id);
+            const copy=
+              productText(p.id);
 
-                return`
+            return`
 
-                  <article class="product">
+              <article class="product">
 
-                    ${drinkVisual(p.id)}
+                ${drinkVisual(p.id)}
 
-                    <div class="product-name">
-                      ${productCopy[0]}
-                    </div>
+                <div class="product-name">
+                  ${copy[0]}
+                </div>
 
-                    <div class="product-desc">
-                      ${productCopy[1]}
-                    </div>
+                <div class="product-desc">
+                  ${copy[1]}
+                </div>
 
-                    <div class="product-price">
-                      ${p.price} RSD
-                    </div>
+                <div class="product-price">
+                  ${p.price} RSD
+                </div>
 
-                    <button
-                      class="add"
-                      onclick="openProduct('${p.id}')"
-                    >
-                      + ${TEXT[language].add}
-                    </button>
+                <button
+                  class="add"
+                  onclick="openProduct('${p.id}')"
+                >
+                  + ${TEXT[language].add}
+                </button>
 
-                  </article>
-                `;
-              }
-            ).join("")
-          }
+              </article>
+            `;
 
-        </div>
+          }).join("")
+        }
 
-      </section>
-    `;
+      </div>
+
+    </section>
+  `;
 }
 
 
-/* =========================
-   OPEN PRODUCT
-========================= */
+/* PRODUCT MODAL */
 
 function openProduct(id){
 
@@ -2077,39 +2426,23 @@ function openProduct(id){
   modalBoba=false;
   modalQuantity=1;
 
-  const productCopy=
+  const copy=
     productText(id);
 
-  document
-    .getElementById("modalName")
-    .innerText=
-      productCopy[0];
+  document.getElementById("modalName").innerText=
+    copy[0];
 
-  document
-    .getElementById("modalPrice")
-    .innerText=
-      selectedProduct.price+
-      " RSD";
+  document.getElementById("modalPrice").innerText=
+    selectedProduct.price+" RSD";
 
-  document
-    .getElementById("modalQuantity")
-    .innerText=
-      modalQuantity;
-
-  document
-    .getElementById("quantityLabel")
-    .innerText=
-      TEXT[language].quantity;
+  document.getElementById("modalQuantity").innerText=
+    "1";
 
   const extra=
-    document.getElementById(
-      "extraOption"
-    );
+    document.getElementById("extraOption");
 
   const boba=
-    document.getElementById(
-      "bobaOption"
-    );
+    document.getElementById("bobaOption");
 
   extra.style.display=
     canExtra(id)
@@ -2121,13 +2454,8 @@ function openProduct(id){
       ? "flex"
       : "none";
 
-  extra.classList.remove(
-    "selected"
-  );
-
-  boba.classList.remove(
-    "selected"
-  );
+  extra.classList.remove("selected");
+  boba.classList.remove("selected");
 
   updateModalAddButton();
 
@@ -2137,16 +2465,11 @@ function openProduct(id){
 }
 
 
-/* =========================
-   ADDONS
-========================= */
-
 function toggleAddon(type){
 
   if(type==="extra"){
 
-    modalExtra=
-      !modalExtra;
+    modalExtra=!modalExtra;
 
     document
       .getElementById("extraOption")
@@ -2158,8 +2481,7 @@ function toggleAddon(type){
 
   if(type==="boba"){
 
-    modalBoba=
-      !modalBoba;
+    modalBoba=!modalBoba;
 
     document
       .getElementById("bobaOption")
@@ -2173,50 +2495,43 @@ function toggleAddon(type){
 }
 
 
-/* =========================
-   MODAL QUANTITY
-========================= */
-
 function changeModalQuantity(change){
 
-  modalQuantity+=change;
+  let next=
+    modalQuantity+change;
 
-  if(modalQuantity<1){
-    modalQuantity=1;
+  if(next<1){
+    next=1;
   }
 
-  if(modalQuantity>10){
-    modalQuantity=10;
+  if(next>10){
+    next=10;
   }
 
-  document
-    .getElementById("modalQuantity")
-    .innerText=
-      modalQuantity;
+  const currentCart=
+    totalCartQuantity();
+
+  if(
+    change>0 &&
+    currentCart+next>30
+  ){
+
+    showMessage(
+      TEXT[language].maxOrder,
+      "error"
+    );
+
+    return;
+  }
+
+  modalQuantity=next;
+
+  document.getElementById("modalQuantity").innerText=
+    modalQuantity;
 
   updateModalAddButton();
-
-  const telegram=
-    getTelegramWebApp();
-
-  try{
-
-    if(
-      telegram &&
-      telegram.HapticFeedback
-    ){
-
-      telegram.HapticFeedback
-        .selectionChanged();
-    }
-
-  }catch(e){}
 }
 
-
-/* =========================
-   MODAL TOTAL
-========================= */
 
 function updateModalAddButton(){
 
@@ -2224,40 +2539,45 @@ function updateModalAddButton(){
     return;
   }
 
-  let unitPrice=
+  let unit=
     Number(
       selectedProduct.price
     );
 
   if(modalExtra){
-    unitPrice+=150;
+    unit+=150;
   }
 
   if(modalBoba){
-    unitPrice+=100;
+    unit+=100;
   }
 
-  const total=
-    unitPrice*
-    modalQuantity;
-
-  document
-    .getElementById("modalAdd")
-    .innerText=
-      TEXT[language].addOrder+
-      " — "+
-      total+
-      " RSD";
+  document.getElementById("modalAdd").innerText=
+    TEXT[language].addOrder+
+    " — "+
+    (unit*modalQuantity)+
+    " RSD";
 }
 
-
-/* =========================
-   CONFIRM ADD
-========================= */
 
 function confirmAdd(){
 
   if(!selectedProduct){
+    return;
+  }
+
+  const current=
+    totalCartQuantity();
+
+  if(
+    current+modalQuantity>30
+  ){
+
+    showMessage(
+      TEXT[language].maxOrder,
+      "error"
+    );
+
     return;
   }
 
@@ -2271,29 +2591,22 @@ function confirmAdd(){
 
   if(existing){
 
-    existing.qty+=
-      modalQuantity;
-
-    if(existing.qty>10){
+    if(
+      existing.qty+
+      modalQuantity>10
+    ){
       existing.qty=10;
+    }else{
+      existing.qty+=modalQuantity;
     }
 
   }else{
 
     cart.push({
-
-      id:
-        selectedProduct.id,
-
-      qty:
-        modalQuantity,
-
-      extra_shot:
-        modalExtra,
-
-      boba:
-        modalBoba
-
+      id:selectedProduct.id,
+      qty:modalQuantity,
+      extra_shot:modalExtra,
+      boba:modalBoba
     });
   }
 
@@ -2301,31 +2614,9 @@ function confirmAdd(){
     .getElementById("modalBg")
     .classList.remove("open");
 
-  modalQuantity=1;
-
   updateCart();
-
-  const telegram=
-    getTelegramWebApp();
-
-  try{
-
-    if(
-      telegram &&
-      telegram.HapticFeedback
-    ){
-
-      telegram.HapticFeedback
-        .impactOccurred("light");
-    }
-
-  }catch(e){}
 }
 
-
-/* =========================
-   CLOSE MODAL
-========================= */
 
 function closeModal(event){
 
@@ -2340,9 +2631,7 @@ function closeModal(event){
 }
 
 
-/* =========================
-   PRICE
-========================= */
+/* CART */
 
 function itemPrice(item){
 
@@ -2366,308 +2655,208 @@ function itemPrice(item){
     price+=100;
   }
 
-  return price*
-    item.qty;
+  return price*item.qty;
 }
 
-
-/* =========================
-   CART
-========================= */
 
 function updateCart(){
 
   const count=
-    cart.reduce(
-      (sum,x)=>
-        sum+x.qty,
-      0
-    );
+    totalCartQuantity();
 
   const total=
     cart.reduce(
-      (sum,x)=>
-        sum+itemPrice(x),
+      (sum,item)=>
+        sum+itemPrice(item),
       0
     );
 
-  document
-    .getElementById("itemCount")
-    .innerText=
-      count+
-      " "+
-      (
-        count===1
-          ? TEXT[language].item
-          : TEXT[language].items
-      );
+  document.getElementById("itemCount").innerText=
+    count+
+    " "+
+    (
+      count===1
+        ? TEXT[language].item
+        : TEXT[language].items
+    );
 
-  document
-    .getElementById("total")
-    .innerText=
-      total+
-      " RSD";
+  document.getElementById("total").innerText=
+    total+" RSD";
 
   const section=
-    document.getElementById(
-      "cartSection"
-    );
+    document.getElementById("cartSection");
 
   const box=
-    document.getElementById(
-      "cartItems"
-    );
+    document.getElementById("cartItems");
 
   if(!cart.length){
 
-    section.classList.remove(
-      "show"
-    );
-
+    section.classList.remove("show");
     box.innerHTML="";
-
     return;
   }
 
-  section.classList.add(
-    "show"
-  );
+  section.classList.add("show");
 
   box.innerHTML=
-    cart.map(
-      (item,index)=>{
+    cart.map((item,index)=>{
 
-        const product=
-          menu.find(
-            x=>x.id===item.id
-          );
+      const copy=
+        productText(item.id);
 
-        if(!product){
-          return "";
-        }
+      let extras=[];
 
-        const productCopy=
-          productText(item.id);
+      if(item.extra_shot){
+        extras.push(
+          TEXT[language].extra
+        );
+      }
 
-        let extras=[];
+      if(item.boba){
+        extras.push(
+          TEXT[language].boba
+        );
+      }
 
-        if(item.extra_shot){
+      return`
 
-          extras.push(
-            TEXT[language].extra
-          );
-        }
+        <div class="cart-item">
 
-        if(item.boba){
+          <div class="cart-item-info">
 
-          extras.push(
-            TEXT[language].boba
-          );
-        }
+            <strong>
+              ${copy[0]}
+            </strong>
 
-        return`
-
-          <div class="cart-item">
-
-            <div class="cart-item-info">
-
-              <strong>
-                ${productCopy[0]}
-              </strong>
-
-              ${
-                extras.length
-                  ? `
-                    <div class="cart-extra">
-                      ${extras.join(" · ")}
-                    </div>
-                  `
-                  : ""
-              }
-
-            </div>
-
-
-            <div class="cart-right">
-
-              <div class="cart-quantity">
-
-                <button
-                  class="cart-qty-btn"
-                  onclick="changeCartQuantity(${index},-1)"
-                >
-                  −
-                </button>
-
-                <span class="cart-qty-number">
-                  ${item.qty}
-                </span>
-
-                <button
-                  class="cart-qty-btn"
-                  onclick="changeCartQuantity(${index},1)"
-                >
-                  +
-                </button>
-
-              </div>
-
-
-              <div class="cart-price">
-                ${itemPrice(item)} RSD
-              </div>
-
-
-              <button
-                class="remove"
-                onclick="deleteCartItem(${index})"
-                aria-label="Remove"
-              >
-                ×
-              </button>
-
-            </div>
+            ${
+              extras.length
+                ? `
+                  <div class="cart-extra">
+                    ${extras.join(" · ")}
+                  </div>
+                `
+                : ""
+            }
 
           </div>
-        `;
 
-      }
-    ).join("");
+          <div class="cart-right">
+
+            <div class="cart-quantity">
+
+              <button
+                class="cart-qty-btn"
+                onclick="changeCartQuantity(${index},-1)"
+              >−</button>
+
+              <span class="cart-qty-number">
+                ${item.qty}
+              </span>
+
+              <button
+                class="cart-qty-btn"
+                onclick="changeCartQuantity(${index},1)"
+              >+</button>
+
+            </div>
+
+            <div class="cart-price">
+              ${itemPrice(item)} RSD
+            </div>
+
+            <button
+              class="remove"
+              onclick="deleteCartItem(${index})"
+            >×</button>
+
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
 }
 
 
-/* =========================
-   CHANGE CART QUANTITY
-========================= */
-
-function changeCartQuantity(
-  index,
-  change
-){
+function changeCartQuantity(index,change){
 
   if(!cart[index]){
     return;
   }
 
-  const newQuantity=
+  if(
+    change>0 &&
+    totalCartQuantity()>=30
+  ){
+
+    showMessage(
+      TEXT[language].maxOrder,
+      "error"
+    );
+
+    return;
+  }
+
+  const next=
     cart[index].qty+
     change;
 
-  if(newQuantity<=0){
+  if(next<=0){
 
-    cart.splice(
-      index,
-      1
-    );
+    cart.splice(index,1);
 
-  }else if(newQuantity<=10){
+  }else if(next<=10){
 
-    cart[index].qty=
-      newQuantity;
+    cart[index].qty=next;
   }
 
   updateCart();
-
-  const telegram=
-    getTelegramWebApp();
-
-  try{
-
-    if(
-      telegram &&
-      telegram.HapticFeedback
-    ){
-
-      telegram.HapticFeedback
-        .selectionChanged();
-    }
-
-  }catch(e){}
 }
 
-
-/* =========================
-   DELETE CART ITEM
-========================= */
 
 function deleteCartItem(index){
 
-  if(!cart[index]){
-    return;
-  }
-
-  cart.splice(
-    index,
-    1
-  );
+  cart.splice(index,1);
 
   updateCart();
 }
 
 
-/* =========================
-   PICKUP MODE
-========================= */
+/* PICKUP */
 
 function setPickupMode(mode){
 
   pickupMode=mode;
 
   const asap=
-    document.getElementById(
-      "asapMode"
-    );
+    document.getElementById("asapMode");
 
   const exact=
-    document.getElementById(
-      "exactMode"
-    );
+    document.getElementById("exactMode");
 
   const times=
-    document.getElementById(
-      "asapTimes"
-    );
+    document.getElementById("asapTimes");
 
   const box=
-    document.getElementById(
-      "exactBox"
-    );
+    document.getElementById("exactBox");
 
   if(mode==="asap"){
 
-    asap.classList.add(
-      "active"
-    );
+    asap.classList.add("active");
+    exact.classList.remove("active");
 
-    exact.classList.remove(
-      "active"
-    );
-
-    times.style.display=
-      "grid";
-
-    box.classList.remove(
-      "show"
-    );
+    times.style.display="grid";
+    box.classList.remove("show");
 
     exactPickupDate=null;
 
   }else{
 
-    exact.classList.add(
-      "active"
-    );
+    exact.classList.add("active");
+    asap.classList.remove("active");
 
-    asap.classList.remove(
-      "active"
-    );
-
-    times.style.display=
-      "none";
-
-    box.classList.add(
-      "show"
-    );
+    times.style.display="none";
+    box.classList.add("show");
 
     generateExactTimes();
   }
@@ -2676,14 +2865,7 @@ function setPickupMode(mode){
 }
 
 
-/* =========================
-   ASAP
-========================= */
-
-function chooseTime(
-  button,
-  minutes
-){
+function chooseTime(button,minutes){
 
   pickupMode="asap";
   pickupMinutes=minutes;
@@ -2691,45 +2873,37 @@ function chooseTime(
   document
     .querySelectorAll(".time")
     .forEach(
-      x=>x.classList.remove(
-        "selected"
-      )
+      x=>x.classList.remove("selected")
     );
 
-  button.classList.add(
-    "selected"
-  );
+  button.classList.add("selected");
 
   updatePickupInfo();
 }
 
 
-/* =========================
-   EXACT TIMES
-========================= */
-
 function generateExactTimes(){
 
   const select=
-    document.getElementById(
-      "exactTime"
-    );
+    document.getElementById("exactTime");
 
   select.innerHTML="";
 
   const now=
     new Date();
 
+  /*
+    11 minutes instead of exactly 10
+    gives a small network safety margin.
+  */
+
   let first=
     new Date(
       now.getTime()+
-      10*60*1000
+      11*60*1000
     );
 
-  first.setSeconds(
-    0,
-    0
-  );
+  first.setSeconds(0,0);
 
   const remainder=
     first.getMinutes()%15;
@@ -2746,26 +2920,18 @@ function generateExactTimes(){
     new Date();
 
   opening.setHours(
-    7,
-    0,
-    0,
-    0
+    7,0,0,0
   );
 
   const closing=
     new Date();
 
   closing.setHours(
-    17,
-    0,
-    0,
-    0
+    17,0,0,0
   );
 
   if(first<opening){
-
-    first=
-      new Date(opening);
+    first=new Date(opening);
   }
 
   let current=
@@ -2781,30 +2947,20 @@ function generateExactTimes(){
     const h=
       String(
         current.getHours()
-      ).padStart(
-        2,
-        "0"
-      );
+      ).padStart(2,"0");
 
     const m=
       String(
         current.getMinutes()
-      ).padStart(
-        2,
-        "0"
-      );
+      ).padStart(2,"0");
 
     option.value=
       current.toISOString();
 
     option.textContent=
-      h+
-      ":"+
-      m;
+      h+":"+m;
 
-    select.appendChild(
-      option
-    );
+    select.appendChild(option);
 
     current=
       new Date(
@@ -2813,9 +2969,7 @@ function generateExactTimes(){
       );
   }
 
-  if(
-    !select.options.length
-  ){
+  if(!select.options.length){
 
     const option=
       document.createElement(
@@ -2823,39 +2977,28 @@ function generateExactTimes(){
       );
 
     option.value="";
-
     option.textContent=
       TEXT[language].noTimes;
 
-    select.appendChild(
-      option
-    );
+    select.appendChild(option);
 
     exactPickupDate=null;
 
   }else{
 
     exactPickupDate=
-      new Date(
-        select.value
-      );
+      new Date(select.value);
   }
 
   updatePickupInfo();
 }
 
 
-/* =========================
-   EXACT TIME CHANGE
-========================= */
-
 function chooseExactTime(){
 
   const value=
     document
-      .getElementById(
-        "exactTime"
-      )
+      .getElementById("exactTime")
       .value;
 
   exactPickupDate=
@@ -2866,10 +3009,6 @@ function chooseExactTime(){
   updatePickupInfo();
 }
 
-
-/* =========================
-   PICKUP INFO
-========================= */
 
 function updatePickupInfo(){
 
@@ -2901,18 +3040,12 @@ function updatePickupInfo(){
   const h=
     String(
       exactPickupDate.getHours()
-    ).padStart(
-      2,
-      "0"
-    );
+    ).padStart(2,"0");
 
   const m=
     String(
       exactPickupDate.getMinutes()
-    ).padStart(
-      2,
-      "0"
-    );
+    ).padStart(2,"0");
 
   info.innerText=
     TEXT[language].pickupAt+
@@ -2923,93 +3056,55 @@ function updatePickupInfo(){
 }
 
 
-/* =========================
-   PICKUP ISO
-========================= */
-
 function pickupISO(){
 
-  if(
-    pickupMode==="exact"
-  ){
+  if(pickupMode==="exact"){
 
     if(!exactPickupDate){
       return null;
     }
 
-    return exactPickupDate
-      .toISOString();
+    return exactPickupDate.toISOString();
   }
+
+  /*
+    Add a 45 second network buffer.
+    UI still says 10/15/20/30 minutes.
+  */
 
   return new Date(
     Date.now()+
-    pickupMinutes*
-    60*
-    1000
+    pickupMinutes*60*1000+
+    45000
   ).toISOString();
 }
 
 
-/* =========================
-   MESSAGE
-========================= */
+/* MESSAGE */
 
-function showMessage(
-  text,
-  type
-){
+function showMessage(text,type){
 
   const box=
-    document.getElementById(
-      "message"
-    );
+    document.getElementById("message");
 
   box.className=
-    "message "+
-    type;
+    "message "+type;
 
-  box.innerText=
-    text;
+  box.innerText=text;
 
-  box.style.display=
-    "block";
+  box.style.display="block";
 
-  box.scrollIntoView({
-    behavior:"smooth",
-    block:"center"
-  });
-}
+  if(currentPage==="menu"){
 
-
-/* =========================
-   TELEGRAM INIT DATA
-========================= */
-
-function getTelegramInitData(){
-
-  const telegram=
-    getTelegramWebApp();
-
-  if(!telegram){
-    return "";
+    box.scrollIntoView({
+      behavior:"smooth",
+      block:"center"
+    });
   }
-
-  const initData=
-    telegram.initData ||
-    "";
-
-  console.log(
-    "Telegram initData available:",
-    Boolean(initData)
-  );
-
-  return initData;
 }
 
 
-/* =========================
-   PLACE ORDER
-========================= */
+/* PLACE ORDER */
 
 async function placeOrder(){
 
@@ -3041,10 +3136,6 @@ async function placeOrder(){
 
   if(!initData){
 
-    console.error(
-      "Telegram initData is empty."
-    );
-
     showMessage(
       "❌ "+
       TEXT[language].telegramRequired,
@@ -3068,40 +3159,21 @@ async function placeOrder(){
 
     const payload={
 
-      initData:
-        initData,
+      initData:initData,
 
-      pickup:
-        pickup,
+      pickup:pickup,
 
-      items:
-        cart.map(
-          item=>({
-
-            id:
-              item.id,
-
-            qty:
-              item.qty,
-
-            extra_shot:
-              Boolean(
-                item.extra_shot
-              ),
-
-            boba:
-              Boolean(
-                item.boba
-              )
-
-          })
-        )
+      items:cart.map(
+        item=>({
+          id:item.id,
+          qty:item.qty,
+          extra_shot:
+            Boolean(item.extra_shot),
+          boba:
+            Boolean(item.boba)
+        })
+      )
     };
-
-    console.log(
-      "Sending order. initData present:",
-      Boolean(payload.initData)
-    );
 
     const response=
       await fetch(
@@ -3116,40 +3188,16 @@ async function placeOrder(){
 
           cache:"no-store",
 
-          credentials:
-            "same-origin",
+          credentials:"same-origin",
 
-          body:
-            JSON.stringify(
-              payload
-            )
+          body:JSON.stringify(
+            payload
+          )
         }
       );
 
-    const raw=
-      await response.text();
-
-    let result={};
-
-    if(raw){
-
-      try{
-
-        result=
-          JSON.parse(raw);
-
-      }catch(e){
-
-        console.error(
-          "Invalid server response:",
-          raw
-        );
-
-        throw new Error(
-          "Invalid server response."
-        );
-      }
-    }
+    const result=
+      await response.json();
 
     if(!response.ok){
 
@@ -3181,6 +3229,9 @@ async function placeOrder(){
       "success"
     );
 
+    loadOrders();
+    loadProfile();
+
     const telegram=
       getTelegramWebApp();
 
@@ -3201,34 +3252,10 @@ async function placeOrder(){
 
   }catch(error){
 
-    console.error(
-      "Order error:",
-      error
-    );
-
     showMessage(
-      "❌ "+
-      error.message,
+      "❌ "+error.message,
       "error"
     );
-
-    const telegram=
-      getTelegramWebApp();
-
-    try{
-
-      if(
-        telegram &&
-        telegram.HapticFeedback
-      ){
-
-        telegram.HapticFeedback
-          .notificationOccurred(
-            "error"
-          );
-      }
-
-    }catch(e){}
 
   }finally{
 
@@ -3240,22 +3267,555 @@ async function placeOrder(){
 }
 
 
-/* =========================
-   START
-========================= */
+/* ORDERS */
+
+async function loadOrders(){
+
+  const initData=
+    getTelegramInitData();
+
+  if(!initData){
+
+    customerOrders=[];
+
+    renderOrders();
+
+    return;
+  }
+
+  try{
+
+    const response=
+      await fetch(
+        "/api/orders",
+        {
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+
+          cache:"no-store",
+
+          body:JSON.stringify({
+            initData:initData
+          })
+        }
+      );
+
+    const result=
+      await response.json();
+
+    if(!response.ok){
+
+      throw new Error(
+        result.error
+      );
+    }
+
+    customerOrders=
+      result.orders || [];
+
+    renderOrders();
+
+  }catch(error){
+
+    document
+      .getElementById("ordersContent")
+      .innerHTML=`
+        <div class="empty-state">
+          ${escapeHtml(error.message)}
+        </div>
+      `;
+  }
+}
+
+
+function statusText(status){
+
+  if(status==="new"){
+    return TEXT[language].newStatus;
+  }
+
+  if(status==="preparing"){
+    return TEXT[language].preparingStatus;
+  }
+
+  if(status==="ready"){
+    return TEXT[language].readyStatus;
+  }
+
+  if(status==="completed"){
+    return TEXT[language].completedStatus;
+  }
+
+  if(status==="cancelled"){
+    return TEXT[language].cancelledStatus;
+  }
+
+  return status;
+}
+
+
+function renderOrders(){
+
+  const box=
+    document.getElementById(
+      "ordersContent"
+    );
+
+  if(!customerOrders.length){
+
+    box.innerHTML=`
+
+      <div class="empty-state">
+
+        <div class="empty-icon">
+          🧾
+        </div>
+
+        <div class="empty-title">
+          ${TEXT[language].noOrders}
+        </div>
+
+        <div class="empty-copy">
+          ${TEXT[language].noOrdersCopy}
+        </div>
+
+      </div>
+    `;
+
+    return;
+  }
+
+  box.innerHTML=
+    customerOrders.map(order=>{
+
+      const items=
+        Array.isArray(order.items)
+          ? order.items
+          : [];
+
+      return`
+
+        <div class="order-card">
+
+          <div class="order-card-top">
+
+            <div>
+
+              <div class="order-number">
+                Order #${order.id}
+              </div>
+
+              <div class="order-date">
+                ${escapeHtml(order.created)}
+                ·
+                ${escapeHtml(order.pickup)}
+              </div>
+
+            </div>
+
+            <div class="status ${escapeHtml(order.status)}">
+              ${escapeHtml(statusText(order.status))}
+            </div>
+
+          </div>
+
+
+          <div class="order-products">
+
+            ${
+              items.map(item=>{
+
+                const copy=
+                  productText(item.id);
+
+                let extras=[];
+
+                if(item.extra_shot){
+                  extras.push(
+                    TEXT[language].extra
+                  );
+                }
+
+                if(item.boba){
+                  extras.push(
+                    TEXT[language].boba
+                  );
+                }
+
+                return`
+
+                  <div class="order-product-line">
+
+                    <span>
+                      ${item.qty}×
+                      ${escapeHtml(copy[0])}
+                      ${
+                        extras.length
+                          ? `<small> · ${escapeHtml(extras.join(", "))}</small>`
+                          : ""
+                      }
+                    </span>
+
+                    <strong>
+                      ${item.line_total} RSD
+                    </strong>
+
+                  </div>
+                `;
+
+              }).join("")
+            }
+
+          </div>
+
+
+          <div class="order-card-bottom">
+
+            <div class="order-total">
+              ${order.total} RSD
+            </div>
+
+            ${
+              order.status!=="cancelled"
+                ? `
+                  <button
+                    class="reorder"
+                    onclick="reorder(${order.id})"
+                  >
+                    ${TEXT[language].reorder}
+                  </button>
+                `
+                : ""
+            }
+
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+}
+
+
+function reorder(orderId){
+
+  const order=
+    customerOrders.find(
+      item=>item.id===orderId
+    );
+
+  if(!order){
+    return;
+  }
+
+  const newCart=[];
+
+  for(
+    const item
+    of order.items || []
+  ){
+
+    const product=
+      menu.find(
+        p=>p.id===item.id
+      );
+
+    if(!product){
+      continue;
+    }
+
+    const qty=
+      Math.min(
+        10,
+        Number(item.qty) || 1
+      );
+
+    newCart.push({
+      id:item.id,
+      qty:qty,
+      extra_shot:
+        Boolean(item.extra_shot),
+      boba:
+        Boolean(item.boba)
+    });
+  }
+
+  let running=0;
+
+  cart=[];
+
+  for(const item of newCart){
+
+    if(running>=30){
+      break;
+    }
+
+    const allowed=
+      Math.min(
+        item.qty,
+        30-running
+      );
+
+    if(allowed>0){
+
+      cart.push({
+        ...item,
+        qty:allowed
+      });
+
+      running+=allowed;
+    }
+  }
+
+  updateCart();
+
+  showPage("menu");
+
+  document
+    .getElementById("cartSection")
+    .scrollIntoView({
+      behavior:"smooth",
+      block:"center"
+    });
+}
+
+
+/* PROFILE */
+
+async function loadProfile(){
+
+  const initData=
+    getTelegramInitData();
+
+  if(!initData){
+
+    customerProfile=null;
+
+    renderProfile();
+
+    return;
+  }
+
+  try{
+
+    const response=
+      await fetch(
+        "/api/profile",
+        {
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+
+          cache:"no-store",
+
+          body:JSON.stringify({
+            initData:initData
+          })
+        }
+      );
+
+    const result=
+      await response.json();
+
+    if(!response.ok){
+
+      throw new Error(
+        result.error
+      );
+    }
+
+    customerProfile=result;
+
+    renderProfile();
+
+  }catch(error){
+
+    document
+      .getElementById("profileContent")
+      .innerHTML=`
+        <div class="empty-state">
+          ${escapeHtml(error.message)}
+        </div>
+      `;
+  }
+}
+
+
+function renderProfile(){
+
+  const box=
+    document.getElementById(
+      "profileContent"
+    );
+
+  if(!customerProfile){
+
+    box.innerHTML=`
+      <div class="empty-state">
+        ${TEXT[language].telegramRequired}
+      </div>
+    `;
+
+    return;
+  }
+
+  const name=
+    customerProfile.name ||
+    "TAKE AWAY Member";
+
+  const username=
+    customerProfile.username
+      ? "@"+customerProfile.username
+      : "";
+
+  const initial=
+    (
+      customerProfile.first_name ||
+      name ||
+      "T"
+    )
+    .charAt(0)
+    .toUpperCase();
+
+  let favorite=
+    TEXT[language].noFavorite;
+
+  if(
+    customerProfile.favorite &&
+    customerProfile.favorite.id
+  ){
+
+    favorite=
+      productText(
+        customerProfile.favorite.id
+      )[0];
+  }
+
+  box.innerHTML=`
+
+    <div class="profile-card">
+
+      <div class="avatar">
+        ${escapeHtml(initial)}
+      </div>
+
+      <div class="profile-name">
+        ${escapeHtml(name)}
+      </div>
+
+      ${
+        username
+          ? `
+            <div class="profile-user">
+              ${escapeHtml(username)}
+            </div>
+          `
+          : ""
+      }
+
+      <div class="member">
+        ${TEXT[language].member}
+      </div>
+
+    </div>
+
+
+    <div class="stats">
+
+      <div class="stat">
+
+        <div class="stat-number">
+          ${customerProfile.orders || 0}
+        </div>
+
+        <div class="stat-label">
+          ${TEXT[language].totalOrders}
+        </div>
+
+      </div>
+
+
+      <div class="stat">
+
+        <div class="stat-number">
+          ${customerProfile.drinks || 0}
+        </div>
+
+        <div class="stat-label">
+          ${TEXT[language].drinks}
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="profile-info">
+
+      <div class="profile-row">
+
+        <span>
+          ${TEXT[language].favorite}
+        </span>
+
+        <strong>
+          ${escapeHtml(favorite)}
+        </strong>
+
+      </div>
+
+
+      <div class="profile-row">
+
+        <span>
+          ${TEXT[language].memberSince}
+        </span>
+
+        <strong>
+          ${
+            escapeHtml(
+              customerProfile.first_order ||
+              "—"
+            )
+          }
+        </strong>
+
+      </div>
+
+    </div>
+  `;
+}
+
+
+/* START */
 
 document.addEventListener(
   "DOMContentLoaded",
-  function(){
+  async function(){
 
     initializeTelegram();
 
-    loadMenu();
+    await loadMenu();
 
     updateCart();
 
     updatePickupInfo();
 
+    /*
+      Preload account data quietly.
+      This makes Orders/Profile faster
+      when customer opens those tabs.
+    */
+
+    loadOrders();
+    loadProfile();
   }
 );
 
