@@ -1,1082 +1,1208 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-  >
-
-  <meta name="theme-color" content="#17231c">
-
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  <title>Take Away</title>
-
-  <style>
-    :root {
-      --green: #17231c;
-      --green2: #25362a;
-      --cream: #f4f0e7;
-      --card: #fffdf8;
-      --muted: #7b776f;
-      --line: #e5dfd3;
-      --gold: #c9a86a;
-      --soft: #ebe5da;
-      --danger: #8b3b32;
-      --success: #315a39;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    html {
-      background: var(--cream);
-    }
-
-    body {
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Helvetica,
-        Arial,
-        sans-serif;
-
-      background: var(--cream);
-      color: #171a17;
-
-      padding-bottom: 125px;
-    }
-
-    button,
-    select {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-
-    /* =========================================
-       HERO
-    ========================================= */
-
-    .hero {
-      position: relative;
-      overflow: hidden;
-
-      background:
-        radial-gradient(
-          circle at 90% 5%,
-          #344a39 0,
-          transparent 35%
-        ),
-        linear-gradient(
-          145deg,
-          #18241d,
-          #101711
-        );
+<meta charset="UTF-8">
 
-      color: white;
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+>
 
-      padding:
-        30px
-        20px
-        30px;
+<meta name="theme-color" content="#073b28">
 
-      border-radius:
-        0
-        0
-        34px
-        34px;
-    }
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-    .hero::after {
-      content: "";
+<title>TAKE AWAY</title>
 
-      position: absolute;
+<style>
 
-      width: 170px;
-      height: 170px;
+:root{
+  --green:#073b28;
+  --green2:#0b5136;
+  --green3:#0f6543;
+  --cream:#f7f2e8;
+  --white:#ffffff;
+  --gold:#d6b36a;
+  --orange:#d85c17;
+  --line:rgba(255,255,255,.15);
+  --muted:rgba(255,255,255,.65);
+}
 
-      border:
-        1px solid
-        rgba(255,255,255,.07);
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  -webkit-tap-highlight-color:transparent;
+}
 
-      border-radius: 50%;
+html{
+  background:var(--green);
+}
 
-      right: -65px;
-      bottom: -90px;
-    }
+body{
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Arial,
+    sans-serif;
 
-    .brand-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+  background:
+    radial-gradient(circle at 100% 0%, #116342 0%, transparent 30%),
+    radial-gradient(circle at 0% 40%, #0c5237 0%, transparent 35%),
+    linear-gradient(180deg,#063722,#052d1e);
 
-      margin-bottom: 31px;
-    }
+  color:white;
 
-    .brand {
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 3px;
+  min-height:100vh;
 
-      opacity: .72;
-    }
+  padding-bottom:120px;
+}
 
-    .status {
-      display: flex;
-      align-items: center;
+button,
+select{
+  font:inherit;
+}
 
-      gap: 7px;
 
-      padding:
-        7px
-        10px;
+/* =====================================
+   HEADER
+===================================== */
 
-      border-radius: 20px;
+.header{
+  padding:
+    18px
+    17px
+    23px;
 
-      background:
-        rgba(255,255,255,.09);
+  text-align:center;
+}
 
-      font-size: 11px;
+.top{
+  display:flex;
+  justify-content:flex-end;
+  margin-bottom:13px;
+}
 
-      color:
-        rgba(255,255,255,.85);
-    }
 
-    .status-dot {
-      width: 7px;
-      height: 7px;
+/* LANGUAGE */
 
-      border-radius: 50%;
+.languages{
+  display:flex;
+  gap:5px;
 
-      background: #78d18b;
+  padding:4px;
 
-      box-shadow:
-        0 0 0 3px
-        rgba(120,209,139,.12);
-    }
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:15px;
 
-    .hero-label {
-      color: #d9c18f;
+  background:rgba(0,0,0,.13);
+}
 
-      font-size: 11px;
-      font-weight: 800;
+.lang{
+  border:0;
 
-      letter-spacing: 1px;
+  padding:7px 9px;
 
-      margin-bottom: 8px;
-    }
+  border-radius:11px;
 
-    .hero h1 {
-      font-size: 36px;
-      line-height: 1.03;
+  background:transparent;
 
-      letter-spacing: -1.3px;
+  color:white;
 
-      max-width: 320px;
+  font-size:16px;
+}
 
-      margin-bottom: 12px;
-    }
+.lang.active{
+  background:white;
+}
 
-    .hero p {
-      max-width: 300px;
 
-      font-size: 14px;
-      line-height: 1.5;
+/* LOGO */
 
-      color:
-        rgba(255,255,255,.65);
-    }
+.logo-icon{
+  width:67px;
+  height:67px;
 
+  margin:
+    0 auto
+    7px;
 
-    /* =========================================
-       CATEGORY
-    ========================================= */
+  display:flex;
+  align-items:center;
+  justify-content:center;
 
-    .tabs-wrap {
-      position: sticky;
-      top: 0;
+  border:2px solid white;
+  border-radius:20px;
 
-      z-index: 10;
+  font-size:35px;
 
-      padding:
-        15px
-        14px
-        8px;
+  transform:rotate(-2deg);
+}
 
-      background:
-        rgba(244,240,231,.94);
+.logo{
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
 
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
+  font-size:31px;
 
-    .tabs {
-      display: flex;
+  letter-spacing:8px;
 
-      gap: 3px;
+  margin-left:8px;
+}
 
-      padding: 4px;
+.subtitle{
+  margin-top:7px;
 
-      border-radius: 17px;
+  font-family:
+    Georgia,
+    serif;
 
-      background: #e9e3d8;
-    }
+  font-size:11px;
 
-    .tab {
-      flex: 1;
+  letter-spacing:5px;
 
-      border: 0;
+  color:rgba(255,255,255,.75);
+}
 
-      padding:
-        10px
-        7px;
+.tagline{
+  margin-top:17px;
 
-      border-radius: 13px;
+  color:var(--gold);
 
-      background: transparent;
+  font-size:10px;
 
-      color: #77736c;
+  letter-spacing:3px;
+}
 
-      font-size: 13px;
-      font-weight: 750;
-    }
 
-    .tab.active {
-      background: var(--card);
-      color: var(--green);
+/* =====================================
+   TABS
+===================================== */
 
-      box-shadow:
-        0 2px 8px
-        rgba(0,0,0,.06);
-    }
+.tabs-wrap{
+  position:sticky;
+  top:0;
 
+  z-index:20;
 
-    /* =========================================
-       MENU
-    ========================================= */
+  padding:
+    8px
+    12px
+    9px;
 
-    .section {
-      padding:
-        15px
-        15px
-        5px;
-    }
+  background:rgba(5,45,30,.92);
 
-    .section-head {
-      display: flex;
+  backdrop-filter:blur(15px);
+  -webkit-backdrop-filter:blur(15px);
+}
 
-      align-items: flex-end;
-      justify-content: space-between;
+.tabs{
+  display:grid;
 
-      margin-bottom: 14px;
-    }
+  grid-template-columns:
+    repeat(3,1fr);
 
-    .section-eyebrow {
-      color: #a17d43;
+  gap:5px;
 
-      font-size: 10px;
-      font-weight: 800;
+  padding:4px;
 
-      letter-spacing: 1.7px;
+  border-radius:16px;
 
-      text-transform: uppercase;
+  background:rgba(0,0,0,.18);
+}
 
-      margin-bottom: 4px;
-    }
+.tab{
+  min-height:42px;
 
-    .section-title {
-      font-size: 25px;
+  border:0;
+  border-radius:12px;
 
-      letter-spacing: -.7px;
-    }
+  background:transparent;
 
-    .section-count {
-      color: #99958d;
+  color:rgba(255,255,255,.65);
 
-      font-size: 12px;
-    }
+  font-size:13px;
+  font-weight:700;
+}
 
-    .product {
-      background: var(--card);
+.tab.active{
+  background:white;
+  color:var(--green);
+}
 
-      border:
-        1px solid
-        rgba(30,40,32,.04);
 
-      border-radius: 22px;
+/* =====================================
+   MENU
+===================================== */
 
-      padding: 17px;
+.section{
+  padding:
+    18px
+    13px
+    5px;
+}
 
-      margin-bottom: 11px;
+.section-header{
+  display:flex;
+  align-items:center;
+  gap:10px;
 
-      box-shadow:
-        0 7px 22px
-        rgba(42,37,27,.045);
-    }
+  margin:
+    0
+    4px
+    15px;
+}
 
-    .product-top {
-      display: flex;
+.section-icon{
+  color:var(--gold);
+  font-size:22px;
+}
 
-      align-items: center;
+.section-title{
+  font-family:
+    Georgia,
+    serif;
 
-      gap: 13px;
-    }
+  font-size:25px;
 
-    .drink-icon {
-      width: 48px;
-      height: 48px;
+  letter-spacing:3px;
+}
 
-      flex: 0 0 48px;
+.section-line{
+  height:1px;
 
-      display: flex;
+  flex:1;
 
-      align-items: center;
-      justify-content: center;
+  background:
+    rgba(255,255,255,.28);
+}
 
-      border-radius: 15px;
 
-      background: #f0ebe1;
+/* PRODUCT GRID */
 
-      font-size: 22px;
-    }
+.products{
+  display:grid;
 
-    .product-info {
-      flex: 1;
+  grid-template-columns:
+    repeat(2,1fr);
 
-      min-width: 0;
-    }
+  gap:10px;
+}
 
-    .product h3 {
-      font-size: 16px;
 
-      letter-spacing: -.2px;
+/* CARD */
 
-      margin-bottom: 5px;
-    }
+.product{
+  position:relative;
 
-    .price {
-      color: #77736b;
+  overflow:hidden;
 
-      font-size: 13px;
-      font-weight: 550;
-    }
+  min-height:235px;
 
-    .add {
-      width: 43px;
-      height: 43px;
+  padding:
+    13px
+    12px
+    14px;
 
-      flex: 0 0 43px;
+  border:
+    1px solid
+    rgba(255,255,255,.10);
 
-      border: 0;
+  border-radius:22px;
 
-      border-radius: 14px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.09),
+      rgba(255,255,255,.035)
+    );
 
-      background: var(--green);
+  box-shadow:
+    0 10px 30px
+    rgba(0,0,0,.12);
+}
 
-      color: white;
+.product::before{
+  content:"";
 
-      font-size: 24px;
-      font-weight: 300;
+  position:absolute;
 
-      box-shadow:
-        0 5px 12px
-        rgba(23,35,28,.15);
-    }
+  width:100px;
+  height:100px;
 
-    .add:active {
-      transform: scale(.94);
-    }
+  top:-40px;
+  right:-40px;
 
-    .options {
-      display: flex;
+  border-radius:50%;
 
-      flex-wrap: wrap;
+  background:
+    rgba(255,255,255,.035);
+}
 
-      gap: 7px;
 
-      margin-top: 13px;
-    }
+/* DRINK VISUAL */
 
-    .option {
-      padding:
-        7px
-        9px;
+.drink{
+  position:relative;
 
-      border:
-        1px solid
-        var(--line);
+  height:105px;
 
-      border-radius: 10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 
-      background: #faf7f1;
+  margin-bottom:7px;
+}
 
-      color: #716d65;
 
-      font-size: 11px;
-      font-weight: 600;
-    }
+/* CUP */
 
+.cup{
+  position:relative;
 
-    /* =========================================
-       CART ITEMS
-    ========================================= */
+  width:72px;
+  height:88px;
 
-    .cart-items {
-      padding:
-        8px
-        15px
-        0;
-    }
+  border:
+    2px solid
+    rgba(255,255,255,.75);
 
-    .cart-title {
-      font-size: 19px;
+  border-radius:
+    8px
+    8px
+    20px
+    20px;
 
-      margin-bottom: 10px;
-    }
+  overflow:hidden;
 
-    .cart-line {
-      display: flex;
+  box-shadow:
+    0 10px 20px
+    rgba(0,0,0,.18);
+}
 
-      align-items: center;
-      justify-content: space-between;
+.cup::before{
+  content:"";
 
-      gap: 10px;
+  position:absolute;
 
-      padding:
-        12px
-        13px;
+  top:0;
+  left:0;
+  right:0;
 
-      margin-bottom: 7px;
+  height:9px;
 
-      border-radius: 16px;
+  background:
+    rgba(255,255,255,.65);
+}
 
-      background: #e8e2d7;
+.liquid{
+  position:absolute;
 
-      font-size: 13px;
-    }
+  left:3px;
+  right:3px;
+  bottom:3px;
 
-    .cart-line strong {
-      font-size: 13px;
-    }
+  height:72px;
 
-    .extras-text {
-      display: inline-block;
+  border-radius:
+    4px
+    4px
+    15px
+    15px;
+}
 
-      margin-top: 3px;
 
-      color: #77736c;
+/* COLORS */
 
-      font-size: 11px;
-    }
+.espresso .liquid{
+  background:
+    linear-gradient(
+      #7b3515 0 12%,
+      #24120b 12% 100%
+    );
+}
 
-    .cart-right {
-      display: flex;
+.americano .liquid{
+  background:
+    linear-gradient(
+      #75401f,
+      #180e09
+    );
+}
 
-      align-items: center;
+.milkcoffee .liquid{
+  background:
+    linear-gradient(
+      #f4e4ca 0 28%,
+      #c56c34 28% 100%
+    );
+}
 
-      gap: 6px;
+.icedcoffee .liquid{
+  background:
+    linear-gradient(
+      #eee0c5 0 20%,
+      #7d351b 20% 100%
+    );
+}
 
-      white-space: nowrap;
+.thai .liquid{
+  background:
+    linear-gradient(
+      #f5e4c8 0 22%,
+      #ef731c 22% 100%
+    );
+}
 
-      font-weight: 650;
-    }
+.greentea .liquid{
+  background:
+    linear-gradient(
+      #f2e7c8 0 22%,
+      #789537 22% 100%
+    );
+}
 
-    .remove {
-      width: 29px;
-      height: 29px;
+/* BLACK TEA WITH LIME */
 
-      border: 0;
+.limetea .liquid{
+  background:
+    linear-gradient(
+      #5b2d13,
+      #24140d
+    );
+}
 
-      border-radius: 9px;
+.bumble .liquid{
+  background:
+    linear-gradient(
+      #4d2416 0 48%,
+      #e98218 48% 100%
+    );
+}
 
-      background:
-        rgba(255,255,255,.55);
+.tonic .liquid{
+  background:
+    linear-gradient(
+      #542a17 0 38%,
+      #d9b55b 38% 55%,
+      #e7e1cc 55% 100%
+    );
+}
 
-      font-size: 17px;
-    }
 
+/* ICE */
 
-    /* =========================================
-       PICKUP
-    ========================================= */
+.ice{
+  position:absolute;
 
-    .pickup {
-      margin:
-        13px
-        15px
-        20px;
+  top:27px;
+  left:14px;
 
-      padding: 18px;
+  color:rgba(255,255,255,.7);
 
-      border-radius: 22px;
+  font-size:22px;
+  letter-spacing:-7px;
+}
 
-      background: var(--card);
 
-      box-shadow:
-        0 7px 22px
-        rgba(42,37,27,.04);
-    }
+/* LIME */
 
-    .pickup-top {
-      display: flex;
+.lime{
+  position:absolute;
 
-      align-items: center;
+  width:31px;
+  height:31px;
 
-      gap: 11px;
+  right:-11px;
+  top:15px;
 
-      margin-bottom: 16px;
-    }
+  border:
+    3px solid
+    #b9d83f;
 
-    .clock {
-      width: 42px;
-      height: 42px;
+  border-radius:50%;
 
-      flex: 0 0 42px;
+  background:
+    radial-gradient(
+      circle,
+      #e9f3a6 0 20%,
+      #9fc735 21% 28%,
+      #e9f3a6 29% 47%,
+      #a4cb38 48%
+    );
 
-      display: flex;
+  z-index:4;
+}
 
-      align-items: center;
-      justify-content: center;
 
-      border-radius: 13px;
+/* COFFEE CUP */
 
-      background: #eee8dc;
+.coffee-cup{
+  position:relative;
 
-      font-size: 19px;
-    }
+  width:78px;
+  height:55px;
 
-    .pickup h2 {
-      font-size: 17px;
+  border-radius:
+    6px
+    6px
+    28px
+    28px;
 
-      margin-bottom: 3px;
-    }
+  background:white;
 
-    .pickup-description {
-      color: #817d75;
+  box-shadow:
+    0 11px 20px
+    rgba(0,0,0,.2);
+}
 
-      font-size: 12px;
-    }
+.coffee-cup::before{
+  content:"";
 
+  position:absolute;
 
-    /* ASAP / EXACT */
+  left:7px;
+  right:7px;
+  top:6px;
 
-    .pickup-modes {
-      display: grid;
+  height:15px;
 
-      grid-template-columns:
-        1fr
-        1fr;
+  border-radius:50%;
 
-      gap: 7px;
+  background:#512412;
+}
 
-      margin-bottom: 11px;
-    }
+.coffee-cup::after{
+  content:"";
 
-    .pickup-mode {
-      min-height: 44px;
+  position:absolute;
 
-      border:
-        1px solid
-        var(--line);
+  right:-18px;
+  top:12px;
 
-      border-radius: 13px;
+  width:23px;
+  height:25px;
 
-      background: #faf8f3;
+  border:
+    6px solid white;
 
-      color: #66625b;
+  border-left:0;
 
-      font-size: 13px;
-      font-weight: 750;
-    }
+  border-radius:
+    0
+    18px
+    18px
+    0;
+}
 
-    .pickup-mode.active {
-      background: var(--green);
 
-      color: white;
+/* PRODUCT TEXT */
 
-      border-color: var(--green);
-    }
+.product-name{
+  min-height:37px;
 
+  text-align:center;
 
-    /* QUICK TIME */
+  font-family:
+    Georgia,
+    serif;
 
-    .times {
-      display: grid;
+  font-size:15px;
 
-      grid-template-columns:
-        repeat(4, 1fr);
+  line-height:1.15;
+}
 
-      gap: 7px;
-    }
+.product-desc{
+  min-height:30px;
 
-    .time {
-      min-height: 42px;
+  margin-top:3px;
 
-      border:
-        1px solid
-        var(--line);
+  text-align:center;
 
-      border-radius: 12px;
+  color:rgba(255,255,255,.58);
 
-      background: #faf8f3;
+  font-size:10px;
 
-      color: #55524c;
+  line-height:1.25;
+}
 
-      font-size: 12px;
-      font-weight: 750;
-    }
+.product-price{
+  margin-top:8px;
 
-    .time.selected {
-      background: var(--green);
+  text-align:center;
 
-      color: white;
+  font-family:
+    Georgia,
+    serif;
 
-      border-color: var(--green);
-    }
+  font-size:19px;
+}
 
+.add{
+  width:100%;
 
-    /* EXACT TIME */
+  margin-top:10px;
 
-    .exact-box {
-      display: none;
-    }
+  border:0;
 
-    .exact-box.visible {
-      display: block;
-    }
+  padding:
+    10px
+    7px;
 
-    .exact-label {
-      display: block;
+  border-radius:12px;
 
-      margin-bottom: 7px;
+  background:white;
 
-      color: #77736c;
+  color:var(--green);
 
-      font-size: 11px;
-      font-weight: 650;
-    }
+  font-size:12px;
+  font-weight:800;
+}
 
-    .exact-select {
-      width: 100%;
-      min-height: 49px;
 
-      border:
-        1px solid
-        var(--line);
+/* =====================================
+   PICKUP
+===================================== */
 
-      border-radius: 14px;
+.pickup{
+  margin:
+    18px
+    13px
+    12px;
 
-      padding:
-        0
-        14px;
+  padding:17px;
 
-      outline: none;
+  border:
+    1px solid
+    rgba(255,255,255,.12);
 
-      background: #faf8f3;
+  border-radius:22px;
 
-      color: var(--green);
+  background:
+    rgba(255,255,255,.07);
+}
 
-      font-size: 16px;
-      font-weight: 700;
-    }
+.pickup h2{
+  font-family:
+    Georgia,
+    serif;
 
-    .pickup-info {
-      margin-top: 12px;
+  font-size:19px;
 
-      padding:
-        10px
-        11px;
+  margin-bottom:5px;
+}
 
-      border-radius: 11px;
+.pickup-subtitle{
+  color:var(--muted);
 
-      background: #f1ece3;
+  font-size:11px;
 
-      color: #69655e;
+  margin-bottom:14px;
+}
 
-      font-size: 12px;
-      line-height: 1.35;
-    }
+.pickup-modes{
+  display:grid;
 
-    .pickup-info strong {
-      color: var(--green);
-    }
+  grid-template-columns:
+    1fr
+    1fr;
 
+  gap:6px;
 
-    /* =========================================
-       MESSAGE
-    ========================================= */
+  margin-bottom:9px;
+}
 
-    .message {
-      display: none;
+.pickup-mode,
+.time{
+  border:
+    1px solid
+    rgba(255,255,255,.15);
 
-      margin:
-        12px
-        15px
-        20px;
+  border-radius:12px;
 
-      padding: 14px;
+  background:
+    rgba(0,0,0,.15);
 
-      border-radius: 16px;
+  color:white;
 
-      font-size: 13px;
-      line-height: 1.5;
+  font-size:12px;
+  font-weight:700;
+}
 
-      white-space: pre-line;
-    }
+.pickup-mode{
+  height:43px;
+}
 
-    .message.success {
-      display: block;
+.pickup-mode.active,
+.time.selected{
+  background:white;
+  color:var(--green);
+}
 
-      background: #e2eee1;
+.times{
+  display:grid;
 
-      color: #244b2b;
-    }
+  grid-template-columns:
+    repeat(4,1fr);
 
-    .message.error {
-      display: block;
+  gap:6px;
+}
 
-      background: #f2e3df;
+.time{
+  height:40px;
+}
 
-      color: #77352e;
-    }
+.exact-box{
+  display:none;
+}
 
+.exact-box.show{
+  display:block;
+}
 
-    /* =========================================
-       BOTTOM CART
-    ========================================= */
+.exact-select{
+  width:100%;
+  height:47px;
 
-    .bottom-cart {
-      position: fixed;
+  border:0;
+  border-radius:12px;
 
-      left: 10px;
-      right: 10px;
-      bottom: 10px;
+  padding:
+    0
+    13px;
 
-      z-index: 20;
+  background:white;
 
-      display: flex;
+  color:var(--green);
 
-      align-items: center;
-      justify-content: space-between;
+  font-weight:700;
+}
 
-      gap: 10px;
+.pickup-info{
+  margin-top:10px;
 
-      padding:
-        11px
-        12px
-        11px
-        17px;
+  color:rgba(255,255,255,.7);
 
-      border-radius: 22px;
+  font-size:11px;
+}
 
-      background:
-        rgba(22,34,27,.97);
 
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
+/* =====================================
+   CART
+===================================== */
 
-      color: white;
+.cart-section{
+  margin:
+    12px
+    13px;
 
-      box-shadow:
-        0 13px 35px
-        rgba(0,0,0,.28);
-    }
+  display:none;
+}
 
-    .bottom-cart small {
-      display: block;
+.cart-section.show{
+  display:block;
+}
 
-      margin-bottom: 3px;
+.cart-title{
+  font-family:
+    Georgia,
+    serif;
 
-      color:
-        rgba(255,255,255,.55);
+  font-size:20px;
 
-      font-size: 11px;
-    }
+  margin-bottom:9px;
+}
 
-    .total {
-      font-size: 20px;
-      font-weight: 800;
+.cart-item{
+  display:flex;
 
-      letter-spacing: -.3px;
-    }
+  justify-content:space-between;
+  align-items:center;
 
-    .order {
-      min-width: 132px;
+  gap:8px;
 
-      border: 0;
+  margin-bottom:6px;
 
-      padding:
-        13px
-        15px;
+  padding:11px;
 
-      border-radius: 14px;
+  border-radius:13px;
 
-      background: var(--cream);
+  background:
+    rgba(255,255,255,.08);
 
-      color: var(--green);
+  font-size:12px;
+}
 
-      font-size: 13px;
-      font-weight: 800;
-    }
+.cart-extra{
+  margin-top:3px;
 
-    .order:active {
-      transform: scale(.97);
-    }
+  color:rgba(255,255,255,.55);
 
-    .order:disabled {
-      opacity: .55;
-    }
+  font-size:10px;
+}
 
+.remove{
+  width:28px;
+  height:28px;
 
-    /* =========================================
-       ADD-ON MODAL
-    ========================================= */
+  border:0;
+  border-radius:8px;
 
-    .modal-bg {
-      position: fixed;
+  background:
+    rgba(255,255,255,.15);
 
-      inset: 0;
+  color:white;
 
-      z-index: 50;
+  font-size:17px;
+}
 
-      display: none;
 
-      align-items: flex-end;
+/* =====================================
+   BOTTOM
+===================================== */
 
-      background:
-        rgba(8,12,9,.48);
+.bottom{
+  position:fixed;
 
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-    }
+  z-index:30;
 
-    .modal-bg.open {
-      display: flex;
-    }
+  left:9px;
+  right:9px;
+  bottom:9px;
 
-    .modal {
-      width: 100%;
+  display:flex;
 
-      padding:
-        22px
-        17px
-        28px;
+  align-items:center;
+  justify-content:space-between;
 
-      border-radius:
-        28px
-        28px
-        0
-        0;
+  gap:10px;
 
-      background: var(--cream);
+  padding:
+    10px
+    10px
+    10px
+    15px;
 
-      animation:
-        slideUp
-        .22s
-        ease;
-    }
+  border:
+    1px solid
+    rgba(255,255,255,.14);
 
-    @keyframes slideUp {
-      from {
-        transform: translateY(100%);
-      }
+  border-radius:20px;
 
-      to {
-        transform: translateY(0);
-      }
-    }
+  background:
+    rgba(3,28,19,.96);
 
-    .modal-bar {
-      width: 38px;
-      height: 4px;
+  backdrop-filter:blur(15px);
 
-      margin:
-        -8px
-        auto
-        19px;
+  box-shadow:
+    0 15px 35px
+    rgba(0,0,0,.35);
+}
 
-      border-radius: 10px;
+.bottom small{
+  display:block;
 
-      background: #cbc6bc;
-    }
+  color:rgba(255,255,255,.55);
 
-    .modal h2 {
-      margin-bottom: 5px;
+  font-size:10px;
+}
 
-      font-size: 23px;
+.total{
+  margin-top:2px;
 
-      letter-spacing: -.5px;
-    }
+  font-size:19px;
+  font-weight:800;
+}
 
-    .modal-price {
-      margin-bottom: 18px;
+.order{
+  min-width:135px;
 
-      color: var(--muted);
+  border:0;
 
-      font-size: 13px;
-    }
+  padding:
+    13px
+    12px;
 
-    .addon {
-      width: 100%;
+  border-radius:13px;
 
-      display: flex;
+  background:white;
 
-      align-items: center;
-      justify-content: space-between;
+  color:var(--green);
 
-      margin-bottom: 8px;
+  font-size:12px;
+  font-weight:800;
+}
 
-      padding: 14px;
+.order:disabled{
+  opacity:.5;
+}
 
-      border:
-        1px solid
-        var(--line);
 
-      border-radius: 15px;
+/* =====================================
+   MODAL
+===================================== */
 
-      background: var(--card);
-    }
+.modal-bg{
+  position:fixed;
 
-    .addon.selected {
-      border-color: var(--green);
+  inset:0;
 
-      background: #e7ece7;
-    }
+  z-index:50;
 
-    .addon strong {
-      font-size: 14px;
-    }
+  display:none;
 
-    .addon span {
-      color: #777;
+  align-items:flex-end;
 
-      font-size: 12px;
-    }
+  background:
+    rgba(0,0,0,.55);
 
-    .modal-add {
-      width: 100%;
+  backdrop-filter:blur(4px);
+}
 
-      margin-top: 11px;
+.modal-bg.open{
+  display:flex;
+}
 
-      border: 0;
+.modal{
+  width:100%;
 
-      border-radius: 16px;
+  padding:
+    21px
+    17px
+    28px;
 
-      padding: 15px;
+  border-radius:
+    25px
+    25px
+    0
+    0;
 
-      background: var(--green);
+  background:#f6f0e5;
 
-      color: white;
+  color:#13291f;
+}
 
-      font-size: 15px;
-      font-weight: 800;
-    }
+.modal h2{
+  font-family:
+    Georgia,
+    serif;
 
+  font-size:23px;
+}
 
-    /* =========================================
-       SMALL SCREEN
-    ========================================= */
+.modal-price{
+  margin:
+    4px
+    0
+    16px;
 
-    @media (max-width: 350px) {
+  color:#777;
+}
 
-      .hero h1 {
-        font-size: 32px;
-      }
+.addon{
+  width:100%;
 
-      .times {
-        grid-template-columns:
-          repeat(2, 1fr);
-      }
+  display:flex;
 
-      .order {
-        min-width: 115px;
-      }
-    }
-  </style>
+  justify-content:space-between;
+
+  padding:14px;
+
+  margin-bottom:7px;
+
+  border:
+    1px solid
+    #ddd4c5;
+
+  border-radius:13px;
+
+  background:white;
+
+  color:#183326;
+}
+
+.addon.selected{
+  border:
+    2px solid
+    var(--green);
+
+  background:#e5eee8;
+}
+
+.modal-add{
+  width:100%;
+
+  margin-top:8px;
+
+  border:0;
+
+  padding:14px;
+
+  border-radius:13px;
+
+  background:var(--green);
+
+  color:white;
+
+  font-weight:800;
+}
+
+
+/* =====================================
+   MESSAGE
+===================================== */
+
+.message{
+  display:none;
+
+  margin:
+    12px
+    13px;
+
+  padding:13px;
+
+  border-radius:14px;
+
+  font-size:12px;
+  line-height:1.5;
+
+  white-space:pre-line;
+}
+
+.message.error{
+  display:block;
+
+  background:#f4ded9;
+  color:#702d27;
+}
+
+.message.success{
+  display:block;
+
+  background:#dcecdc;
+  color:#244c2b;
+}
+
+
+/* =====================================
+   DESKTOP / BIG TELEGRAM
+===================================== */
+
+@media(min-width:600px){
+
+  body{
+    max-width:600px;
+    margin:auto;
+  }
+
+  .bottom{
+    max-width:580px;
+    margin:auto;
+  }
+
+}
+
+</style>
 </head>
 
 
 <body>
 
 
-<!-- =========================================
-     HERO
-========================================= -->
+<!-- =====================================
+     HEADER
+===================================== -->
 
-<div class="hero">
+<header class="header">
 
-  <div class="brand-row">
+  <div class="top">
 
-    <div class="brand">
-      TAKE AWAY
-    </div>
+    <div class="languages">
 
-    <div class="status">
+      <button
+        id="lang-en"
+        class="lang active"
+        onclick="changeLanguage('en')"
+      >
+        🇬🇧
+      </button>
 
-      <span class="status-dot"></span>
+      <button
+        id="lang-sr"
+        class="lang"
+        onclick="changeLanguage('sr')"
+      >
+        🇷🇸
+      </button>
 
-      Open today
+      <button
+        id="lang-ru"
+        class="lang"
+        onclick="changeLanguage('ru')"
+      >
+        🇷🇺
+      </button>
 
     </div>
 
   </div>
 
 
-  <div class="hero-label">
-    BELGRADE · SAVSKI TRG
+  <div class="logo-icon">
+    ☕
   </div>
 
 
-  <h1>
-    Good coffee.<br>
-    Ready when you are.
-  </h1>
+  <div class="logo">
+    TAKE AWAY
+  </div>
 
 
-  <p>
-    Order ahead and skip the wait.
-    Pay when you collect.
-  </p>
-
-</div>
+  <div class="subtitle">
+    THAI TEA & COFFEE
+  </div>
 
 
-<!-- =========================================
-     CATEGORIES
-========================================= -->
+  <div class="tagline">
+    SAME GOOD ENERGY DAILY
+  </div>
+
+</header>
+
+
+<!-- =====================================
+     TABS
+===================================== -->
 
 <div class="tabs-wrap">
 
   <div class="tabs">
 
     <button
+      id="tab-tea"
       class="tab active"
-      onclick="showCategory('coffee', this)"
-    >
-      Coffee
-    </button>
-
-    <button
-      class="tab"
-      onclick="showCategory('tea', this)"
+      onclick="showCategory('tea',this)"
     >
       Thai Tea
     </button>
 
+
     <button
+      id="tab-coffee"
       class="tab"
-      onclick="showCategory('special', this)"
+      onclick="showCategory('coffee',this)"
+    >
+      Coffee
+    </button>
+
+
+    <button
+      id="tab-special"
+      class="tab"
+      onclick="showCategory('special',this)"
     >
       Specials
     </button>
@@ -1086,47 +1212,47 @@
 </div>
 
 
-<!-- MENU -->
-
 <div id="menu"></div>
 
 
-<!-- CART ITEMS -->
+<!-- =====================================
+     CART
+===================================== -->
 
 <div
-  id="cartItems"
-  class="cart-items"
-></div>
+  id="cartSection"
+  class="cart-section"
+>
 
-
-<!-- =========================================
-     PICKUP
-========================================= -->
-
-<div class="pickup">
-
-  <div class="pickup-top">
-
-    <div class="clock">
-      ◷
-    </div>
-
-    <div>
-
-      <h2>
-        When do you want it?
-      </h2>
-
-      <p class="pickup-description">
-        Choose when we'll have your order ready.
-      </p>
-
-    </div>
-
+  <div
+    id="cartTitle"
+    class="cart-title"
+  >
+    Your order
   </div>
 
+  <div id="cartItems"></div>
 
-  <!-- ASAP / EXACT -->
+</div>
+
+
+<!-- =====================================
+     PICKUP
+===================================== -->
+
+<section class="pickup">
+
+  <h2 id="pickupTitle">
+    Pickup time
+  </h2>
+
+  <div
+    id="pickupSubtitle"
+    class="pickup-subtitle"
+  >
+    When should we prepare your order?
+  </div>
+
 
   <div class="pickup-modes">
 
@@ -1149,8 +1275,6 @@
   </div>
 
 
-  <!-- ASAP TIMES -->
-
   <div
     id="asapTimes"
     class="times"
@@ -1158,28 +1282,28 @@
 
     <button
       class="time selected"
-      onclick="chooseTime(this, 10)"
+      onclick="chooseTime(this,10)"
     >
       10 min
     </button>
 
     <button
       class="time"
-      onclick="chooseTime(this, 15)"
+      onclick="chooseTime(this,15)"
     >
       15 min
     </button>
 
     <button
       class="time"
-      onclick="chooseTime(this, 20)"
+      onclick="chooseTime(this,20)"
     >
       20 min
     </button>
 
     <button
       class="time"
-      onclick="chooseTime(this, 30)"
+      onclick="chooseTime(this,30)"
     >
       30 min
     </button>
@@ -1187,19 +1311,10 @@
   </div>
 
 
-  <!-- EXACT TIME -->
-
   <div
-    id="exactTimeBox"
+    id="exactBox"
     class="exact-box"
   >
-
-    <label
-      for="exactTime"
-      class="exact-label"
-    >
-      Select pickup time
-    </label>
 
     <select
       id="exactTime"
@@ -1215,14 +1330,10 @@
     id="pickupInfo"
     class="pickup-info"
   >
-    Ready in approximately
-    <strong>10 minutes</strong>
   </div>
 
-</div>
+</section>
 
-
-<!-- MESSAGE -->
 
 <div
   id="message"
@@ -1230,11 +1341,11 @@
 ></div>
 
 
-<!-- =========================================
-     BOTTOM CART
-========================================= -->
+<!-- =====================================
+     BOTTOM
+===================================== -->
 
-<div class="bottom-cart">
+<div class="bottom">
 
   <div>
 
@@ -1263,19 +1374,17 @@
 </div>
 
 
-<!-- =========================================
-     PRODUCT MODAL
-========================================= -->
+<!-- =====================================
+     ADDONS MODAL
+===================================== -->
 
 <div
   id="modalBg"
   class="modal-bg"
-  onclick="closeModalBackground(event)"
+  onclick="closeModal(event)"
 >
 
   <div class="modal">
-
-    <div class="modal-bar"></div>
 
     <h2 id="modalName"></h2>
 
@@ -1286,13 +1395,13 @@
 
 
     <button
-      id="extraShotOption"
+      id="extraOption"
       class="addon"
       onclick="toggleAddon('extra')"
     >
 
-      <strong>
-        Extra espresso shot
+      <strong id="extraText">
+        Extra shot
       </strong>
 
       <span>
@@ -1308,8 +1417,8 @@
       onclick="toggleAddon('boba')"
     >
 
-      <strong>
-        Add boba
+      <strong id="bobaText">
+        Boba
       </strong>
 
       <span>
@@ -1320,6 +1429,7 @@
 
 
     <button
+      id="modalAdd"
       class="modal-add"
       onclick="confirmAdd()"
     >
@@ -1333,26 +1443,340 @@
 
 <script>
 
-/* =========================================
+/* =====================================
    TELEGRAM
-========================================= */
+===================================== */
 
-const tg = window.Telegram.WebApp;
+const tg =
+  window.Telegram.WebApp;
 
 tg.ready();
 tg.expand();
 
 
-/* =========================================
+/* =====================================
+   LANGUAGES
+===================================== */
+
+const TEXT = {
+
+  en:{
+    tea:"Thai Tea",
+    coffee:"Coffee",
+    specials:"Specials",
+
+    teaTitle:"TEA",
+    coffeeTitle:"COFFEE",
+    specialTitle:"SPECIALS",
+
+    add:"ADD",
+
+    cart:"Your order",
+
+    pickup:"Pickup time",
+
+    pickupSub:
+      "When should we prepare your order?",
+
+    asap:"ASAP",
+
+    choose:"Choose time",
+
+    ready:"Ready in approximately",
+
+    minutes:"minutes",
+
+    pickupAt:"Pickup today at",
+
+    items:"items",
+    item:"item",
+
+    order:"Place order →",
+
+    sending:"Sending...",
+
+    extra:"Extra espresso shot",
+
+    boba:"Add boba",
+
+    addOrder:"Add to order",
+
+    empty:
+      "Please add a drink first.",
+
+    choosePickup:
+      "Please choose a pickup time.",
+
+    success:"Order confirmed!",
+
+    pay:
+      "Pay when you collect.",
+
+    noTimes:
+      "No pickup times available today."
+  },
+
+
+  sr:{
+    tea:"Tajlandski čaj",
+    coffee:"Kafa",
+    specials:"Specijaliteti",
+
+    teaTitle:"ČAJ",
+    coffeeTitle:"KAFA",
+    specialTitle:"SPECIJALITETI",
+
+    add:"DODAJ",
+
+    cart:"Vaša porudžbina",
+
+    pickup:"Vreme preuzimanja",
+
+    pickupSub:
+      "Kada želite da porudžbina bude spremna?",
+
+    asap:"Što pre",
+
+    choose:"Izaberi vreme",
+
+    ready:"Spremno za približno",
+
+    minutes:"minuta",
+
+    pickupAt:"Preuzimanje danas u",
+
+    items:"stavki",
+    item:"stavka",
+
+    order:"Poruči →",
+
+    sending:"Šaljem...",
+
+    extra:"Dodatni espresso",
+
+    boba:"Dodaj boba kuglice",
+
+    addOrder:"Dodaj u porudžbinu",
+
+    empty:
+      "Prvo dodajte piće.",
+
+    choosePickup:
+      "Izaberite vreme preuzimanja.",
+
+    success:"Porudžbina potvrđena!",
+
+    pay:
+      "Plaćanje prilikom preuzimanja.",
+
+    noTimes:
+      "Danas nema dostupnih termina."
+  },
+
+
+  ru:{
+    tea:"Тайский чай",
+    coffee:"Кофе",
+    specials:"Спешл",
+
+    teaTitle:"ЧАЙ",
+    coffeeTitle:"КОФЕ",
+    specialTitle:"СПЕШЛ",
+
+    add:"ДОБАВИТЬ",
+
+    cart:"Ваш заказ",
+
+    pickup:"Время получения",
+
+    pickupSub:
+      "Когда приготовить ваш заказ?",
+
+    asap:"Как можно скорее",
+
+    choose:"Выбрать время",
+
+    ready:"Будет готово примерно через",
+
+    minutes:"мин.",
+
+    pickupAt:"Получение сегодня в",
+
+    items:"позиций",
+    item:"позиция",
+
+    order:"Заказать →",
+
+    sending:"Отправляем...",
+
+    extra:"Дополнительный эспрессо",
+
+    boba:"Добавить боба",
+
+    addOrder:"Добавить в заказ",
+
+    empty:
+      "Сначала добавьте напиток.",
+
+    choosePickup:
+      "Выберите время получения.",
+
+    success:"Заказ подтвержден!",
+
+    pay:
+      "Оплата при получении.",
+
+    noTimes:
+      "На сегодня свободного времени нет."
+  }
+
+};
+
+
+const PRODUCT_TEXT = {
+
+  espresso:{
+    en:["Espresso","Classic espresso"],
+    sr:["Espresso","Klasični espresso"],
+    ru:["Эспрессо","Классический эспрессо"]
+  },
+
+  americano:{
+    en:["Americano","Espresso + hot water"],
+    sr:["Amerikano","Espresso + topla voda"],
+    ru:["Американо","Эспрессо + горячая вода"]
+  },
+
+  cappuccino:{
+    en:["Cappuccino","Espresso + milk foam"],
+    sr:["Kapućino","Espresso + mlečna pena"],
+    ru:["Капучино","Эспрессо + молочная пена"]
+  },
+
+  latte:{
+    en:["Latte","Espresso + milk"],
+    sr:["Latte","Espresso + mleko"],
+    ru:["Латте","Эспрессо + молоко"]
+  },
+
+  flatwhite:{
+    en:["Flat White","Double espresso + milk"],
+    sr:["Flat White","Dupli espresso + mleko"],
+    ru:["Флэт уайт","Двойной эспрессо + молоко"]
+  },
+
+  icedlatte:{
+    en:["Iced Latte","Espresso + milk + ice"],
+    sr:["Ledeni Latte","Espresso + mleko + led"],
+    ru:["Айс латте","Эспрессо + молоко + лёд"]
+  },
+
+  thai:{
+    en:[
+      "Classic Thai Milk Tea",
+      "Thai tea + milk + ice"
+    ],
+
+    sr:[
+      "Klasični tajski mlečni čaj",
+      "Tajski čaj + mleko + led"
+    ],
+
+    ru:[
+      "Классический тайский чай",
+      "Тайский чай + молоко + лёд"
+    ]
+  },
+
+  green:{
+    en:[
+      "Thai Green Milk Tea",
+      "Thai green tea + milk + ice"
+    ],
+
+    sr:[
+      "Tajski zeleni mlečni čaj",
+      "Zeleni čaj + mleko + led"
+    ],
+
+    ru:[
+      "Тайский зелёный чай",
+      "Зелёный чай + молоко + лёд"
+    ]
+  },
+
+  lime:{
+    en:[
+      "Thai Iced Lime Tea",
+      "Black tea + fresh lime + ice"
+    ],
+
+    sr:[
+      "Tajski ledeni čaj sa limetom",
+      "Crni čaj + sveža limeta + led"
+    ],
+
+    ru:[
+      "Тайский чай с лаймом",
+      "Чёрный чай + свежий лайм + лёд"
+    ]
+  },
+
+  tonic:{
+    en:[
+      "Tonic Coffee",
+      "Espresso + tonic + ice"
+    ],
+
+    sr:[
+      "Tonic Coffee",
+      "Espresso + tonik + led"
+    ],
+
+    ru:[
+      "Тоник кофе",
+      "Эспрессо + тоник + лёд"
+    ]
+  },
+
+  bumble:{
+    en:[
+      "Bumble Coffee",
+      "Espresso + orange juice + ice"
+    ],
+
+    sr:[
+      "Bumble Coffee",
+      "Espresso + sok od pomorandže + led"
+    ],
+
+    ru:[
+      "Бамбл кофе",
+      "Эспрессо + апельсиновый сок + лёд"
+    ]
+  }
+
+};
+
+
+let language = "en";
+
+
+/* =====================================
    STATE
-========================================= */
+===================================== */
 
 let menu = [];
 
 let cart = [];
 
-let category = "coffee";
+let category = "tea";
 
+let selectedProduct = null;
+
+let modalExtra = false;
+
+let modalBoba = false;
 
 let pickupMode = "asap";
 
@@ -1361,31 +1785,122 @@ let pickupMinutes = 10;
 let exactPickupDate = null;
 
 
-let selectedProduct = null;
+/* =====================================
+   CHANGE LANGUAGE
+===================================== */
 
-let modalExtra = false;
+function changeLanguage(lang){
 
-let modalBoba = false;
+  language = lang;
 
 
-/* =========================================
-   MENU
-========================================= */
+  document
+    .querySelectorAll(".lang")
+    .forEach(
+      x =>
+        x.classList.remove("active")
+    );
 
-async function loadMenu() {
 
-  try {
+  document
+    .getElementById("lang-"+lang)
+    .classList.add("active");
+
+
+  document.getElementById(
+    "tab-tea"
+  ).innerText =
+    TEXT[lang].tea;
+
+
+  document.getElementById(
+    "tab-coffee"
+  ).innerText =
+    TEXT[lang].coffee;
+
+
+  document.getElementById(
+    "tab-special"
+  ).innerText =
+    TEXT[lang].specials;
+
+
+  document.getElementById(
+    "cartTitle"
+  ).innerText =
+    TEXT[lang].cart;
+
+
+  document.getElementById(
+    "pickupTitle"
+  ).innerText =
+    TEXT[lang].pickup;
+
+
+  document.getElementById(
+    "pickupSubtitle"
+  ).innerText =
+    TEXT[lang].pickupSub;
+
+
+  document.getElementById(
+    "asapMode"
+  ).innerText =
+    TEXT[lang].asap;
+
+
+  document.getElementById(
+    "exactMode"
+  ).innerText =
+    TEXT[lang].choose;
+
+
+  document.getElementById(
+    "orderButton"
+  ).innerText =
+    TEXT[lang].order;
+
+
+  document.getElementById(
+    "extraText"
+  ).innerText =
+    TEXT[lang].extra;
+
+
+  document.getElementById(
+    "bobaText"
+  ).innerText =
+    TEXT[lang].boba;
+
+
+  document.getElementById(
+    "modalAdd"
+  ).innerText =
+    TEXT[lang].addOrder;
+
+
+  renderMenu();
+
+  updateCart();
+
+  updatePickupInfo();
+}
+
+
+/* =====================================
+   LOAD MENU
+===================================== */
+
+async function loadMenu(){
+
+  try{
 
     const response =
       await fetch("/api/menu");
 
 
-    if (!response.ok) {
-
-      throw new Error(
-        "Could not load menu."
-      );
-
+    if(!response.ok){
+      throw new Error();
     }
 
 
@@ -1396,25 +1911,23 @@ async function loadMenu() {
     renderMenu();
 
 
-  } catch (error) {
+  }catch(error){
 
     showMessage(
-      "Could not load the menu.",
+      "Could not load menu.",
       "error"
     );
 
   }
+
 }
 
 
-/* =========================================
+/* =====================================
    CATEGORY
-========================================= */
+===================================== */
 
-function showCategory(
-  cat,
-  button
-) {
+function showCategory(cat,button){
 
   category = cat;
 
@@ -1423,183 +1936,143 @@ function showCategory(
     .querySelectorAll(".tab")
     .forEach(
       x =>
-        x.classList.remove(
-          "active"
-        )
+        x.classList.remove("active")
     );
 
 
-  button.classList.add(
-    "active"
-  );
+  button.classList.add("active");
 
 
   renderMenu();
 }
 
 
-/* =========================================
-   DRINK ICON
-========================================= */
+/* =====================================
+   PRODUCT TEXT
+===================================== */
 
-function drinkIcon(product) {
+function productText(id){
 
-  const name =
-    product.name.toLowerCase();
+  if(
+    PRODUCT_TEXT[id]
+    &&
+    PRODUCT_TEXT[id][language]
+  ){
 
-
-  if (
-    name.includes("tea")
-  ) {
-
-    return "🧋";
+    return PRODUCT_TEXT[id][language];
 
   }
 
 
-  if (
-    name.includes("iced") ||
-    name.includes("bumble") ||
-    name.includes("tonic")
-  ) {
-
-    return "🥤";
-
-  }
+  const p =
+    menu.find(x => x.id === id);
 
 
-  return "☕";
+  return [
+    p ? p.name : id,
+    ""
+  ];
 }
 
 
-/* =========================================
-   RENDER MENU
-========================================= */
+/* =====================================
+   DRINK TYPE
+===================================== */
 
-function renderMenu() {
+function drinkClass(id){
 
-  const box =
-    document.getElementById(
-      "menu"
-    );
+  if(id === "espresso")
+    return "espresso";
 
+  if(id === "americano")
+    return "americano";
 
-  const names = {
+  if(
+    id === "cappuccino" ||
+    id === "latte" ||
+    id === "flatwhite"
+  )
+    return "milkcoffee";
 
-    coffee: "Coffee",
+  if(id === "icedlatte")
+    return "icedcoffee";
 
-    tea: "Thai Tea",
+  if(id === "thai")
+    return "thai";
 
-    special: "Specials"
+  if(id === "green")
+    return "greentea";
 
-  };
+  if(id === "lime")
+    return "limetea";
 
+  if(id === "bumble")
+    return "bumble";
 
-  const products =
-    menu.filter(
-      x =>
-        x.category === category
-    );
+  if(id === "tonic")
+    return "tonic";
 
-
-  box.innerHTML = `
-
-    <div class="section">
-
-      <div class="section-head">
-
-        <div>
-
-          <div class="section-eyebrow">
-            Made fresh
-          </div>
-
-          <h2 class="section-title">
-            ${names[category]}
-          </h2>
-
-        </div>
+  return "americano";
+}
 
 
-        <div class="section-count">
+/* =====================================
+   DRINK VISUAL
+===================================== */
 
-          ${products.length}
-          ${
-            products.length === 1
-            ? "drink"
-            : "drinks"
-          }
+function drinkVisual(id){
 
-        </div>
+  /*
+    Hot milk coffees get
+    a ceramic cup.
+  */
+
+  if(
+    id === "cappuccino" ||
+    id === "flatwhite"
+  ){
+
+    return `
+      <div class="drink">
+        <div class="coffee-cup"></div>
+      </div>
+    `;
+
+  }
+
+
+  const lime =
+    id === "lime"
+      ? `<span class="lime"></span>`
+      : "";
+
+
+  const ice =
+    [
+      "icedlatte",
+      "thai",
+      "green",
+      "lime",
+      "bumble",
+      "tonic"
+    ].includes(id)
+      ? `<span class="ice">◇ ◇</span>`
+      : "";
+
+
+  return `
+
+    <div class="drink">
+
+      <div class="cup ${drinkClass(id)}">
+
+        <div class="liquid"></div>
+
+        ${ice}
+
+        ${lime}
 
       </div>
-
-
-      ${products.map(p => `
-
-        <div class="product">
-
-          <div class="product-top">
-
-
-            <div class="drink-icon">
-
-              ${drinkIcon(p)}
-
-            </div>
-
-
-            <div class="product-info">
-
-              <h3>
-                ${p.name}
-              </h3>
-
-              <div class="price">
-                ${p.price} RSD
-              </div>
-
-            </div>
-
-
-            <button
-              class="add"
-              onclick="openProduct('${p.id}')"
-            >
-              +
-            </button>
-
-          </div>
-
-
-          <div class="options">
-
-            ${
-              canExtraShot(p.id)
-              ? `
-                <span class="option">
-                  Extra shot +150
-                </span>
-              `
-              : ""
-            }
-
-
-            ${
-              p.boba
-              ? `
-                <span class="option">
-                  Boba +100
-                </span>
-              `
-              : ""
-            }
-
-          </div>
-
-        </div>
-
-      `).join("")}
 
     </div>
 
@@ -1607,11 +2080,11 @@ function renderMenu() {
 }
 
 
-/* =========================================
-   EXTRAS
-========================================= */
+/* =====================================
+   EXTRA SHOT
+===================================== */
 
-function canExtraShot(id) {
+function canExtra(id){
 
   return [
     "espresso",
@@ -1626,11 +2099,122 @@ function canExtraShot(id) {
 }
 
 
-/* =========================================
-   PRODUCT MODAL
-========================================= */
+/* =====================================
+   RENDER MENU
+===================================== */
 
-function openProduct(id) {
+function renderMenu(){
+
+  const filtered =
+    menu.filter(
+      x => x.category === category
+    );
+
+
+  let title =
+    TEXT[language].coffeeTitle;
+
+
+  let icon = "☕";
+
+
+  if(category === "tea"){
+
+    title =
+      TEXT[language].teaTitle;
+
+    icon = "🍃";
+
+  }
+
+
+  if(category === "special"){
+
+    title =
+      TEXT[language].specialTitle;
+
+    icon = "✦";
+
+  }
+
+
+  document.getElementById(
+    "menu"
+  ).innerHTML = `
+
+    <section class="section">
+
+      <div class="section-header">
+
+        <span class="section-icon">
+          ${icon}
+        </span>
+
+        <span class="section-title">
+          ${title}
+        </span>
+
+        <span class="section-line"></span>
+
+      </div>
+
+
+      <div class="products">
+
+        ${filtered.map(p=>{
+
+          const text =
+            productText(p.id);
+
+
+          return `
+
+            <article class="product">
+
+              ${drinkVisual(p.id)}
+
+
+              <div class="product-name">
+                ${text[0]}
+              </div>
+
+
+              <div class="product-desc">
+                ${text[1]}
+              </div>
+
+
+              <div class="product-price">
+                ${p.price} RSD
+              </div>
+
+
+              <button
+                class="add"
+                onclick="openProduct('${p.id}')"
+              >
+                + ${TEXT[language].add}
+              </button>
+
+            </article>
+
+          `;
+
+        }).join("")}
+
+      </div>
+
+    </section>
+
+  `;
+}
+
+
+/* =====================================
+   OPEN PRODUCT
+===================================== */
+
+function openProduct(id){
 
   selectedProduct =
     menu.find(
@@ -1638,36 +2222,34 @@ function openProduct(id) {
     );
 
 
-  if (!selectedProduct) {
+  if(!selectedProduct)
     return;
-  }
 
 
   modalExtra = false;
-
   modalBoba = false;
 
 
-  document
-    .getElementById(
-      "modalName"
-    )
-    .innerText =
-      selectedProduct.name;
+  const text =
+    productText(id);
 
 
-  document
-    .getElementById(
-      "modalPrice"
-    )
-    .innerText =
-      selectedProduct.price
-      + " RSD";
+  document.getElementById(
+    "modalName"
+  ).innerText =
+    text[0];
+
+
+  document.getElementById(
+    "modalPrice"
+  ).innerText =
+    selectedProduct.price
+    + " RSD";
 
 
   const extra =
     document.getElementById(
-      "extraShotOption"
+      "extraOption"
     );
 
 
@@ -1678,9 +2260,7 @@ function openProduct(id) {
 
 
   extra.style.display =
-    canExtraShot(
-      selectedProduct.id
-    )
+    canExtra(id)
       ? "flex"
       : "none";
 
@@ -1702,17 +2282,15 @@ function openProduct(id) {
 
 
   /*
-    No extras available:
+    If no extras exist,
     add immediately.
   */
 
-  if (
-    !canExtraShot(
-      selectedProduct.id
-    )
+  if(
+    !canExtra(id)
     &&
     !selectedProduct.boba
-  ) {
+  ){
 
     confirmAdd();
 
@@ -1721,96 +2299,85 @@ function openProduct(id) {
   }
 
 
-  document
-    .getElementById(
-      "modalBg"
-    )
-    .classList.add(
-      "open"
-    );
+  document.getElementById(
+    "modalBg"
+  ).classList.add("open");
 }
 
 
-/* =========================================
-   TOGGLE EXTRA
-========================================= */
+/* =====================================
+   ADDONS
+===================================== */
 
-function toggleAddon(type) {
+function toggleAddon(type){
 
-  if (type === "extra") {
+  if(type === "extra"){
 
     modalExtra =
       !modalExtra;
 
 
-    document
-      .getElementById(
-        "extraShotOption"
-      )
-      .classList.toggle(
-        "selected",
-        modalExtra
-      );
+    document.getElementById(
+      "extraOption"
+    ).classList.toggle(
+      "selected",
+      modalExtra
+    );
 
   }
 
 
-  if (type === "boba") {
+  if(type === "boba"){
 
     modalBoba =
       !modalBoba;
 
 
-    document
-      .getElementById(
-        "bobaOption"
-      )
-      .classList.toggle(
-        "selected",
-        modalBoba
-      );
+    document.getElementById(
+      "bobaOption"
+    ).classList.toggle(
+      "selected",
+      modalBoba
+    );
 
   }
+
 }
 
 
-/* =========================================
+/* =====================================
    CONFIRM ADD
-========================================= */
+===================================== */
 
-function confirmAdd() {
+function confirmAdd(){
 
-  if (!selectedProduct) {
+  if(!selectedProduct)
     return;
-  }
 
 
   const existing =
     cart.find(
       x =>
-        x.id ===
-          selectedProduct.id
+        x.id === selectedProduct.id
         &&
-        x.extra_shot ===
-          modalExtra
+        x.extra_shot === modalExtra
         &&
-        x.boba ===
-          modalBoba
+        x.boba === modalBoba
     );
 
 
-  if (existing) {
+  if(existing){
 
     existing.qty++;
 
-  } else {
+  }else{
 
     cart.push({
 
       id:
         selectedProduct.id,
 
-      qty: 1,
+      qty:1,
 
       extra_shot:
         modalExtra,
@@ -1823,150 +2390,121 @@ function confirmAdd() {
   }
 
 
-  document
-    .getElementById(
-      "modalBg"
-    )
-    .classList.remove(
-      "open"
-    );
-
-
-  try {
-
-    tg.HapticFeedback
-      .impactOccurred(
-        "light"
-      );
-
-  } catch (e) {}
+  document.getElementById(
+    "modalBg"
+  ).classList.remove("open");
 
 
   updateCart();
+
+
+  try{
+
+    tg.HapticFeedback
+      .impactOccurred("light");
+
+  }catch(e){}
+
 }
 
 
-/* =========================================
+/* =====================================
    CLOSE MODAL
-========================================= */
+===================================== */
 
-function closeModalBackground(
-  event
-) {
+function closeModal(event){
 
-  if (
-    event.target.id ===
-    "modalBg"
-  ) {
+  if(
+    event.target.id === "modalBg"
+  ){
 
-    document
-      .getElementById(
-        "modalBg"
-      )
-      .classList.remove(
-        "open"
-      );
+    document.getElementById(
+      "modalBg"
+    ).classList.remove("open");
 
   }
+
 }
 
 
-/* =========================================
-   PRICE
-========================================= */
+/* =====================================
+   ITEM PRICE
+===================================== */
 
-function itemPrice(item) {
+function itemPrice(item){
 
   const product =
     menu.find(
-      x =>
-        x.id === item.id
+      x => x.id === item.id
     );
 
 
-  if (!product) {
+  if(!product)
     return 0;
-  }
 
 
   let price =
     Number(product.price);
 
 
-  if (
-    item.extra_shot
-  ) {
-
+  if(item.extra_shot)
     price += 150;
 
-  }
 
-
-  if (
-    item.boba
-  ) {
-
+  if(item.boba)
     price += 100;
 
-  }
 
-
-  return (
-    price * item.qty
-  );
+  return price * item.qty;
 }
 
 
-/* =========================================
+/* =====================================
    CART
-========================================= */
+===================================== */
 
-function updateCart() {
+function updateCart(){
 
   const count =
     cart.reduce(
-      (
-        sum,
-        item
-      ) =>
-        sum + item.qty,
+      (sum,x)=>sum+x.qty,
       0
     );
 
 
   const total =
     cart.reduce(
-      (
-        sum,
-        item
-      ) =>
-        sum
-        + itemPrice(item),
+      (sum,x)=>
+        sum+itemPrice(x),
       0
     );
 
 
-  document
-    .getElementById(
-      "itemCount"
-    )
-    .innerText =
-      count
-      +
-      (
-        count === 1
-          ? " item"
-          : " items"
-      );
+  document.getElementById(
+    "itemCount"
+  ).innerText =
+
+    count
+    +
+    " "
+    +
+    (
+      count === 1
+      ? TEXT[language].item
+      : TEXT[language].items
+    );
 
 
-  document
-    .getElementById(
-      "total"
-    )
-    .innerText =
-      total
-      + " RSD";
+  document.getElementById(
+    "total"
+  ).innerText =
+    total+" RSD";
+
+
+  const section =
+    document.getElementById(
+      "cartSection"
+    );
 
 
   const box =
@@ -1975,102 +2513,85 @@ function updateCart() {
     );
 
 
-  if (!cart.length) {
+  if(!cart.length){
 
-    box.innerHTML = "";
+    section.classList.remove(
+      "show"
+    );
+
+    box.innerHTML="";
 
     return;
 
   }
 
 
-  box.innerHTML = `
-
-    <h3 class="cart-title">
-      Your order
-    </h3>
+  section.classList.add(
+    "show"
+  );
 
 
-    ${cart.map(
-      (
-        item,
-        index
-      ) => {
+  box.innerHTML =
+    cart.map(
+      (item,index)=>{
 
         const p =
           menu.find(
-            x =>
-              x.id ===
-              item.id
+            x=>x.id===item.id
           );
 
 
-        if (!p) {
+        if(!p)
           return "";
-        }
 
 
-        let extras = [];
+        const text =
+          productText(item.id);
 
 
-        if (
-          item.extra_shot
-        ) {
+        let extras=[];
 
+
+        if(item.extra_shot)
           extras.push(
-            "extra shot"
+            TEXT[language].extra
           );
 
-        }
 
-
-        if (
-          item.boba
-        ) {
-
+        if(item.boba)
           extras.push(
-            "boba"
+            TEXT[language].boba
           );
-
-        }
 
 
         return `
 
-          <div class="cart-line">
+          <div class="cart-item">
 
             <div>
 
               <strong>
-
                 ${item.qty}×
-                ${p.name}
-
+                ${text[0]}
               </strong>
-
 
               ${
                 extras.length
-                  ? `
-                    <br>
-
-                    <span
-                      class="extras-text"
-                    >
-                      ${extras.join(" · ")}
-                    </span>
-                  `
-                  : ""
+                ? `
+                  <div class="cart-extra">
+                    ${extras.join(" · ")}
+                  </div>
+                `
+                : ""
               }
 
             </div>
 
 
-            <div class="cart-right">
+            <div>
 
               ${itemPrice(item)}
               RSD
-
 
               <button
                 class="remove"
@@ -2086,30 +2607,24 @@ function updateCart() {
         `;
 
       }
-    ).join("")}
+    ).join("");
 
-  `;
 }
 
 
-/* =========================================
-   REMOVE ITEM
-========================================= */
+/* =====================================
+   REMOVE
+===================================== */
 
-function removeItem(index) {
+function removeItem(index){
 
-  if (
-    cart[index].qty > 1
-  ) {
+  if(cart[index].qty>1){
 
     cart[index].qty--;
 
-  } else {
+  }else{
 
-    cart.splice(
-      index,
-      1
-    );
+    cart.splice(index,1);
 
   }
 
@@ -2118,121 +2633,83 @@ function removeItem(index) {
 }
 
 
-/* =========================================
+/* =====================================
    PICKUP MODE
-========================================= */
+===================================== */
 
-function setPickupMode(mode) {
+function setPickupMode(mode){
 
-  pickupMode = mode;
+  pickupMode=mode;
 
 
-  const asapButton =
+  const asap =
     document.getElementById(
       "asapMode"
     );
 
 
-  const exactButton =
+  const exact =
     document.getElementById(
       "exactMode"
     );
 
 
-  const asapTimes =
+  const times =
     document.getElementById(
       "asapTimes"
     );
 
 
-  const exactBox =
+  const box =
     document.getElementById(
-      "exactTimeBox"
+      "exactBox"
     );
 
 
-  if (
-    mode === "asap"
-  ) {
+  if(mode==="asap"){
 
-    asapButton
-      .classList
-      .add("active");
+    asap.classList.add("active");
 
+    exact.classList.remove("active");
 
-    exactButton
-      .classList
-      .remove("active");
+    times.style.display="grid";
 
+    box.classList.remove("show");
 
-    asapTimes.style.display =
-      "grid";
+    exactPickupDate=null;
 
+  }else{
 
-    exactBox
-      .classList
-      .remove("visible");
+    exact.classList.add("active");
 
+    asap.classList.remove("active");
 
-    exactPickupDate = null;
+    times.style.display="none";
 
-
-    updatePickupInfo();
-
-  } else {
-
-    exactButton
-      .classList
-      .add("active");
-
-
-    asapButton
-      .classList
-      .remove("active");
-
-
-    asapTimes.style.display =
-      "none";
-
-
-    exactBox
-      .classList
-      .add("visible");
-
+    box.classList.add("show");
 
     generateExactTimes();
 
   }
 
 
-  try {
-
-    tg.HapticFeedback
-      .selectionChanged();
-
-  } catch (e) {}
+  updatePickupInfo();
 }
 
 
-/* =========================================
-   ASAP TIME
-========================================= */
+/* =====================================
+   ASAP
+===================================== */
 
-function chooseTime(
-  button,
-  minutes
-) {
+function chooseTime(button,minutes){
 
-  pickupMode = "asap";
+  pickupMode="asap";
 
-  pickupMinutes =
-    minutes;
+  pickupMinutes=minutes;
 
 
   document
-    .querySelectorAll(
-      "#asapTimes .time"
-    )
+    .querySelectorAll(".time")
     .forEach(
       x =>
         x.classList.remove(
@@ -2241,28 +2718,20 @@ function chooseTime(
     );
 
 
-  button
-    .classList
-    .add("selected");
+  button.classList.add(
+    "selected"
+  );
 
 
   updatePickupInfo();
-
-
-  try {
-
-    tg.HapticFeedback
-      .selectionChanged();
-
-  } catch (e) {}
 }
 
 
-/* =========================================
-   GENERATE EXACT TIMES
-========================================= */
+/* =====================================
+   EXACT TIMES
+===================================== */
 
-function generateExactTimes() {
+function generateExactTimes(){
 
   const select =
     document.getElementById(
@@ -2270,96 +2739,42 @@ function generateExactTimes() {
     );
 
 
-  select.innerHTML = "";
+  select.innerHTML="";
 
 
   const now =
     new Date();
 
 
-  /*
-    At least 10 minutes
-    preparation time.
-  */
-
-  const minimum =
+  let first =
     new Date(
       now.getTime()
       +
-      10
-      *
-      60
-      *
-      1000
+      10*60*1000
     );
 
 
-  /*
-    Round UP to next
-    15-minute interval.
-
-    Example:
-    14:07 + 10 min = 14:17
-    First available = 14:30
-  */
-
-  let first =
-    new Date(minimum);
-
-
-  first.setSeconds(
-    0,
-    0
-  );
+  first.setSeconds(0,0);
 
 
   const remainder =
-    first.getMinutes()
-    % 15;
+    first.getMinutes()%15;
 
 
-  if (
-    remainder !== 0
-  ) {
+  if(remainder!==0){
 
     first.setMinutes(
       first.getMinutes()
       +
-      (
-        15
-        -
-        remainder
-      )
+      (15-remainder)
     );
 
   }
 
 
   /*
-    Closing time:
-    17:00
-
-    Last available slot:
-    16:45
-  */
-
-  const closing =
-    new Date();
-
-
-  closing.setHours(
-    17,
-    0,
-    0,
-    0
-  );
-
-
-  /*
-    If the app is somehow
-    opened before 07:00,
-    first pickup cannot be
-    before 07:00.
+    Current configured hours:
+    07:00 - 17:00
   */
 
   const opening =
@@ -2367,16 +2782,20 @@ function generateExactTimes() {
 
 
   opening.setHours(
-    7,
-    0,
-    0,
-    0
+    7,0,0,0
   );
 
 
-  if (
-    first < opening
-  ) {
+  const closing =
+    new Date();
+
+
+  closing.setHours(
+    17,0,0,0
+  );
+
+
+  if(first<opening){
 
     first =
       new Date(opening);
@@ -2388,9 +2807,7 @@ function generateExactTimes() {
     new Date(first);
 
 
-  while (
-    current < closing
-  ) {
+  while(current<closing){
 
     const option =
       document.createElement(
@@ -2398,24 +2815,16 @@ function generateExactTimes() {
       );
 
 
-    const hours =
+    const h =
       String(
         current.getHours()
-      )
-      .padStart(
-        2,
-        "0"
-      );
+      ).padStart(2,"0");
 
 
-    const minutes =
+    const m =
       String(
         current.getMinutes()
-      )
-      .padStart(
-        2,
-        "0"
-      );
+      ).padStart(2,"0");
 
 
     option.value =
@@ -2423,11 +2832,7 @@ function generateExactTimes() {
 
 
     option.textContent =
-      hours
-      +
-      ":"
-      +
-      minutes;
+      h+":"+m;
 
 
     select.appendChild(
@@ -2439,19 +2844,13 @@ function generateExactTimes() {
       new Date(
         current.getTime()
         +
-        15
-        *
-        60
-        *
-        1000
+        15*60*1000
       );
 
   }
 
 
-  if (
-    !select.options.length
-  ) {
+  if(!select.options.length){
 
     const option =
       document.createElement(
@@ -2459,11 +2858,10 @@ function generateExactTimes() {
       );
 
 
-    option.value = "";
-
+    option.value="";
 
     option.textContent =
-      "No pickup times available today";
+      TEXT[language].noTimes;
 
 
     select.appendChild(
@@ -2471,10 +2869,9 @@ function generateExactTimes() {
     );
 
 
-    exactPickupDate =
-      null;
+    exactPickupDate=null;
 
-  } else {
+  }else{
 
     exactPickupDate =
       new Date(
@@ -2488,52 +2885,33 @@ function generateExactTimes() {
 }
 
 
-/* =========================================
-   EXACT TIME CHANGE
-========================================= */
+/* =====================================
+   EXACT SELECT
+===================================== */
 
-function chooseExactTime() {
+function chooseExactTime(){
 
-  const select =
+  const value =
     document.getElementById(
       "exactTime"
-    );
+    ).value;
 
 
-  if (
-    !select.value
-  ) {
-
-    exactPickupDate =
-      null;
-
-  } else {
-
-    exactPickupDate =
-      new Date(
-        select.value
-      );
-
-  }
+  exactPickupDate =
+    value
+      ? new Date(value)
+      : null;
 
 
   updatePickupInfo();
-
-
-  try {
-
-    tg.HapticFeedback
-      .selectionChanged();
-
-  } catch (e) {}
 }
 
 
-/* =========================================
+/* =====================================
    PICKUP INFO
-========================================= */
+===================================== */
 
-function updatePickupInfo() {
+function updatePickupInfo(){
 
   const info =
     document.getElementById(
@@ -2541,175 +2919,119 @@ function updatePickupInfo() {
     );
 
 
-  if (!info) {
-    return;
-  }
+  if(pickupMode==="asap"){
 
-
-  if (
-    pickupMode === "asap"
-  ) {
-
-    info.innerHTML =
-      "Ready in approximately "
-      +
-      "<strong>"
-      +
-      pickupMinutes
-      +
-      " minutes"
-      +
-      "</strong>";
+    info.innerText =
+      TEXT[language].ready
+      +" "
+      +pickupMinutes
+      +" "
+      +TEXT[language].minutes;
 
     return;
 
   }
 
 
-  if (
-    !exactPickupDate
-  ) {
+  if(!exactPickupDate){
 
-    info.innerHTML =
-      "<strong>"
-      +
-      "No pickup times available today"
-      +
-      "</strong>";
+    info.innerText =
+      TEXT[language].noTimes;
 
     return;
 
   }
 
 
-  const hours =
+  const h =
     String(
-      exactPickupDate
-        .getHours()
-    )
-    .padStart(
-      2,
-      "0"
-    );
+      exactPickupDate.getHours()
+    ).padStart(2,"0");
 
 
-  const minutes =
+  const m =
     String(
-      exactPickupDate
-        .getMinutes()
-    )
-    .padStart(
-      2,
-      "0"
-    );
+      exactPickupDate.getMinutes()
+    ).padStart(2,"0");
 
 
-  info.innerHTML =
-    "Pickup today at "
-    +
-    "<strong>"
-    +
-    hours
-    +
-    ":"
-    +
-    minutes
-    +
-    "</strong>";
+  info.innerText =
+    TEXT[language].pickupAt
+    +" "
+    +h
+    +":"
+    +m;
+
 }
 
 
-/* =========================================
-   PICKUP ISO FOR SERVER
-========================================= */
+/* =====================================
+   PICKUP ISO
+===================================== */
 
-function pickupISO() {
+function pickupISO(){
 
-  if (
-    pickupMode === "exact"
-  ) {
+  if(pickupMode==="exact"){
 
-    if (
-      !exactPickupDate
-    ) {
-
+    if(!exactPickupDate)
       return null;
 
-    }
 
-
-    return (
-      exactPickupDate
-        .toISOString()
-    );
+    return exactPickupDate
+      .toISOString();
 
   }
 
 
-  const date =
-    new Date(
-      Date.now()
-      +
-      pickupMinutes
-      *
-      60
-      *
-      1000
-    );
+  return new Date(
+    Date.now()
+    +
+    pickupMinutes*60*1000
+  ).toISOString();
 
-
-  return date.toISOString();
 }
 
 
-/* =========================================
+/* =====================================
    MESSAGE
-========================================= */
+===================================== */
 
-function showMessage(
-  text,
-  type = "error"
-) {
+function showMessage(text,type){
 
-  const el =
+  const box =
     document.getElementById(
       "message"
     );
 
 
-  el.className =
-    "message "
-    +
-    type;
+  box.className =
+    "message "+type;
 
 
-  el.innerText =
-    text;
+  box.innerText=text;
 
 
-  el.style.display =
-    "block";
+  box.style.display="block";
 
 
-  el.scrollIntoView({
-    behavior: "smooth",
-    block: "center"
+  box.scrollIntoView({
+    behavior:"smooth",
+    block:"center"
   });
+
 }
 
 
-/* =========================================
+/* =====================================
    PLACE ORDER
-========================================= */
+===================================== */
 
-async function placeOrder() {
+async function placeOrder(){
 
-  if (
-    !cart.length
-  ) {
+  if(!cart.length){
 
     showMessage(
-      "Please add a drink first.",
+      TEXT[language].empty,
       "error"
     );
 
@@ -2722,12 +3044,10 @@ async function placeOrder() {
     pickupISO();
 
 
-  if (
-    !pickup
-  ) {
+  if(!pickup){
 
     showMessage(
-      "Please choose a pickup time.",
+      TEXT[language].choosePickup,
       "error"
     );
 
@@ -2742,213 +3062,153 @@ async function placeOrder() {
     );
 
 
-  button.disabled =
-    true;
-
+  button.disabled=true;
 
   button.innerText =
-    "Sending...";
+    TEXT[language].sending;
 
 
-  /*
-    Hide previous message
-  */
-
-  const message =
-    document.getElementById(
-      "message"
-    );
-
-
-  message.style.display =
-    "none";
-
-
-  try {
-
-    const payload = {
-
-      initData:
-        tg.initData || "",
-
-      pickup:
-        pickup,
-
-      items:
-        cart
-
-    };
-
+  try{
 
     const response =
       await fetch(
         "/api/order",
         {
 
-          method: "POST",
+          method:"POST",
 
-          headers: {
+          headers:{
             "Content-Type":
               "application/json"
           },
 
-          body:
-            JSON.stringify(
-              payload
-            )
+          body:JSON.stringify({
+
+            /*
+              VERY IMPORTANT:
+              Telegram initData is still
+              sent to app.py.
+            */
+
+            initData:
+              tg.initData || "",
+
+            pickup:
+              pickup,
+
+            items:
+              cart
+
+          })
 
         }
       );
 
 
-    /*
-      Read text first so that
-      server errors don't break
-      JSON parsing.
-    */
-
     const raw =
       await response.text();
 
 
-    let result = {};
+    let result={};
 
 
-    try {
+    try{
 
       result =
         raw
-          ? JSON.parse(raw)
-          : {};
+        ? JSON.parse(raw)
+        : {};
 
-    } catch (e) {
+    }catch(e){
 
       throw new Error(
-        "Server returned an invalid response."
+        "Invalid server response."
       );
 
     }
 
 
-    if (
-      !response.ok
-    ) {
+    if(!response.ok){
 
       throw new Error(
         result.error
         ||
-        (
-          "Order failed ("
-          +
-          response.status
-          +
-          ")."
-        )
+        "Order failed."
       );
 
     }
 
 
-    /*
-      SUCCESS
-    */
-
-    cart = [];
-
+    cart=[];
 
     updateCart();
 
 
     showMessage(
 
-      "✅ Order #"
-      +
-      result.order_id
-      +
-      " confirmed!"
-      +
-      "\n\n"
-      +
-      "Pickup: "
-      +
-      result.pickup
-      +
-      "\n"
-      +
-      "Total: "
-      +
-      result.total
-      +
-      " RSD"
-      +
-      "\n\n"
-      +
-      "Pay when you collect. ☕",
+      "✅ "
+      +TEXT[language].success
+      +"\n\n"
+      +"#"
+      +result.order_id
+      +"\n"
+      +TEXT[language].pickup
+      +": "
+      +result.pickup
+      +"\n"
+      +result.total
+      +" RSD"
+      +"\n\n"
+      +TEXT[language].pay,
 
       "success"
 
     );
 
 
-    try {
+    try{
 
       tg.HapticFeedback
         .notificationOccurred(
           "success"
         );
 
-    } catch (e) {}
+    }catch(e){}
 
 
-  } catch (error) {
-
-    console.error(
-      "Order error:",
-      error
-    );
-
+  }catch(error){
 
     showMessage(
-
-      "❌ "
-      +
-      (
-        error.message
-        ||
-        "Could not place order."
-      ),
-
+      "❌ "+error.message,
       "error"
-
     );
 
 
-    try {
+    try{
 
       tg.HapticFeedback
         .notificationOccurred(
           "error"
         );
 
-    } catch (e) {}
+    }catch(e){}
 
 
-  } finally {
+  }finally{
 
-    button.disabled =
-      false;
-
+    button.disabled=false;
 
     button.innerText =
-      "Place order →";
+      TEXT[language].order;
 
   }
+
 }
 
 
-/* =========================================
+/* =====================================
    START
-========================================= */
+===================================== */
 
 loadMenu();
 
