@@ -28,7 +28,9 @@ URL = os.environ.get(
     "https://takeaway-telegram.onrender.com"
 ).rstrip("/")
 
-ADMIN = os.environ.get("ADMIN_CHAT_ID", "")
+# Telegram group where you + barista receive orders
+ADMIN = os.environ.get("ORDER_CHAT_ID", "")
+
 DB = os.environ.get("DATABASE_PATH", "orders.db")
 WEBHOOK_SECRET = os.environ.get("WEBHOOK_SECRET", "")
 
@@ -177,7 +179,6 @@ def get_db():
     )
 
     connection.row_factory = sqlite3.Row
-
     return connection
 
 
@@ -378,8 +379,7 @@ def order_keyboard():
         "inline_keyboard": [
             [
                 {
-                    "text":
-                        "☕ ORDER / PORUČI",
+                    "text": "☕ ORDER / PORUČI",
                     "web_app": {
                         "url": URL
                     }
@@ -399,18 +399,14 @@ def new_order_keyboard(order_id):
         "inline_keyboard": [
             [
                 {
-                    "text":
-                        "✅ ACCEPT ORDER",
-                    "callback_data":
-                        f"accept:{order_id}"
+                    "text": "✅ ACCEPT ORDER",
+                    "callback_data": f"accept:{order_id}"
                 }
             ],
             [
                 {
-                    "text":
-                        "❌ CANCEL",
-                    "callback_data":
-                        f"cancel:{order_id}"
+                    "text": "❌ CANCEL",
+                    "callback_data": f"cancel:{order_id}"
                 }
             ]
         ]
@@ -423,18 +419,14 @@ def preparing_keyboard(order_id):
         "inline_keyboard": [
             [
                 {
-                    "text":
-                        "☕ ORDER READY",
-                    "callback_data":
-                        f"ready:{order_id}"
+                    "text": "☕ ORDER READY",
+                    "callback_data": f"ready:{order_id}"
                 }
             ],
             [
                 {
-                    "text":
-                        "❌ CANCEL",
-                    "callback_data":
-                        f"cancel:{order_id}"
+                    "text": "❌ CANCEL",
+                    "callback_data": f"cancel:{order_id}"
                 }
             ]
         ]
@@ -447,10 +439,8 @@ def ready_keyboard(order_id):
         "inline_keyboard": [
             [
                 {
-                    "text":
-                        "✅ PICKED UP",
-                    "callback_data":
-                        f"picked:{order_id}"
+                    "text": "✅ PICKED UP",
+                    "callback_data": f"picked:{order_id}"
                 }
             ]
         ]
@@ -483,48 +473,28 @@ def parse_order_details(order):
 
 def order_details_text(order):
 
-    details = parse_order_details(
-        order
-    )
+    details = parse_order_details(order)
 
     lines = []
 
     for item in details:
 
-        qty = item.get(
-            "qty",
-            1
-        )
-
-        name = item.get(
-            "name",
-            "Drink"
-        )
-
-        line_total = item.get(
-            "line_total",
-            0
-        )
+        qty = item.get("qty", 1)
+        name = item.get("name", "Drink")
+        line_total = item.get("line_total", 0)
 
         extras = []
 
         if item.get("extra_shot"):
-            extras.append(
-                "extra espresso shot"
-            )
+            extras.append("extra espresso shot")
 
         if item.get("boba"):
-            extras.append(
-                "boba"
-            )
+            extras.append("boba")
 
         extra_text = ""
 
         if extras:
-            extra_text = (
-                " + " +
-                ", ".join(extras)
-            )
+            extra_text = " + " + ", ".join(extras)
 
         lines.append(
             f"{qty}x "
@@ -546,13 +516,9 @@ def pickup_time_text(order):
 
         if pickup.tzinfo is not None:
 
-            pickup = pickup.astimezone(
-                TZ
-            )
+            pickup = pickup.astimezone(TZ)
 
-        return pickup.strftime(
-            "%H:%M"
-        )
+        return pickup.strftime("%H:%M")
 
     except Exception:
 
@@ -574,9 +540,7 @@ def created_date_text(order):
 
         if created.tzinfo is not None:
 
-            created = created.astimezone(
-                TZ
-            )
+            created = created.astimezone(TZ)
 
         return created.strftime(
             "%d.%m.%Y"
@@ -590,32 +554,17 @@ def created_date_text(order):
 def serialize_order(order):
 
     return {
-        "id":
-            order["id"],
-
-        "pickup":
-            pickup_time_text(order),
-
-        "pickup_iso":
-            order.get("pickup"),
-
-        "created":
-            created_date_text(order),
-
-        "created_iso":
-            order.get("created"),
-
-        "total":
-            order.get("total", 0),
-
-        "status":
-            order.get(
-                "status",
-                "new"
-            ),
-
-        "items":
-            parse_order_details(order)
+        "id": order["id"],
+        "pickup": pickup_time_text(order),
+        "pickup_iso": order.get("pickup"),
+        "created": created_date_text(order),
+        "created_iso": order.get("created"),
+        "total": order.get("total", 0),
+        "status": order.get(
+            "status",
+            "new"
+        ),
+        "items": parse_order_details(order)
     }
 
 
@@ -628,78 +577,45 @@ def barista_order_text(
     status
 ):
 
-    pickup_text = pickup_time_text(
-        order
-    )
-
-    details_text = order_details_text(
-        order
-    )
+    pickup_text = pickup_time_text(order)
+    details_text = order_details_text(order)
 
     if status == "new":
-
-        title = (
-            "🔔 TAKE AWAY — NEW ORDER"
-        )
+        title = "🔔 TAKE AWAY — NEW ORDER"
 
     elif status == "preparing":
-
-        title = (
-            "🟡 TAKE AWAY — PREPARING"
-        )
+        title = "🟡 TAKE AWAY — PREPARING"
 
     elif status == "ready":
-
-        title = (
-            "🟢 TAKE AWAY — READY"
-        )
+        title = "🟢 TAKE AWAY — READY"
 
     elif status == "completed":
-
-        title = (
-            "✅ TAKE AWAY — COMPLETED"
-        )
+        title = "✅ TAKE AWAY — COMPLETED"
 
     elif status == "cancelled":
-
-        title = (
-            "❌ TAKE AWAY — CANCELLED"
-        )
+        title = "❌ TAKE AWAY — CANCELLED"
 
     else:
-
         title = "☕ TAKE AWAY"
 
     text = (
         f"{title}\n\n"
         f"🧾 Order #{order['id']}\n"
-        f"👤 Customer: "
-        f"{order['customer']}\n"
-        f"🕐 Pickup: "
-        f"{pickup_text}\n\n"
+        f"👤 Customer: {order['customer']}\n"
+        f"🕐 Pickup: {pickup_text}\n\n"
         f"{details_text}\n\n"
-        f"💰 TOTAL: "
-        f"{order['total']} RSD\n"
+        f"💰 TOTAL: {order['total']} RSD\n"
         f"💵 Payment at pickup"
     )
 
     if status == "ready":
-
-        text += (
-            "\n\n📲 Customer notified"
-        )
+        text += "\n\n📲 Customer notified"
 
     if status == "completed":
-
-        text += (
-            "\n\n✅ Order completed"
-        )
+        text += "\n\n✅ Order completed"
 
     if status == "cancelled":
-
-        text += (
-            "\n\n📲 Customer notified"
-        )
+        text += "\n\n📲 Customer notified"
 
     return text
 
@@ -712,10 +628,7 @@ def verify(init_data):
 
     if (
         not TOKEN
-        or not isinstance(
-            init_data,
-            str
-        )
+        or not isinstance(init_data, str)
         or not init_data
         or len(init_data) > 8192
     ):
@@ -762,9 +675,7 @@ def verify(init_data):
 
         calculated_hash = hmac.new(
             secret_key,
-            data_check_string.encode(
-                "utf-8"
-            ),
+            data_check_string.encode("utf-8"),
             hashlib.sha256
         ).hexdigest()
 
@@ -786,10 +697,7 @@ def verify(init_data):
             )
         )
 
-        age = (
-            int(time.time())
-            - auth_date
-        )
+        age = int(time.time()) - auth_date
 
         if (
             age > 86400
@@ -809,10 +717,7 @@ def verify(init_data):
             )
         )
 
-        if not isinstance(
-            user,
-            dict
-        ):
+        if not isinstance(user, dict):
             return None
 
         if not user.get("id"):
@@ -839,10 +744,7 @@ def verified_user_from_request():
         silent=True
     )
 
-    if not isinstance(
-        data,
-        dict
-    ):
+    if not isinstance(data, dict):
         return None, {}
 
     user = verify(
@@ -876,14 +778,10 @@ def health():
 
     return jsonify({
         "ok": True,
-        "bot_token":
-            bool(TOKEN),
-        "admin_chat":
-            bool(ADMIN),
-        "app_url":
-            URL,
-        "menu_items":
-            len(MENU)
+        "bot_token": bool(TOKEN),
+        "order_chat": bool(ADMIN),
+        "app_url": URL,
+        "menu_items": len(MENU)
     })
 
 
@@ -907,9 +805,7 @@ def menu():
 )
 def profile():
 
-    user, data = (
-        verified_user_from_request()
-    )
+    user, data = verified_user_from_request()
 
     if not user:
 
@@ -931,19 +827,15 @@ def profile():
     completed_orders = [
         order
         for order in orders
-        if order.get("status")
-        == "completed"
+        if order.get("status") == "completed"
     ]
 
     drinks = 0
-
     drink_counts = {}
 
     for order in completed_orders:
 
-        for item in parse_order_details(
-            order
-        ):
+        for item in parse_order_details(order):
 
             qty = int(
                 item.get(
@@ -985,10 +877,8 @@ def profile():
         if product:
 
             favorite = {
-                "id":
-                    favorite_id,
-                "name":
-                    product["name"]
+                "id": favorite_id,
+                "name": product["name"]
             }
 
     first_name = str(
@@ -1023,39 +913,20 @@ def profile():
 
         oldest = orders[-1]
 
-        first_order = (
-            created_date_text(
-                oldest
-            )
+        first_order = created_date_text(
+            oldest
         )
 
     return jsonify({
-        "telegram_id":
-            telegram_id,
-
-        "name":
-            name or "TAKE AWAY Member",
-
-        "first_name":
-            first_name,
-
-        "username":
-            username,
-
-        "orders":
-            len(orders),
-
-        "completed_orders":
-            len(completed_orders),
-
-        "drinks":
-            drinks,
-
-        "favorite":
-            favorite,
-
-        "first_order":
-            first_order
+        "telegram_id": telegram_id,
+        "name": name or "TAKE AWAY Member",
+        "first_name": first_name,
+        "username": username,
+        "orders": len(orders),
+        "completed_orders": len(completed_orders),
+        "drinks": drinks,
+        "favorite": favorite,
+        "first_order": first_order
     })
 
 
@@ -1069,9 +940,7 @@ def profile():
 )
 def customer_orders():
 
-    user, data = (
-        verified_user_from_request()
-    )
+    user, data = verified_user_from_request()
 
     if not user:
 
@@ -1108,14 +977,10 @@ def create_order():
         silent=True
     )
 
-    if not isinstance(
-        data,
-        dict
-    ):
+    if not isinstance(data, dict):
 
         return jsonify({
-            "error":
-                "Invalid request."
+            "error": "Invalid request."
         }), 400
 
     user = verify(
@@ -1147,10 +1012,7 @@ def create_order():
     )
 
     if (
-        not isinstance(
-            items,
-            list
-        )
+        not isinstance(items, list)
         or not items
         or len(items) > 20
     ):
@@ -1208,8 +1070,7 @@ def create_order():
     minimum_pickup = (
         now
         + timedelta(
-            minutes=
-                MIN_PREP_MINUTES
+            minutes=MIN_PREP_MINUTES
         )
     )
 
@@ -1267,7 +1128,6 @@ def create_order():
 
     total = 0
     total_quantity = 0
-
     clean_items = []
 
     for item in items:
@@ -1313,10 +1173,7 @@ def create_order():
 
         if (
             isinstance(qty, bool)
-            or not isinstance(
-                qty,
-                int
-            )
+            or not isinstance(qty, int)
         ):
 
             return jsonify({
@@ -1326,8 +1183,7 @@ def create_order():
 
         if (
             qty < 1
-            or qty >
-                MAX_ITEM_QUANTITY
+            or qty > MAX_ITEM_QUANTITY
         ):
 
             return jsonify({
@@ -1338,10 +1194,7 @@ def create_order():
 
         total_quantity += qty
 
-        if (
-            total_quantity >
-            MAX_ORDER_QUANTITY
-        ):
+        if total_quantity > MAX_ORDER_QUANTITY:
 
             return jsonify({
                 "error":
@@ -1350,17 +1203,12 @@ def create_order():
             }), 400
 
         extra_shot = (
-            item.get(
-                "extra_shot"
-            ) is True
-            and item_id
-            in COFFEE_IDS
+            item.get("extra_shot") is True
+            and item_id in COFFEE_IDS
         )
 
         boba = (
-            item.get(
-                "boba"
-            ) is True
+            item.get("boba") is True
             and product.get(
                 "boba",
                 False
@@ -1377,34 +1225,18 @@ def create_order():
         if boba:
             unit_price += 100
 
-        line_total = (
-            unit_price
-            * qty
-        )
+        line_total = unit_price * qty
 
         total += line_total
 
         clean_items.append({
-            "id":
-                item_id,
-
-            "name":
-                product["name"],
-
-            "qty":
-                qty,
-
-            "extra_shot":
-                extra_shot,
-
-            "boba":
-                boba,
-
-            "unit_price":
-                unit_price,
-
-            "line_total":
-                line_total
+            "id": item_id,
+            "name": product["name"],
+            "qty": qty,
+            "extra_shot": extra_shot,
+            "boba": boba,
+            "unit_price": unit_price,
+            "line_total": line_total
         })
 
 
@@ -1450,10 +1282,8 @@ def create_order():
             else telegram_id
         )
 
-    pickup_text = (
-        pickup.strftime(
-            "%H:%M"
-        )
+    pickup_text = pickup.strftime(
+        "%H:%M"
     )
 
 
@@ -1493,9 +1323,7 @@ def create_order():
             )
         )
 
-        order_id = (
-            cursor.lastrowid
-        )
+        order_id = cursor.lastrowid
 
         connection.commit()
 
@@ -1504,7 +1332,7 @@ def create_order():
 
 
     # =====================================================
-    # BARISTA
+    # SEND ORDER TO TAKE AWAY GROUP
     # =====================================================
 
     order = get_order(
@@ -1513,11 +1341,10 @@ def create_order():
 
     if ADMIN and order:
 
-        tg(
+        result = tg(
             "sendMessage",
             {
-                "chat_id":
-                    ADMIN,
+                "chat_id": ADMIN,
 
                 "text":
                     barista_order_text(
@@ -1530,6 +1357,23 @@ def create_order():
                         order_id
                     )
             }
+        )
+
+        if not result or not result.get("ok"):
+
+            logging.error(
+                "Could not send order #%s "
+                "to ORDER_CHAT_ID %s",
+                order_id,
+                ADMIN
+            )
+
+    else:
+
+        logging.warning(
+            "Order #%s saved but ORDER_CHAT_ID "
+            "is missing.",
+            order_id
         )
 
 
@@ -1553,25 +1397,16 @@ def create_order():
     tg(
         "sendMessage",
         {
-            "chat_id":
-                telegram_id,
-            "text":
-                customer_message
+            "chat_id": telegram_id,
+            "text": customer_message
         }
     )
 
     return jsonify({
-        "success":
-            True,
-
-        "order_id":
-            order_id,
-
-        "total":
-            total,
-
-        "pickup":
-            pickup_text
+        "success": True,
+        "order_id": order_id,
+        "total": total,
+        "pickup": pickup_text
     })
 
 
@@ -1581,25 +1416,11 @@ def create_order():
 
 def handle_callback(callback):
 
-    callback_id = callback.get(
-        "id"
-    )
+    callback_id = callback.get("id")
 
     callback_data = str(
         callback.get(
             "data",
-            ""
-        )
-    )
-
-    callback_from = (
-        callback.get("from")
-        or {}
-    )
-
-    callback_user_id = str(
-        callback_from.get(
-            "id",
             ""
         )
     )
@@ -1626,16 +1447,13 @@ def handle_callback(callback):
     )
 
 
-    # ADMIN ONLY
+    # =====================================================
+    # ONLY BUTTONS INSIDE TAKE AWAY ORDER GROUP
+    # =====================================================
 
     if (
         not ADMIN
-        or (
-            callback_chat_id
-            != str(ADMIN)
-            and callback_user_id
-            != str(ADMIN)
-        )
+        or callback_chat_id != str(ADMIN)
     ):
 
         if callback_id:
@@ -1645,10 +1463,8 @@ def handle_callback(callback):
                 {
                     "callback_query_id":
                         callback_id,
-
                     "text":
                         "Not allowed.",
-
                     "show_alert":
                         True
                 }
@@ -1714,12 +1530,10 @@ def handle_callback(callback):
 
     if action == "accept":
 
-        changed = (
-            transition_order_status(
-                order_id,
-                "new",
-                "preparing"
-            )
+        changed = transition_order_status(
+            order_id,
+            "new",
+            "preparing"
         )
 
         if not changed:
@@ -1766,15 +1580,12 @@ def handle_callback(callback):
             "sendMessage",
             {
                 "chat_id":
-                    order[
-                        "telegram_id"
-                    ],
+                    order["telegram_id"],
 
                 "text":
                     "✅ TAKE AWAY — "
                     "ORDER ACCEPTED\n\n"
-                    f"🧾 Order "
-                    f"#{order_id}\n"
+                    f"🧾 Order #{order_id}\n"
                     f"🕐 Pickup: "
                     f"{pickup_time_text(order)}"
                     "\n\n"
@@ -1805,12 +1616,10 @@ def handle_callback(callback):
 
     if action == "ready":
 
-        changed = (
-            transition_order_status(
-                order_id,
-                "preparing",
-                "ready"
-            )
+        changed = transition_order_status(
+            order_id,
+            "preparing",
+            "ready"
         )
 
         if not changed:
@@ -1858,17 +1667,13 @@ def handle_callback(callback):
             "sendMessage",
             {
                 "chat_id":
-                    order[
-                        "telegram_id"
-                    ],
+                    order["telegram_id"],
 
                 "text":
                     "☕ TAKE AWAY — "
                     "YOUR ORDER IS READY!\n\n"
-                    f"🧾 Order "
-                    f"#{order_id}\n"
-                    f"💰 "
-                    f"{order['total']} RSD"
+                    f"🧾 Order #{order_id}\n"
+                    f"💰 {order['total']} RSD"
                     "\n\n"
                     "Your drinks are ready "
                     "for pickup. 🤍\n\n"
@@ -1900,12 +1705,10 @@ def handle_callback(callback):
 
     if action == "picked":
 
-        changed = (
-            transition_order_status(
-                order_id,
-                "ready",
-                "completed"
-            )
+        changed = transition_order_status(
+            order_id,
+            "ready",
+            "completed"
         )
 
         if not changed:
@@ -2008,15 +1811,12 @@ def handle_callback(callback):
             "sendMessage",
             {
                 "chat_id":
-                    order[
-                        "telegram_id"
-                    ],
+                    order["telegram_id"],
 
                 "text":
                     "❌ TAKE AWAY — "
                     "ORDER CANCELLED\n\n"
-                    f"🧾 Order "
-                    f"#{order_id}\n\n"
+                    f"🧾 Order #{order_id}\n\n"
                     "Unfortunately, "
                     "we cannot prepare "
                     "this order.\n\n"
@@ -2130,9 +1930,7 @@ def bot_webhook():
     )
 
     chat_id = chat.get("id")
-    chat_type = chat.get(
-        "type"
-    )
+    chat_type = chat.get("type")
 
     message_text = str(
         message.get(
