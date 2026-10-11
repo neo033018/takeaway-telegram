@@ -13,6 +13,7 @@ from zoneinfo import ZoneInfo
 import requests
 from flask import Flask, request, jsonify, render_template
 
+
 # =========================================================
 # SETTINGS
 # =========================================================
@@ -21,6 +22,7 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 
 TOKEN = os.environ.get("BOT_TOKEN", "")
+
 URL = os.environ.get(
     "APP_URL",
     "https://takeaway-telegram.onrender.com"
@@ -35,6 +37,9 @@ TZ = ZoneInfo("Europe/Belgrade")
 MIN_PREP_MINUTES = 10
 OPEN_HOUR = 7
 CLOSE_HOUR = 17
+
+MAX_ITEM_QUANTITY = 10
+MAX_ORDER_QUANTITY = 30
 
 
 # =========================================================
@@ -166,15 +171,22 @@ MENU_BY_ID = {
 # =========================================================
 
 def get_db():
-    connection = sqlite3.connect(DB, timeout=15)
+    connection = sqlite3.connect(
+        DB,
+        timeout=15
+    )
+
     connection.row_factory = sqlite3.Row
+
     return connection
 
 
 def init_db():
+
     connection = get_db()
 
     try:
+
         connection.execute("""
             CREATE TABLE IF NOT EXISTS orders (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -202,11 +214,17 @@ init_db()
 # =========================================================
 
 def get_order(order_id):
+
     connection = get_db()
 
     try:
+
         row = connection.execute(
-            "SELECT * FROM orders WHERE id = ?",
+            """
+            SELECT *
+            FROM orders
+            WHERE id = ?
+            """,
             (order_id,)
         ).fetchone()
 
@@ -219,20 +237,89 @@ def get_order(order_id):
         connection.close()
 
 
-def set_order_status(order_id, status):
+def transition_order_status(
+    order_id,
+    expected_status,
+    new_status
+):
+
     connection = get_db()
 
     try:
-        connection.execute(
+
+        cursor = connection.execute(
             """
             UPDATE orders
             SET status = ?
             WHERE id = ?
+            AND status = ?
             """,
-            (status, order_id)
+            (
+                new_status,
+                order_id,
+                expected_status
+            )
         )
 
         connection.commit()
+
+        return cursor.rowcount == 1
+
+    finally:
+        connection.close()
+
+
+def cancel_order_status(order_id):
+
+    connection = get_db()
+
+    try:
+
+        cursor = connection.execute(
+            """
+            UPDATE orders
+            SET status = 'cancelled'
+            WHERE id = ?
+            AND status IN ('new', 'preparing')
+            """,
+            (order_id,)
+        )
+
+        connection.commit()
+
+        return cursor.rowcount == 1
+
+    finally:
+        connection.close()
+
+
+def get_customer_orders(
+    telegram_id,
+    limit=50
+):
+
+    connection = get_db()
+
+    try:
+
+        rows = connection.execute(
+            """
+            SELECT *
+            FROM orders
+            WHERE telegram_id = ?
+            ORDER BY id DESC
+            LIMIT ?
+            """,
+            (
+                str(telegram_id),
+                int(limit)
+            )
+        ).fetchall()
+
+        return [
+            dict(row)
+            for row in rows
+        ]
 
     finally:
         connection.close()
@@ -245,10 +332,15 @@ def set_order_status(order_id, status):
 def tg(method, payload):
 
     if not TOKEN:
-        logging.warning("BOT_TOKEN missing")
+
+        logging.warning(
+            "BOT_TOKEN missing"
+        )
+
         return None
 
     try:
+
         response = requests.post(
             f"https://api.telegram.org/bot{TOKEN}/{method}",
             json=payload,
@@ -258,6 +350,7 @@ def tg(method, payload):
         result = response.json()
 
         if not result.get("ok"):
+
             logging.warning(
                 "Telegram %s failed: %s",
                 method,
@@ -267,12 +360,16 @@ def tg(method, payload):
         return result
 
     except Exception:
-        logging.exception("Telegram API error")
+
+        logging.exception(
+            "Telegram API error"
+        )
+
         return None
 
 
 # =========================================================
-# ORDER BUTTON FOR CUSTOMER
+# CUSTOMER ORDER BUTTON
 # =========================================================
 
 def order_keyboard():
@@ -281,7 +378,8 @@ def order_keyboard():
         "inline_keyboard": [
             [
                 {
-                    "text": "☕ ORDER / PORUČI",
+                    "text":
+                        "☕ ORDER / PORUČI",
                     "web_app": {
                         "url": URL
                     }
@@ -301,14 +399,18 @@ def new_order_keyboard(order_id):
         "inline_keyboard": [
             [
                 {
-                    "text": "✅ ACCEPT ORDER",
-                    "callback_data": f"accept:{order_id}"
+                    "text":
+                        "✅ ACCEPT ORDER",
+                    "callback_data":
+                        f"accept:{order_id}"
                 }
             ],
             [
                 {
-                    "text": "❌ CANCEL",
-                    "callback_data": f"cancel:{order_id}"
+                    "text":
+                        "❌ CANCEL",
+                    "callback_data":
+                        f"cancel:{order_id}"
                 }
             ]
         ]
@@ -321,14 +423,18 @@ def preparing_keyboard(order_id):
         "inline_keyboard": [
             [
                 {
-                    "text": "☕ ORDER READY",
-                    "callback_data": f"ready:{order_id}"
+                    "text":
+                        "☕ ORDER READY",
+                    "callback_data":
+                        f"ready:{order_id}"
                 }
             ],
             [
                 {
-                    "text": "❌ CANCEL",
-                    "callback_data": f"cancel:{order_id}"
+                    "text":
+                        "❌ CANCEL",
+                    "callback_data":
+                        f"cancel:{order_id}"
                 }
             ]
         ]
@@ -341,8 +447,10 @@ def ready_keyboard(order_id):
         "inline_keyboard": [
             [
                 {
-                    "text": "✅ PICKED UP",
-                    "callback_data": f"picked:{order_id}"
+                    "text":
+                        "✅ PICKED UP",
+                    "callback_data":
+                        f"picked:{order_id}"
                 }
             ]
         ]
@@ -350,39 +458,78 @@ def ready_keyboard(order_id):
 
 
 # =========================================================
-# ORDER TEXT
+# ORDER HELPERS
 # =========================================================
+
+def parse_order_details(order):
+
+    try:
+
+        details = json.loads(
+            order.get(
+                "details",
+                "[]"
+            )
+        )
+
+        if isinstance(details, list):
+            return details
+
+    except Exception:
+        pass
+
+    return []
+
 
 def order_details_text(order):
 
-    try:
-        details = json.loads(order["details"])
-    except Exception:
-        details = []
+    details = parse_order_details(
+        order
+    )
 
     lines = []
 
     for item in details:
 
-        qty = item.get("qty", 1)
-        name = item.get("name", "Drink")
-        line_total = item.get("line_total", 0)
+        qty = item.get(
+            "qty",
+            1
+        )
+
+        name = item.get(
+            "name",
+            "Drink"
+        )
+
+        line_total = item.get(
+            "line_total",
+            0
+        )
 
         extras = []
 
         if item.get("extra_shot"):
-            extras.append("extra espresso shot")
+            extras.append(
+                "extra espresso shot"
+            )
 
         if item.get("boba"):
-            extras.append("boba")
+            extras.append(
+                "boba"
+            )
 
         extra_text = ""
 
         if extras:
-            extra_text = " + " + ", ".join(extras)
+            extra_text = (
+                " + " +
+                ", ".join(extras)
+            )
 
         lines.append(
-            f"{qty}x {name}{extra_text} — "
+            f"{qty}x "
+            f"{name}"
+            f"{extra_text} — "
             f"{line_total} RSD"
         )
 
@@ -392,62 +539,167 @@ def order_details_text(order):
 def pickup_time_text(order):
 
     try:
-        pickup = datetime.fromisoformat(order["pickup"])
+
+        pickup = datetime.fromisoformat(
+            order["pickup"]
+        )
 
         if pickup.tzinfo is not None:
-            pickup = pickup.astimezone(TZ)
 
-        return pickup.strftime("%H:%M")
+            pickup = pickup.astimezone(
+                TZ
+            )
+
+        return pickup.strftime(
+            "%H:%M"
+        )
 
     except Exception:
-        return str(order.get("pickup", ""))
+
+        return str(
+            order.get(
+                "pickup",
+                ""
+            )
+        )
+
+
+def created_date_text(order):
+
+    try:
+
+        created = datetime.fromisoformat(
+            order["created"]
+        )
+
+        if created.tzinfo is not None:
+
+            created = created.astimezone(
+                TZ
+            )
+
+        return created.strftime(
+            "%d.%m.%Y"
+        )
+
+    except Exception:
+
+        return ""
+
+
+def serialize_order(order):
+
+    return {
+        "id":
+            order["id"],
+
+        "pickup":
+            pickup_time_text(order),
+
+        "pickup_iso":
+            order.get("pickup"),
+
+        "created":
+            created_date_text(order),
+
+        "created_iso":
+            order.get("created"),
+
+        "total":
+            order.get("total", 0),
+
+        "status":
+            order.get(
+                "status",
+                "new"
+            ),
+
+        "items":
+            parse_order_details(order)
+    }
 
 
 # =========================================================
-# BARISTA MESSAGE TEXT
+# BARISTA MESSAGE
 # =========================================================
 
-def barista_order_text(order, status):
+def barista_order_text(
+    order,
+    status
+):
 
-    pickup_text = pickup_time_text(order)
-    details_text = order_details_text(order)
+    pickup_text = pickup_time_text(
+        order
+    )
+
+    details_text = order_details_text(
+        order
+    )
 
     if status == "new":
-        title = "🔔 TAKE AWAY — NEW ORDER"
+
+        title = (
+            "🔔 TAKE AWAY — NEW ORDER"
+        )
 
     elif status == "preparing":
-        title = "🟡 TAKE AWAY — PREPARING"
+
+        title = (
+            "🟡 TAKE AWAY — PREPARING"
+        )
 
     elif status == "ready":
-        title = "🟢 TAKE AWAY — READY"
+
+        title = (
+            "🟢 TAKE AWAY — READY"
+        )
 
     elif status == "completed":
-        title = "✅ TAKE AWAY — COMPLETED"
+
+        title = (
+            "✅ TAKE AWAY — COMPLETED"
+        )
 
     elif status == "cancelled":
-        title = "❌ TAKE AWAY — CANCELLED"
+
+        title = (
+            "❌ TAKE AWAY — CANCELLED"
+        )
 
     else:
+
         title = "☕ TAKE AWAY"
 
     text = (
         f"{title}\n\n"
         f"🧾 Order #{order['id']}\n"
-        f"👤 Customer: {order['customer']}\n"
-        f"🕐 Pickup: {pickup_text}\n\n"
+        f"👤 Customer: "
+        f"{order['customer']}\n"
+        f"🕐 Pickup: "
+        f"{pickup_text}\n\n"
         f"{details_text}\n\n"
-        f"💰 TOTAL: {order['total']} RSD\n"
+        f"💰 TOTAL: "
+        f"{order['total']} RSD\n"
         f"💵 Payment at pickup"
     )
 
     if status == "ready":
-        text += "\n\n📲 Customer notified"
+
+        text += (
+            "\n\n📲 Customer notified"
+        )
 
     if status == "completed":
-        text += "\n\n✅ Order completed"
+
+        text += (
+            "\n\n✅ Order completed"
+        )
 
     if status == "cancelled":
-        text += "\n\n📲 Customer notified"
+
+        text += (
+            "\n\n📲 Customer notified"
+        )
 
     return text
 
@@ -460,14 +712,22 @@ def verify(init_data):
 
     if (
         not TOKEN
-        or not isinstance(init_data, str)
+        or not isinstance(
+            init_data,
+            str
+        )
         or not init_data
         or len(init_data) > 8192
     ):
-        logging.warning("Missing or invalid initData")
+
+        logging.warning(
+            "Missing or invalid initData"
+        )
+
         return None
 
     try:
+
         data = dict(
             parse_qsl(
                 init_data,
@@ -475,15 +735,23 @@ def verify(init_data):
             )
         )
 
-        received_hash = data.pop("hash", None)
+        received_hash = data.pop(
+            "hash",
+            None
+        )
 
         if not received_hash:
-            logging.warning("Missing Telegram hash")
+
+            logging.warning(
+                "Missing Telegram hash"
+            )
+
             return None
 
         data_check_string = "\n".join(
             f"{key}={value}"
-            for key, value in sorted(data.items())
+            for key, value
+            in sorted(data.items())
         )
 
         secret_key = hmac.new(
@@ -494,7 +762,9 @@ def verify(init_data):
 
         calculated_hash = hmac.new(
             secret_key,
-            data_check_string.encode("utf-8"),
+            data_check_string.encode(
+                "utf-8"
+            ),
             hashlib.sha256
         ).hexdigest()
 
@@ -502,21 +772,47 @@ def verify(init_data):
             calculated_hash,
             received_hash
         ):
-            logging.warning("Telegram hash mismatch")
+
+            logging.warning(
+                "Telegram hash mismatch"
+            )
+
             return None
 
-        auth_date = int(data.get("auth_date", "0"))
-        age = int(time.time()) - auth_date
+        auth_date = int(
+            data.get(
+                "auth_date",
+                "0"
+            )
+        )
 
-        if age > 86400 or age < -300:
-            logging.warning("Telegram session expired")
+        age = (
+            int(time.time())
+            - auth_date
+        )
+
+        if (
+            age > 86400
+            or age < -300
+        ):
+
+            logging.warning(
+                "Telegram session expired"
+            )
+
             return None
 
         user = json.loads(
-            data.get("user", "{}")
+            data.get(
+                "user",
+                "{}"
+            )
         )
 
-        if not isinstance(user, dict):
+        if not isinstance(
+            user,
+            dict
+        ):
             return None
 
         if not user.get("id"):
@@ -525,10 +821,38 @@ def verify(init_data):
         return user
 
     except Exception:
+
         logging.exception(
             "Telegram verification error"
         )
+
         return None
+
+
+# =========================================================
+# GET USER FROM REQUEST
+# =========================================================
+
+def verified_user_from_request():
+
+    data = request.get_json(
+        silent=True
+    )
+
+    if not isinstance(
+        data,
+        dict
+    ):
+        return None, {}
+
+    user = verify(
+        data.get(
+            "initData",
+            ""
+        )
+    )
+
+    return user, data
 
 
 # =========================================================
@@ -537,7 +861,10 @@ def verify(init_data):
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+
+    return render_template(
+        "index.html"
+    )
 
 
 # =========================================================
@@ -549,68 +876,304 @@ def health():
 
     return jsonify({
         "ok": True,
-        "bot_token": bool(TOKEN),
-        "admin_chat": bool(ADMIN),
-        "app_url": URL,
-        "menu_items": len(MENU)
+        "bot_token":
+            bool(TOKEN),
+        "admin_chat":
+            bool(ADMIN),
+        "app_url":
+            URL,
+        "menu_items":
+            len(MENU)
     })
 
 
 # =========================================================
-# MENU API
+# MENU
 # =========================================================
 
 @app.route("/api/menu")
 def menu():
+
     return jsonify(MENU)
+
+
+# =========================================================
+# PROFILE
+# =========================================================
+
+@app.route(
+    "/api/profile",
+    methods=["POST"]
+)
+def profile():
+
+    user, data = (
+        verified_user_from_request()
+    )
+
+    if not user:
+
+        return jsonify({
+            "error":
+                "Telegram session "
+                "could not be verified."
+        }), 401
+
+    telegram_id = str(
+        user["id"]
+    )
+
+    orders = get_customer_orders(
+        telegram_id,
+        500
+    )
+
+    completed_orders = [
+        order
+        for order in orders
+        if order.get("status")
+        == "completed"
+    ]
+
+    drinks = 0
+
+    drink_counts = {}
+
+    for order in completed_orders:
+
+        for item in parse_order_details(
+            order
+        ):
+
+            qty = int(
+                item.get(
+                    "qty",
+                    1
+                )
+            )
+
+            drinks += qty
+
+            item_id = item.get(
+                "id",
+                ""
+            )
+
+            if item_id:
+
+                drink_counts[item_id] = (
+                    drink_counts.get(
+                        item_id,
+                        0
+                    )
+                    + qty
+                )
+
+    favorite = None
+
+    if drink_counts:
+
+        favorite_id = max(
+            drink_counts,
+            key=drink_counts.get
+        )
+
+        product = MENU_BY_ID.get(
+            favorite_id
+        )
+
+        if product:
+
+            favorite = {
+                "id":
+                    favorite_id,
+                "name":
+                    product["name"]
+            }
+
+    first_name = str(
+        user.get(
+            "first_name",
+            ""
+        )
+    ).strip()
+
+    last_name = str(
+        user.get(
+            "last_name",
+            ""
+        )
+    ).strip()
+
+    name = (
+        f"{first_name} "
+        f"{last_name}"
+    ).strip()
+
+    username = str(
+        user.get(
+            "username",
+            ""
+        )
+    ).strip()
+
+    first_order = ""
+
+    if orders:
+
+        oldest = orders[-1]
+
+        first_order = (
+            created_date_text(
+                oldest
+            )
+        )
+
+    return jsonify({
+        "telegram_id":
+            telegram_id,
+
+        "name":
+            name or "TAKE AWAY Member",
+
+        "first_name":
+            first_name,
+
+        "username":
+            username,
+
+        "orders":
+            len(orders),
+
+        "completed_orders":
+            len(completed_orders),
+
+        "drinks":
+            drinks,
+
+        "favorite":
+            favorite,
+
+        "first_order":
+            first_order
+    })
+
+
+# =========================================================
+# CUSTOMER ORDERS
+# =========================================================
+
+@app.route(
+    "/api/orders",
+    methods=["POST"]
+)
+def customer_orders():
+
+    user, data = (
+        verified_user_from_request()
+    )
+
+    if not user:
+
+        return jsonify({
+            "error":
+                "Telegram session "
+                "could not be verified."
+        }), 401
+
+    orders = get_customer_orders(
+        str(user["id"]),
+        50
+    )
+
+    return jsonify({
+        "orders": [
+            serialize_order(order)
+            for order in orders
+        ]
+    })
 
 
 # =========================================================
 # CREATE ORDER
 # =========================================================
 
-@app.route("/api/order", methods=["POST"])
+@app.route(
+    "/api/order",
+    methods=["POST"]
+)
 def create_order():
 
-    data = request.get_json(silent=True)
+    data = request.get_json(
+        silent=True
+    )
 
-    if not isinstance(data, dict):
+    if not isinstance(
+        data,
+        dict
+    ):
+
         return jsonify({
-            "error": "Invalid request."
+            "error":
+                "Invalid request."
         }), 400
 
     user = verify(
-        data.get("initData", "")
+        data.get(
+            "initData",
+            ""
+        )
     )
 
     if not user:
+
         return jsonify({
             "error":
-            "Telegram session could not be verified. "
-            "Please close the app and reopen it "
-            "using the ORDER button in the bot."
+                "Telegram session could "
+                "not be verified. "
+                "Please close the app "
+                "and reopen it using "
+                "the ORDER button "
+                "in the bot."
         }), 401
 
-    items = data.get("items", [])
-    pickup_raw = data.get("pickup")
+    items = data.get(
+        "items",
+        []
+    )
+
+    pickup_raw = data.get(
+        "pickup"
+    )
 
     if (
-        not isinstance(items, list)
+        not isinstance(
+            items,
+            list
+        )
         or not items
         or len(items) > 20
     ):
+
         return jsonify({
             "error":
-            "Please add at least one drink."
+                "Please add at least "
+                "one drink."
         }), 400
 
-    if not isinstance(pickup_raw, str):
+    if not isinstance(
+        pickup_raw,
+        str
+    ):
+
         return jsonify({
             "error":
-            "Please choose a pickup time."
+                "Please choose a "
+                "pickup time."
         }), 400
 
     try:
+
         pickup = datetime.fromisoformat(
             pickup_raw.replace(
                 "Z",
@@ -619,37 +1182,56 @@ def create_order():
         )
 
         if pickup.tzinfo is None:
+
             pickup = pickup.replace(
                 tzinfo=TZ
             )
-        else:
-            pickup = pickup.astimezone(TZ)
 
-    except (ValueError, TypeError):
+        else:
+
+            pickup = pickup.astimezone(
+                TZ
+            )
+
+    except (
+        ValueError,
+        TypeError
+    ):
+
         return jsonify({
-            "error": "Invalid pickup time."
+            "error":
+                "Invalid pickup time."
         }), 400
 
     now = datetime.now(TZ)
 
-    minimum_pickup = now + timedelta(
-        minutes=MIN_PREP_MINUTES
+    minimum_pickup = (
+        now
+        + timedelta(
+            minutes=
+                MIN_PREP_MINUTES
+        )
     )
 
     if pickup < (
-        minimum_pickup -
-        timedelta(seconds=30)
+        minimum_pickup
+        - timedelta(seconds=30)
     ):
+
         return jsonify({
             "error":
-            f"Minimum preparation time is "
-            f"{MIN_PREP_MINUTES} minutes."
+                f"Minimum preparation "
+                f"time is "
+                f"{MIN_PREP_MINUTES} "
+                f"minutes."
         }), 400
 
     if pickup.date() != now.date():
+
         return jsonify({
             "error":
-            "Pickup is available today only."
+                "Pickup is available "
+                "today only."
         }), 400
 
     opening = now.replace(
@@ -667,38 +1249,49 @@ def create_order():
     )
 
     if pickup < opening:
+
         return jsonify({
             "error":
-            f"Pickup starts at "
-            f"{OPEN_HOUR:02d}:00."
+                f"Pickup starts at "
+                f"{OPEN_HOUR:02d}:00."
         }), 400
 
     if pickup >= closing:
+
         return jsonify({
             "error":
-            f"Last pickup must be before "
-            f"{CLOSE_HOUR:02d}:00."
+                f"Last pickup must be "
+                f"before "
+                f"{CLOSE_HOUR:02d}:00."
         }), 400
 
     total = 0
     total_quantity = 0
-    order_lines = []
+
     clean_items = []
 
     for item in items:
 
-        if not isinstance(item, dict):
+        if not isinstance(
+            item,
+            dict
+        ):
+
             return jsonify({
                 "error":
-                "Invalid order item."
+                    "Invalid order item."
             }), 400
 
         item_id = item.get("id")
 
-        if not isinstance(item_id, str):
+        if not isinstance(
+            item_id,
+            str
+        ):
+
             return jsonify({
                 "error":
-                "Invalid drink ID."
+                    "Invalid drink ID."
             }), 400
 
         product = MENU_BY_ID.get(
@@ -706,45 +1299,68 @@ def create_order():
         )
 
         if not product:
+
             return jsonify({
                 "error":
-                f"Unknown drink: {item_id}"
+                    f"Unknown drink: "
+                    f"{item_id}"
             }), 400
 
-        qty = item.get("qty", 1)
+        qty = item.get(
+            "qty",
+            1
+        )
 
         if (
             isinstance(qty, bool)
-            or not isinstance(qty, int)
+            or not isinstance(
+                qty,
+                int
+            )
         ):
+
             return jsonify({
                 "error":
-                "Invalid quantity."
+                    "Invalid quantity."
             }), 400
 
-        if qty < 1 or qty > 10:
+        if (
+            qty < 1
+            or qty >
+                MAX_ITEM_QUANTITY
+        ):
+
             return jsonify({
                 "error":
-                "Quantity must be "
-                "between 1 and 10."
+                    "Quantity must be "
+                    "between 1 and 10."
             }), 400
 
         total_quantity += qty
 
-        if total_quantity > 30:
+        if (
+            total_quantity >
+            MAX_ORDER_QUANTITY
+        ):
+
             return jsonify({
                 "error":
-                "Maximum 30 drinks "
-                "per order."
+                    "Maximum 30 drinks "
+                    "per order."
             }), 400
 
         extra_shot = (
-            item.get("extra_shot") is True
-            and item_id in COFFEE_IDS
+            item.get(
+                "extra_shot"
+            ) is True
+            and item_id
+            in COFFEE_IDS
         )
 
         boba = (
-            item.get("boba") is True
+            item.get(
+                "boba"
+            ) is True
             and product.get(
                 "boba",
                 False
@@ -755,45 +1371,40 @@ def create_order():
             product["price"]
         )
 
-        extras = []
-
         if extra_shot:
             unit_price += 150
-            extras.append(
-                "extra espresso shot"
-            )
 
         if boba:
             unit_price += 100
-            extras.append("boba")
 
         line_total = (
-            unit_price * qty
+            unit_price
+            * qty
         )
 
         total += line_total
 
-        extras_text = (
-            " + " + ", ".join(extras)
-            if extras
-            else ""
-        )
-
-        order_lines.append(
-            f"{qty}x "
-            f"{product['name']}"
-            f"{extras_text} — "
-            f"{line_total} RSD"
-        )
-
         clean_items.append({
-            "id": item_id,
-            "name": product["name"],
-            "qty": qty,
-            "extra_shot": extra_shot,
-            "boba": boba,
-            "unit_price": unit_price,
-            "line_total": line_total
+            "id":
+                item_id,
+
+            "name":
+                product["name"],
+
+            "qty":
+                qty,
+
+            "extra_shot":
+                extra_shot,
+
+            "boba":
+                boba,
+
+            "unit_price":
+                unit_price,
+
+            "line_total":
+                line_total
         })
 
 
@@ -827,18 +1438,22 @@ def create_order():
     ).strip()
 
     customer = (
-        f"{first_name} {last_name}"
+        f"{first_name} "
+        f"{last_name}"
     ).strip()
 
     if not customer:
+
         customer = (
             f"@{username}"
             if username
             else telegram_id
         )
 
-    pickup_text = pickup.strftime(
-        "%H:%M"
+    pickup_text = (
+        pickup.strftime(
+            "%H:%M"
+        )
     )
 
 
@@ -849,6 +1464,7 @@ def create_order():
     connection = get_db()
 
     try:
+
         cursor = connection.execute(
             """
             INSERT INTO orders
@@ -877,7 +1493,9 @@ def create_order():
             )
         )
 
-        order_id = cursor.lastrowid
+        order_id = (
+            cursor.lastrowid
+        )
 
         connection.commit()
 
@@ -886,33 +1504,32 @@ def create_order():
 
 
     # =====================================================
-    # BARISTA NOTIFICATION
+    # BARISTA
     # =====================================================
 
-    order = get_order(order_id)
+    order = get_order(
+        order_id
+    )
 
     if ADMIN and order:
 
         tg(
             "sendMessage",
             {
-                "chat_id": ADMIN,
+                "chat_id":
+                    ADMIN,
+
                 "text":
                     barista_order_text(
                         order,
                         "new"
                     ),
+
                 "reply_markup":
                     new_order_keyboard(
                         order_id
                     )
             }
-        )
-
-    else:
-        logging.warning(
-            "ADMIN_CHAT_ID "
-            "not configured"
         )
 
 
@@ -927,22 +1544,34 @@ def create_order():
         f"💰 Total: {total} RSD\n\n"
         "We received your order.\n"
         "Please wait for confirmation. ☕\n\n"
-        "💵 Pay at pickup."
+        "🇷🇸 Porudžbina je primljena.\n"
+        "Sačekajte potvrdu.\n\n"
+        "💵 Pay at pickup / "
+        "Plaćanje pri preuzimanju."
     )
 
     tg(
         "sendMessage",
         {
-            "chat_id": telegram_id,
-            "text": customer_message
+            "chat_id":
+                telegram_id,
+            "text":
+                customer_message
         }
     )
 
     return jsonify({
-        "success": True,
-        "order_id": order_id,
-        "total": total,
-        "pickup": pickup_text
+        "success":
+            True,
+
+        "order_id":
+            order_id,
+
+        "total":
+            total,
+
+        "pickup":
+            pickup_text
     })
 
 
@@ -952,9 +1581,15 @@ def create_order():
 
 def handle_callback(callback):
 
-    callback_id = callback.get("id")
+    callback_id = callback.get(
+        "id"
+    )
+
     callback_data = str(
-        callback.get("data", "")
+        callback.get(
+            "data",
+            ""
+        )
     )
 
     callback_from = (
@@ -980,31 +1615,42 @@ def handle_callback(callback):
     )
 
     callback_chat_id = str(
-        chat.get("id", "")
+        chat.get(
+            "id",
+            ""
+        )
     )
 
     message_id = message.get(
         "message_id"
     )
 
-    # Only ADMIN is allowed to control orders
+
+    # ADMIN ONLY
+
     if (
         not ADMIN
         or (
-            callback_chat_id != str(ADMIN)
-            and callback_user_id != str(ADMIN)
+            callback_chat_id
+            != str(ADMIN)
+            and callback_user_id
+            != str(ADMIN)
         )
     ):
 
         if callback_id:
+
             tg(
                 "answerCallbackQuery",
                 {
                     "callback_query_id":
                         callback_id,
+
                     "text":
                         "Not allowed.",
-                    "show_alert": True
+
+                    "show_alert":
+                        True
                 }
             )
 
@@ -1012,6 +1658,7 @@ def handle_callback(callback):
 
 
     try:
+
         action, order_id_raw = (
             callback_data.split(
                 ":",
@@ -1026,6 +1673,7 @@ def handle_callback(callback):
     except Exception:
 
         if callback_id:
+
             tg(
                 "answerCallbackQuery",
                 {
@@ -1045,25 +1693,19 @@ def handle_callback(callback):
 
     if not order:
 
-        if callback_id:
-            tg(
-                "answerCallbackQuery",
-                {
-                    "callback_query_id":
-                        callback_id,
-                    "text":
-                        "Order not found.",
-                    "show_alert": True
-                }
-            )
+        tg(
+            "answerCallbackQuery",
+            {
+                "callback_query_id":
+                    callback_id,
+                "text":
+                    "Order not found.",
+                "show_alert":
+                    True
+            }
+        )
 
         return
-
-
-    current_status = (
-        order.get("status")
-        or "new"
-    )
 
 
     # =====================================================
@@ -1072,7 +1714,15 @@ def handle_callback(callback):
 
     if action == "accept":
 
-        if current_status != "new":
+        changed = (
+            transition_order_status(
+                order_id,
+                "new",
+                "preparing"
+            )
+        )
+
+        if not changed:
 
             tg(
                 "answerCallbackQuery",
@@ -1086,11 +1736,6 @@ def handle_callback(callback):
 
             return
 
-        set_order_status(
-            order_id,
-            "preparing"
-        )
-
         order = get_order(
             order_id
         )
@@ -1100,13 +1745,16 @@ def handle_callback(callback):
             {
                 "chat_id":
                     callback_chat_id,
+
                 "message_id":
                     message_id,
+
                 "text":
                     barista_order_text(
                         order,
                         "preparing"
                     ),
+
                 "reply_markup":
                     preparing_keyboard(
                         order_id
@@ -1118,15 +1766,23 @@ def handle_callback(callback):
             "sendMessage",
             {
                 "chat_id":
-                    order["telegram_id"],
+                    order[
+                        "telegram_id"
+                    ],
+
                 "text":
                     "✅ TAKE AWAY — "
                     "ORDER ACCEPTED\n\n"
-                    f"🧾 Order #{order_id}\n"
+                    f"🧾 Order "
+                    f"#{order_id}\n"
                     f"🕐 Pickup: "
-                    f"{pickup_time_text(order)}\n\n"
+                    f"{pickup_time_text(order)}"
+                    "\n\n"
                     "We're preparing "
-                    "your drinks. ☕"
+                    "your drinks. ☕\n\n"
+                    "🇷🇸 Porudžbina je "
+                    "prihvaćena i "
+                    "pripremamo vaša pića."
             }
         )
 
@@ -1149,7 +1805,15 @@ def handle_callback(callback):
 
     if action == "ready":
 
-        if current_status != "preparing":
+        changed = (
+            transition_order_status(
+                order_id,
+                "preparing",
+                "ready"
+            )
+        )
+
+        if not changed:
 
             tg(
                 "answerCallbackQuery",
@@ -1164,11 +1828,6 @@ def handle_callback(callback):
 
             return
 
-        set_order_status(
-            order_id,
-            "ready"
-        )
-
         order = get_order(
             order_id
         )
@@ -1178,13 +1837,16 @@ def handle_callback(callback):
             {
                 "chat_id":
                     callback_chat_id,
+
                 "message_id":
                     message_id,
+
                 "text":
                     barista_order_text(
                         order,
                         "ready"
                     ),
+
                 "reply_markup":
                     ready_keyboard(
                         order_id
@@ -1196,17 +1858,26 @@ def handle_callback(callback):
             "sendMessage",
             {
                 "chat_id":
-                    order["telegram_id"],
+                    order[
+                        "telegram_id"
+                    ],
+
                 "text":
                     "☕ TAKE AWAY — "
                     "YOUR ORDER IS READY!\n\n"
-                    f"🧾 Order #{order_id}\n"
+                    f"🧾 Order "
+                    f"#{order_id}\n"
                     f"💰 "
-                    f"{order['total']} RSD\n\n"
-                    "Your drinks are "
-                    "ready for pickup. 🤍\n\n"
-                    "💵 Pay at pickup.\n"
-                    "See you soon!"
+                    f"{order['total']} RSD"
+                    "\n\n"
+                    "Your drinks are ready "
+                    "for pickup. 🤍\n\n"
+                    "🇷🇸 Vaša porudžbina "
+                    "je spremna za "
+                    "preuzimanje.\n\n"
+                    "💵 Pay at pickup / "
+                    "Plaćanje pri "
+                    "preuzimanju."
             }
         )
 
@@ -1229,7 +1900,15 @@ def handle_callback(callback):
 
     if action == "picked":
 
-        if current_status != "ready":
+        changed = (
+            transition_order_status(
+                order_id,
+                "ready",
+                "completed"
+            )
+        )
+
+        if not changed:
 
             tg(
                 "answerCallbackQuery",
@@ -1238,16 +1917,12 @@ def handle_callback(callback):
                         callback_id,
                     "text":
                         "Order is not "
-                        "ready yet."
+                        "ready or was "
+                        "already completed."
                 }
             )
 
             return
-
-        set_order_status(
-            order_id,
-            "completed"
-        )
 
         order = get_order(
             order_id
@@ -1258,8 +1933,10 @@ def handle_callback(callback):
             {
                 "chat_id":
                     callback_chat_id,
+
                 "message_id":
                     message_id,
+
                 "text":
                     barista_order_text(
                         order,
@@ -1287,11 +1964,11 @@ def handle_callback(callback):
 
     if action == "cancel":
 
-        if current_status in {
-            "ready",
-            "completed",
-            "cancelled"
-        }:
+        changed = cancel_order_status(
+            order_id
+        )
+
+        if not changed:
 
             tg(
                 "answerCallbackQuery",
@@ -1306,11 +1983,6 @@ def handle_callback(callback):
 
             return
 
-        set_order_status(
-            order_id,
-            "cancelled"
-        )
-
         order = get_order(
             order_id
         )
@@ -1320,8 +1992,10 @@ def handle_callback(callback):
             {
                 "chat_id":
                     callback_chat_id,
+
                 "message_id":
                     message_id,
+
                 "text":
                     barista_order_text(
                         order,
@@ -1334,14 +2008,21 @@ def handle_callback(callback):
             "sendMessage",
             {
                 "chat_id":
-                    order["telegram_id"],
+                    order[
+                        "telegram_id"
+                    ],
+
                 "text":
                     "❌ TAKE AWAY — "
                     "ORDER CANCELLED\n\n"
-                    f"🧾 Order #{order_id}\n\n"
+                    f"🧾 Order "
+                    f"#{order_id}\n\n"
                     "Unfortunately, "
                     "we cannot prepare "
                     "this order.\n\n"
+                    "🇷🇸 Nažalost, "
+                    "ne možemo pripremiti "
+                    "ovu porudžbinu.\n\n"
                     "Sorry for the "
                     "inconvenience."
             }
@@ -1394,6 +2075,7 @@ def bot_webhook():
             received_secret,
             WEBHOOK_SECRET
         ):
+
             return "", 403
 
 
@@ -1408,12 +2090,11 @@ def bot_webhook():
         update,
         dict
     ):
+
         return "", 200
 
 
-    # =====================================================
-    # CALLBACK BUTTONS
-    # =====================================================
+    # CALLBACKS
 
     callback = update.get(
         "callback_query"
@@ -1422,11 +2103,13 @@ def bot_webhook():
     if callback:
 
         try:
+
             handle_callback(
                 callback
             )
 
         except Exception:
+
             logging.exception(
                 "Callback error"
             )
@@ -1434,9 +2117,7 @@ def bot_webhook():
         return "", 200
 
 
-    # =====================================================
     # NORMAL MESSAGE
-    # =====================================================
 
     message = (
         update.get("message")
@@ -1449,7 +2130,9 @@ def bot_webhook():
     )
 
     chat_id = chat.get("id")
-    chat_type = chat.get("type")
+    chat_type = chat.get(
+        "type"
+    )
 
     message_text = str(
         message.get(
@@ -1462,6 +2145,7 @@ def bot_webhook():
         not chat_id
         or chat_type != "private"
     ):
+
         return "", 200
 
 
@@ -1480,36 +2164,49 @@ def bot_webhook():
 
     if command == "/start":
 
-        welcome_message = (
-            "☕ WELCOME TO TAKE AWAY\n\n"
-            "THAI TEA & COFFEE\n\n"
-            "Fresh drinks. "
-            "Good energy. Every day.\n\n"
-            "Choose your favourite drinks, "
-            "select a pickup time and "
-            "we will prepare everything "
-            "for you.\n\n"
-            "💵 Pay at pickup.\n\n"
-            "👇 Tap the button below "
-            "to order!"
-        )
-
         tg(
             "sendMessage",
             {
-                "chat_id": chat_id,
-                "text": "☕ TAKE AWAY",
+                "chat_id":
+                    chat_id,
+
+                "text":
+                    "☕ TAKE AWAY",
+
                 "reply_markup": {
-                    "remove_keyboard": True
+                    "remove_keyboard":
+                        True
                 }
             }
         )
 
+        welcome_message = (
+            "☕ WELCOME TO TAKE AWAY\n\n"
+            "THAI TEA & COFFEE\n\n"
+            "Choose your drinks, "
+            "select a pickup time "
+            "and we'll prepare "
+            "everything for you.\n\n"
+            "💵 Pay at pickup.\n\n"
+            "🇷🇸 DOBRODOŠLI U "
+            "TAKE AWAY\n\n"
+            "Izaberite piće i vreme "
+            "preuzimanja, a mi ćemo "
+            "pripremiti porudžbinu.\n\n"
+            "💵 Plaćanje pri "
+            "preuzimanju.\n\n"
+            "👇 ORDER / PORUČI"
+        )
+
         tg(
             "sendMessage",
             {
-                "chat_id": chat_id,
-                "text": welcome_message,
+                "chat_id":
+                    chat_id,
+
+                "text":
+                    welcome_message,
+
                 "reply_markup":
                     order_keyboard()
             }
@@ -1527,13 +2224,22 @@ def bot_webhook():
         tg(
             "sendMessage",
             {
-                "chat_id": chat_id,
+                "chat_id":
+                    chat_id,
+
                 "text":
                     "☕ TAKE AWAY\n\n"
-                    "Choose your drinks and "
-                    "select a pickup time.\n\n"
+                    "Choose your drinks "
+                    "and pickup time.\n"
                     "Pickup: 07:00–17:00\n"
-                    "Payment: at pickup.",
+                    "Payment: at pickup.\n\n"
+                    "🇷🇸 Izaberite piće "
+                    "i vreme preuzimanja.\n"
+                    "Preuzimanje: "
+                    "07:00–17:00\n"
+                    "Plaćanje pri "
+                    "preuzimanju.",
+
                 "reply_markup":
                     order_keyboard()
             }
@@ -1546,7 +2252,7 @@ def bot_webhook():
 
 
 # =========================================================
-# RUN LOCAL
+# LOCAL RUN
 # =========================================================
 
 if __name__ == "__main__":
