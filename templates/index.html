@@ -19,12 +19,9 @@
 :root{
   --green:#073b28;
   --green2:#0b5136;
-  --green3:#0f6543;
   --cream:#f7f2e8;
   --white:#ffffff;
   --gold:#d6b36a;
-  --orange:#d85c17;
-  --line:rgba(255,255,255,.15);
   --muted:rgba(255,255,255,.65);
 }
 
@@ -53,35 +50,30 @@ body{
     linear-gradient(180deg,#063722,#052d1e);
 
   color:white;
-
   min-height:100vh;
-
   padding-bottom:120px;
 }
 
 button,
 select{
   font:inherit;
+  cursor:pointer;
 }
 
 
-/* =====================================
+/* =========================================
    HEADER
-===================================== */
+========================================= */
 
 .header{
-  padding:
-    18px
-    17px
-    23px;
-
+  padding:18px 17px 24px;
   text-align:center;
 }
 
 .top{
   display:flex;
   justify-content:flex-end;
-  margin-bottom:13px;
+  margin-bottom:5px;
 }
 
 
@@ -90,7 +82,6 @@ select{
 .languages{
   display:flex;
   gap:5px;
-
   padding:4px;
 
   border:1px solid rgba(255,255,255,.12);
@@ -101,16 +92,12 @@ select{
 
 .lang{
   border:0;
-
   padding:7px 9px;
 
   border-radius:11px;
-
   background:transparent;
 
-  color:white;
-
-  font-size:16px;
+  font-size:17px;
 }
 
 .lang.active{
@@ -118,27 +105,35 @@ select{
 }
 
 
-/* LOGO */
+/* =========================================
+   WALKING CUP LOGO
+========================================= */
 
-.logo-icon{
-  width:67px;
-  height:67px;
+.walking-logo{
+  width:91px;
+  height:106px;
 
-  margin:
-    0 auto
-    7px;
+  margin:-3px auto 0;
 
   display:flex;
   align-items:center;
   justify-content:center;
-
-  border:2px solid white;
-  border-radius:20px;
-
-  font-size:35px;
-
-  transform:rotate(-2deg);
 }
+
+.walking-logo svg{
+  display:block;
+  width:100%;
+  height:100%;
+
+  overflow:visible;
+
+  filter:
+    drop-shadow(
+      0 5px 10px
+      rgba(0,0,0,.16)
+    );
+}
+
 
 .logo{
   font-family:
@@ -147,10 +142,10 @@ select{
     serif;
 
   font-size:31px;
-
   letter-spacing:8px;
 
   margin-left:8px;
+  margin-top:-5px;
 }
 
 .subtitle{
@@ -161,7 +156,6 @@ select{
     serif;
 
   font-size:11px;
-
   letter-spacing:5px;
 
   color:rgba(255,255,255,.75);
@@ -173,14 +167,13 @@ select{
   color:var(--gold);
 
   font-size:10px;
-
   letter-spacing:3px;
 }
 
 
-/* =====================================
+/* =========================================
    TABS
-===================================== */
+========================================= */
 
 .tabs-wrap{
   position:sticky;
@@ -188,10 +181,7 @@ select{
 
   z-index:20;
 
-  padding:
-    8px
-    12px
-    9px;
+  padding:8px 12px 9px;
 
   background:rgba(5,45,30,.92);
 
@@ -201,16 +191,12 @@ select{
 
 .tabs{
   display:grid;
-
-  grid-template-columns:
-    repeat(3,1fr);
+  grid-template-columns:repeat(3,1fr);
 
   gap:5px;
-
   padding:4px;
 
   border-radius:16px;
-
   background:rgba(0,0,0,.18);
 }
 
@@ -234,26 +220,21 @@ select{
 }
 
 
-/* =====================================
+/* =========================================
    MENU
-===================================== */
+========================================= */
 
 .section{
-  padding:
-    18px
-    13px
-    5px;
+  padding:18px 13px 5px;
 }
 
 .section-header{
   display:flex;
   align-items:center;
+
   gap:10px;
 
-  margin:
-    0
-    4px
-    15px;
+  margin:0 4px 15px;
 }
 
 .section-icon{
@@ -262,55 +243,41 @@ select{
 }
 
 .section-title{
-  font-family:
-    Georgia,
-    serif;
+  font-family:Georgia,serif;
 
   font-size:25px;
-
   letter-spacing:3px;
 }
 
 .section-line{
   height:1px;
-
   flex:1;
 
-  background:
-    rgba(255,255,255,.28);
+  background:rgba(255,255,255,.28);
 }
 
 
-/* PRODUCT GRID */
-
 .products{
   display:grid;
-
-  grid-template-columns:
-    repeat(2,1fr);
+  grid-template-columns:repeat(2,1fr);
 
   gap:10px;
 }
 
 
-/* CARD */
+/* =========================================
+   PRODUCT CARD
+========================================= */
 
 .product{
   position:relative;
-
   overflow:hidden;
 
   min-height:235px;
 
-  padding:
-    13px
-    12px
-    14px;
+  padding:13px 12px 14px;
 
-  border:
-    1px solid
-    rgba(255,255,255,.10);
-
+  border:1px solid rgba(255,255,255,.10);
   border-radius:22px;
 
   background:
@@ -338,12 +305,13 @@ select{
 
   border-radius:50%;
 
-  background:
-    rgba(255,255,255,.035);
+  background:rgba(255,255,255,.035);
 }
 
 
-/* DRINK VISUAL */
+/* =========================================
+   DRINK DRAWINGS
+========================================= */
 
 .drink{
   position:relative;
@@ -358,25 +326,18 @@ select{
 }
 
 
-/* CUP */
-
 .cup{
   position:relative;
 
   width:72px;
   height:88px;
 
-  border:
-    2px solid
-    rgba(255,255,255,.75);
+  border:2px solid rgba(255,255,255,.75);
 
   border-radius:
-    8px
-    8px
-    20px
-    20px;
+    8px 8px 20px 20px;
 
-  overflow:hidden;
+  overflow:visible;
 
   box-shadow:
     0 10px 20px
@@ -394,8 +355,9 @@ select{
 
   height:9px;
 
-  background:
-    rgba(255,255,255,.65);
+  z-index:3;
+
+  background:rgba(255,255,255,.65);
 }
 
 .liquid{
@@ -407,15 +369,14 @@ select{
 
   height:72px;
 
+  overflow:hidden;
+
   border-radius:
-    4px
-    4px
-    15px
-    15px;
+    4px 4px 15px 15px;
 }
 
 
-/* COLORS */
+/* DRINK COLORS */
 
 .espresso .liquid{
   background:
@@ -465,13 +426,15 @@ select{
     );
 }
 
-/* BLACK TEA WITH LIME */
+
+/* BLACK TEA + LIME */
 
 .limetea .liquid{
   background:
     linear-gradient(
-      #5b2d13,
-      #24140d
+      #6e3919 0%,
+      #43200f 45%,
+      #21120b 100%
     );
 }
 
@@ -493,10 +456,10 @@ select{
 }
 
 
-/* ICE */
-
 .ice{
   position:absolute;
+
+  z-index:2;
 
   top:27px;
   left:14px;
@@ -513,32 +476,29 @@ select{
 .lime{
   position:absolute;
 
-  width:31px;
-  height:31px;
+  z-index:10;
 
-  right:-11px;
-  top:15px;
+  width:32px;
+  height:32px;
 
-  border:
-    3px solid
-    #b9d83f;
+  right:-12px;
+  top:14px;
 
+  border:3px solid #b9d83f;
   border-radius:50%;
 
   background:
     radial-gradient(
       circle,
-      #e9f3a6 0 20%,
+      #eef6b0 0 20%,
       #9fc735 21% 28%,
       #e9f3a6 29% 47%,
       #a4cb38 48%
     );
-
-  z-index:4;
 }
 
 
-/* COFFEE CUP */
+/* CERAMIC CUP */
 
 .coffee-cup{
   position:relative;
@@ -547,10 +507,7 @@ select{
   height:55px;
 
   border-radius:
-    6px
-    6px
-    28px
-    28px;
+    6px 6px 28px 28px;
 
   background:white;
 
@@ -586,32 +543,26 @@ select{
   width:23px;
   height:25px;
 
-  border:
-    6px solid white;
-
+  border:6px solid white;
   border-left:0;
 
   border-radius:
-    0
-    18px
-    18px
-    0;
+    0 18px 18px 0;
 }
 
 
-/* PRODUCT TEXT */
+/* =========================================
+   PRODUCT TEXT
+========================================= */
 
 .product-name{
   min-height:37px;
 
   text-align:center;
 
-  font-family:
-    Georgia,
-    serif;
+  font-family:Georgia,serif;
 
   font-size:15px;
-
   line-height:1.15;
 }
 
@@ -625,7 +576,6 @@ select{
   color:rgba(255,255,255,.58);
 
   font-size:10px;
-
   line-height:1.25;
 }
 
@@ -634,9 +584,7 @@ select{
 
   text-align:center;
 
-  font-family:
-    Georgia,
-    serif;
+  font-family:Georgia,serif;
 
   font-size:19px;
 }
@@ -648,14 +596,11 @@ select{
 
   border:0;
 
-  padding:
-    10px
-    7px;
+  padding:10px 7px;
 
   border-radius:12px;
 
   background:white;
-
   color:var(--green);
 
   font-size:12px;
@@ -663,32 +608,88 @@ select{
 }
 
 
-/* =====================================
+/* =========================================
+   CART
+========================================= */
+
+.cart-section{
+  margin:12px 13px;
+  display:none;
+}
+
+.cart-section.show{
+  display:block;
+}
+
+.cart-title{
+  font-family:Georgia,serif;
+
+  font-size:20px;
+
+  margin-bottom:9px;
+}
+
+.cart-item{
+  display:flex;
+
+  justify-content:space-between;
+  align-items:center;
+
+  gap:8px;
+
+  margin-bottom:6px;
+
+  padding:11px;
+
+  border-radius:13px;
+
+  background:rgba(255,255,255,.08);
+
+  font-size:12px;
+}
+
+.cart-extra{
+  margin-top:3px;
+
+  color:rgba(255,255,255,.55);
+
+  font-size:10px;
+}
+
+.remove{
+  width:28px;
+  height:28px;
+
+  border:0;
+  border-radius:8px;
+
+  margin-left:5px;
+
+  background:rgba(255,255,255,.15);
+
+  color:white;
+
+  font-size:17px;
+}
+
+
+/* =========================================
    PICKUP
-===================================== */
+========================================= */
 
 .pickup{
-  margin:
-    18px
-    13px
-    12px;
+  margin:18px 13px 12px;
 
   padding:17px;
 
-  border:
-    1px solid
-    rgba(255,255,255,.12);
-
+  border:1px solid rgba(255,255,255,.12);
   border-radius:22px;
 
-  background:
-    rgba(255,255,255,.07);
+  background:rgba(255,255,255,.07);
 }
 
 .pickup h2{
-  font-family:
-    Georgia,
-    serif;
+  font-family:Georgia,serif;
 
   font-size:19px;
 
@@ -706,9 +707,7 @@ select{
 .pickup-modes{
   display:grid;
 
-  grid-template-columns:
-    1fr
-    1fr;
+  grid-template-columns:1fr 1fr;
 
   gap:6px;
 
@@ -717,14 +716,11 @@ select{
 
 .pickup-mode,
 .time{
-  border:
-    1px solid
-    rgba(255,255,255,.15);
+  border:1px solid rgba(255,255,255,.15);
 
   border-radius:12px;
 
-  background:
-    rgba(0,0,0,.15);
+  background:rgba(0,0,0,.15);
 
   color:white;
 
@@ -733,7 +729,7 @@ select{
 }
 
 .pickup-mode{
-  height:43px;
+  min-height:43px;
 }
 
 .pickup-mode.active,
@@ -745,8 +741,7 @@ select{
 .times{
   display:grid;
 
-  grid-template-columns:
-    repeat(4,1fr);
+  grid-template-columns:repeat(4,1fr);
 
   gap:6px;
 }
@@ -770,12 +765,9 @@ select{
   border:0;
   border-radius:12px;
 
-  padding:
-    0
-    13px;
+  padding:0 13px;
 
   background:white;
-
   color:var(--green);
 
   font-weight:700;
@@ -790,277 +782,14 @@ select{
 }
 
 
-/* =====================================
-   CART
-===================================== */
-
-.cart-section{
-  margin:
-    12px
-    13px;
-
-  display:none;
-}
-
-.cart-section.show{
-  display:block;
-}
-
-.cart-title{
-  font-family:
-    Georgia,
-    serif;
-
-  font-size:20px;
-
-  margin-bottom:9px;
-}
-
-.cart-item{
-  display:flex;
-
-  justify-content:space-between;
-  align-items:center;
-
-  gap:8px;
-
-  margin-bottom:6px;
-
-  padding:11px;
-
-  border-radius:13px;
-
-  background:
-    rgba(255,255,255,.08);
-
-  font-size:12px;
-}
-
-.cart-extra{
-  margin-top:3px;
-
-  color:rgba(255,255,255,.55);
-
-  font-size:10px;
-}
-
-.remove{
-  width:28px;
-  height:28px;
-
-  border:0;
-  border-radius:8px;
-
-  background:
-    rgba(255,255,255,.15);
-
-  color:white;
-
-  font-size:17px;
-}
-
-
-/* =====================================
-   BOTTOM
-===================================== */
-
-.bottom{
-  position:fixed;
-
-  z-index:30;
-
-  left:9px;
-  right:9px;
-  bottom:9px;
-
-  display:flex;
-
-  align-items:center;
-  justify-content:space-between;
-
-  gap:10px;
-
-  padding:
-    10px
-    10px
-    10px
-    15px;
-
-  border:
-    1px solid
-    rgba(255,255,255,.14);
-
-  border-radius:20px;
-
-  background:
-    rgba(3,28,19,.96);
-
-  backdrop-filter:blur(15px);
-
-  box-shadow:
-    0 15px 35px
-    rgba(0,0,0,.35);
-}
-
-.bottom small{
-  display:block;
-
-  color:rgba(255,255,255,.55);
-
-  font-size:10px;
-}
-
-.total{
-  margin-top:2px;
-
-  font-size:19px;
-  font-weight:800;
-}
-
-.order{
-  min-width:135px;
-
-  border:0;
-
-  padding:
-    13px
-    12px;
-
-  border-radius:13px;
-
-  background:white;
-
-  color:var(--green);
-
-  font-size:12px;
-  font-weight:800;
-}
-
-.order:disabled{
-  opacity:.5;
-}
-
-
-/* =====================================
-   MODAL
-===================================== */
-
-.modal-bg{
-  position:fixed;
-
-  inset:0;
-
-  z-index:50;
-
-  display:none;
-
-  align-items:flex-end;
-
-  background:
-    rgba(0,0,0,.55);
-
-  backdrop-filter:blur(4px);
-}
-
-.modal-bg.open{
-  display:flex;
-}
-
-.modal{
-  width:100%;
-
-  padding:
-    21px
-    17px
-    28px;
-
-  border-radius:
-    25px
-    25px
-    0
-    0;
-
-  background:#f6f0e5;
-
-  color:#13291f;
-}
-
-.modal h2{
-  font-family:
-    Georgia,
-    serif;
-
-  font-size:23px;
-}
-
-.modal-price{
-  margin:
-    4px
-    0
-    16px;
-
-  color:#777;
-}
-
-.addon{
-  width:100%;
-
-  display:flex;
-
-  justify-content:space-between;
-
-  padding:14px;
-
-  margin-bottom:7px;
-
-  border:
-    1px solid
-    #ddd4c5;
-
-  border-radius:13px;
-
-  background:white;
-
-  color:#183326;
-}
-
-.addon.selected{
-  border:
-    2px solid
-    var(--green);
-
-  background:#e5eee8;
-}
-
-.modal-add{
-  width:100%;
-
-  margin-top:8px;
-
-  border:0;
-
-  padding:14px;
-
-  border-radius:13px;
-
-  background:var(--green);
-
-  color:white;
-
-  font-weight:800;
-}
-
-
-/* =====================================
+/* =========================================
    MESSAGE
-===================================== */
+========================================= */
 
 .message{
   display:none;
 
-  margin:
-    12px
-    13px;
+  margin:12px 13px;
 
   padding:13px;
 
@@ -1087,9 +816,171 @@ select{
 }
 
 
-/* =====================================
-   DESKTOP / BIG TELEGRAM
-===================================== */
+/* =========================================
+   BOTTOM CART
+========================================= */
+
+.bottom{
+  position:fixed;
+
+  z-index:30;
+
+  left:9px;
+  right:9px;
+  bottom:9px;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:space-between;
+
+  gap:10px;
+
+  padding:10px 10px 10px 15px;
+
+  border:1px solid rgba(255,255,255,.14);
+
+  border-radius:20px;
+
+  background:rgba(3,28,19,.96);
+
+  backdrop-filter:blur(15px);
+  -webkit-backdrop-filter:blur(15px);
+
+  box-shadow:
+    0 15px 35px
+    rgba(0,0,0,.35);
+}
+
+.bottom small{
+  display:block;
+
+  color:rgba(255,255,255,.55);
+
+  font-size:10px;
+}
+
+.total{
+  margin-top:2px;
+
+  font-size:19px;
+  font-weight:800;
+}
+
+.order{
+  min-width:135px;
+
+  border:0;
+
+  padding:13px 12px;
+
+  border-radius:13px;
+
+  background:white;
+  color:var(--green);
+
+  font-size:12px;
+  font-weight:800;
+}
+
+.order:disabled{
+  opacity:.5;
+}
+
+
+/* =========================================
+   MODAL
+========================================= */
+
+.modal-bg{
+  position:fixed;
+
+  inset:0;
+
+  z-index:50;
+
+  display:none;
+
+  align-items:flex-end;
+
+  background:rgba(0,0,0,.55);
+
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+}
+
+.modal-bg.open{
+  display:flex;
+}
+
+.modal{
+  width:100%;
+
+  padding:21px 17px 28px;
+
+  border-radius:
+    25px 25px 0 0;
+
+  background:#f6f0e5;
+
+  color:#13291f;
+}
+
+.modal h2{
+  font-family:Georgia,serif;
+
+  font-size:23px;
+}
+
+.modal-price{
+  margin:4px 0 16px;
+
+  color:#777;
+}
+
+.addon{
+  width:100%;
+
+  display:flex;
+
+  justify-content:space-between;
+
+  padding:14px;
+
+  margin-bottom:7px;
+
+  border:1px solid #ddd4c5;
+  border-radius:13px;
+
+  background:white;
+
+  color:#183326;
+}
+
+.addon.selected{
+  border:2px solid var(--green);
+
+  background:#e5eee8;
+}
+
+.modal-add{
+  width:100%;
+
+  margin-top:8px;
+
+  border:0;
+
+  padding:14px;
+
+  border-radius:13px;
+
+  background:var(--green);
+
+  color:white;
+
+  font-weight:800;
+}
+
 
 @media(min-width:600px){
 
@@ -1112,9 +1003,9 @@ select{
 <body>
 
 
-<!-- =====================================
+<!-- =========================================
      HEADER
-===================================== -->
+========================================= -->
 
 <header class="header">
 
@@ -1151,8 +1042,155 @@ select{
   </div>
 
 
-  <div class="logo-icon">
-    ☕
+  <!-- WALKING TAKE AWAY CUP -->
+
+  <div class="walking-logo">
+
+    <svg
+      viewBox="0 0 120 140"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+
+      <!-- STRAW -->
+
+      <path
+        d="M69 25
+           C70 15 77 11 84 10
+           C92 9 96 5 96 1"
+        fill="none"
+        stroke="white"
+        stroke-width="4.5"
+        stroke-linecap="round"
+      />
+
+
+      <!-- TOP OF LID -->
+
+      <path
+        d="M28 36
+           Q60 28 92 36"
+        fill="none"
+        stroke="white"
+        stroke-width="4.5"
+        stroke-linecap="round"
+      />
+
+
+      <!-- LID -->
+
+      <path
+        d="M27 36
+           L93 36
+           L90 47
+           L30 47
+           Z"
+        fill="none"
+        stroke="white"
+        stroke-width="4.5"
+        stroke-linejoin="round"
+      />
+
+
+      <!-- CUP -->
+
+      <path
+        d="M34 47
+           L86 47
+           L79 100
+           Q60 108 41 100
+           Z"
+        fill="none"
+        stroke="white"
+        stroke-width="4.5"
+        stroke-linejoin="round"
+      />
+
+
+      <!-- LEFT EYE -->
+
+      <circle
+        cx="51"
+        cy="70"
+        r="3"
+        fill="white"
+      />
+
+
+      <!-- RIGHT EYE -->
+
+      <circle
+        cx="69"
+        cy="70"
+        r="3"
+        fill="white"
+      />
+
+
+      <!-- SMILE -->
+
+      <path
+        d="M50 80
+           Q60 90 71 80"
+        fill="none"
+        stroke="white"
+        stroke-width="3.8"
+        stroke-linecap="round"
+      />
+
+
+      <!-- LEFT LEG -->
+
+      <path
+        d="M49 102
+           L42 116
+           L31 112"
+        fill="none"
+        stroke="white"
+        stroke-width="4.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+
+
+      <!-- LEFT FOOT -->
+
+      <path
+        d="M31 112
+           L26 118"
+        fill="none"
+        stroke="white"
+        stroke-width="4.5"
+        stroke-linecap="round"
+      />
+
+
+      <!-- RIGHT LEG -->
+
+      <path
+        d="M69 103
+           L79 117
+           L90 110"
+        fill="none"
+        stroke="white"
+        stroke-width="4.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+
+
+      <!-- RIGHT FOOT -->
+
+      <path
+        d="M90 110
+           L96 115"
+        fill="none"
+        stroke="white"
+        stroke-width="4.5"
+        stroke-linecap="round"
+      />
+
+    </svg>
+
   </div>
 
 
@@ -1173,9 +1211,9 @@ select{
 </header>
 
 
-<!-- =====================================
+<!-- =========================================
      TABS
-===================================== -->
+========================================= -->
 
 <div class="tabs-wrap">
 
@@ -1212,12 +1250,14 @@ select{
 </div>
 
 
+<!-- MENU -->
+
 <div id="menu"></div>
 
 
-<!-- =====================================
+<!-- =========================================
      CART
-===================================== -->
+========================================= -->
 
 <div
   id="cartSection"
@@ -1236,15 +1276,16 @@ select{
 </div>
 
 
-<!-- =====================================
+<!-- =========================================
      PICKUP
-===================================== -->
+========================================= -->
 
 <section class="pickup">
 
   <h2 id="pickupTitle">
     Pickup time
   </h2>
+
 
   <div
     id="pickupSubtitle"
@@ -1263,6 +1304,7 @@ select{
     >
       ASAP
     </button>
+
 
     <button
       id="exactMode"
@@ -1329,8 +1371,7 @@ select{
   <div
     id="pickupInfo"
     class="pickup-info"
-  >
-  </div>
+  ></div>
 
 </section>
 
@@ -1341,9 +1382,9 @@ select{
 ></div>
 
 
-<!-- =====================================
-     BOTTOM
-===================================== -->
+<!-- =========================================
+     BOTTOM CART
+========================================= -->
 
 <div class="bottom">
 
@@ -1374,9 +1415,9 @@ select{
 </div>
 
 
-<!-- =====================================
-     ADDONS MODAL
-===================================== -->
+<!-- =========================================
+     MODAL
+========================================= -->
 
 <div
   id="modalBg"
@@ -1401,7 +1442,7 @@ select{
     >
 
       <strong id="extraText">
-        Extra shot
+        Extra espresso shot
       </strong>
 
       <span>
@@ -1418,7 +1459,7 @@ select{
     >
 
       <strong id="bobaText">
-        Boba
+        Add boba
       </strong>
 
       <span>
@@ -1443,9 +1484,9 @@ select{
 
 <script>
 
-/* =====================================
+/* =========================================
    TELEGRAM
-===================================== */
+========================================= */
 
 const tg =
   window.Telegram.WebApp;
@@ -1454,9 +1495,9 @@ tg.ready();
 tg.expand();
 
 
-/* =====================================
-   LANGUAGES
-===================================== */
+/* =========================================
+   TRANSLATIONS
+========================================= */
 
 const TEXT = {
 
@@ -1501,16 +1542,14 @@ const TEXT = {
 
     addOrder:"Add to order",
 
-    empty:
-      "Please add a drink first.",
+    empty:"Please add a drink first.",
 
     choosePickup:
       "Please choose a pickup time.",
 
     success:"Order confirmed!",
 
-    pay:
-      "Pay when you collect.",
+    pay:"Pay when you collect.",
 
     noTimes:
       "No pickup times available today."
@@ -1558,16 +1597,14 @@ const TEXT = {
 
     addOrder:"Dodaj u porudžbinu",
 
-    empty:
-      "Prvo dodajte piće.",
+    empty:"Prvo dodajte piće.",
 
     choosePickup:
       "Izaberite vreme preuzimanja.",
 
     success:"Porudžbina potvrđena!",
 
-    pay:
-      "Plaćanje prilikom preuzimanja.",
+    pay:"Plaćanje prilikom preuzimanja.",
 
     noTimes:
       "Danas nema dostupnih termina."
@@ -1615,16 +1652,14 @@ const TEXT = {
 
     addOrder:"Добавить в заказ",
 
-    empty:
-      "Сначала добавьте напиток.",
+    empty:"Сначала добавьте напиток.",
 
     choosePickup:
       "Выберите время получения.",
 
     success:"Заказ подтвержден!",
 
-    pay:
-      "Оплата при получении.",
+    pay:"Оплата при получении.",
 
     noTimes:
       "На сегодня свободного времени нет."
@@ -1632,6 +1667,10 @@ const TEXT = {
 
 };
 
+
+/* =========================================
+   PRODUCT TRANSLATIONS
+========================================= */
 
 const PRODUCT_TEXT = {
 
@@ -1641,11 +1680,13 @@ const PRODUCT_TEXT = {
     ru:["Эспрессо","Классический эспрессо"]
   },
 
+
   americano:{
     en:["Americano","Espresso + hot water"],
     sr:["Amerikano","Espresso + topla voda"],
     ru:["Американо","Эспрессо + горячая вода"]
   },
+
 
   cappuccino:{
     en:["Cappuccino","Espresso + milk foam"],
@@ -1653,11 +1694,13 @@ const PRODUCT_TEXT = {
     ru:["Капучино","Эспрессо + молочная пена"]
   },
 
+
   latte:{
     en:["Latte","Espresso + milk"],
     sr:["Latte","Espresso + mleko"],
     ru:["Латте","Эспрессо + молоко"]
   },
+
 
   flatwhite:{
     en:["Flat White","Double espresso + milk"],
@@ -1665,11 +1708,13 @@ const PRODUCT_TEXT = {
     ru:["Флэт уайт","Двойной эспрессо + молоко"]
   },
 
+
   icedlatte:{
     en:["Iced Latte","Espresso + milk + ice"],
     sr:["Ledeni Latte","Espresso + mleko + led"],
     ru:["Айс латте","Эспрессо + молоко + лёд"]
   },
+
 
   thai:{
     en:[
@@ -1688,6 +1733,7 @@ const PRODUCT_TEXT = {
     ]
   },
 
+
   green:{
     en:[
       "Thai Green Milk Tea",
@@ -1704,6 +1750,7 @@ const PRODUCT_TEXT = {
       "Зелёный чай + молоко + лёд"
     ]
   },
+
 
   lime:{
     en:[
@@ -1722,6 +1769,7 @@ const PRODUCT_TEXT = {
     ]
   },
 
+
   tonic:{
     en:[
       "Tonic Coffee",
@@ -1738,6 +1786,7 @@ const PRODUCT_TEXT = {
       "Эспрессо + тоник + лёд"
     ]
   },
+
 
   bumble:{
     en:[
@@ -1759,46 +1808,44 @@ const PRODUCT_TEXT = {
 };
 
 
-let language = "en";
-
-
-/* =====================================
+/* =========================================
    STATE
-===================================== */
+========================================= */
 
-let menu = [];
+let language="en";
 
-let cart = [];
+let menu=[];
 
-let category = "tea";
+let cart=[];
 
-let selectedProduct = null;
+let category="tea";
 
-let modalExtra = false;
+let selectedProduct=null;
 
-let modalBoba = false;
+let modalExtra=false;
 
-let pickupMode = "asap";
+let modalBoba=false;
 
-let pickupMinutes = 10;
+let pickupMode="asap";
 
-let exactPickupDate = null;
+let pickupMinutes=10;
+
+let exactPickupDate=null;
 
 
-/* =====================================
-   CHANGE LANGUAGE
-===================================== */
+/* =========================================
+   LANGUAGE
+========================================= */
 
 function changeLanguage(lang){
 
-  language = lang;
+  language=lang;
 
 
   document
     .querySelectorAll(".lang")
     .forEach(
-      x =>
-        x.classList.remove("active")
+      x=>x.classList.remove("active")
     );
 
 
@@ -1807,76 +1854,41 @@ function changeLanguage(lang){
     .classList.add("active");
 
 
-  document.getElementById(
-    "tab-tea"
-  ).innerText =
-    TEXT[lang].tea;
+  document.getElementById("tab-tea")
+    .innerText=TEXT[lang].tea;
 
+  document.getElementById("tab-coffee")
+    .innerText=TEXT[lang].coffee;
 
-  document.getElementById(
-    "tab-coffee"
-  ).innerText =
-    TEXT[lang].coffee;
+  document.getElementById("tab-special")
+    .innerText=TEXT[lang].specials;
 
+  document.getElementById("cartTitle")
+    .innerText=TEXT[lang].cart;
 
-  document.getElementById(
-    "tab-special"
-  ).innerText =
-    TEXT[lang].specials;
+  document.getElementById("pickupTitle")
+    .innerText=TEXT[lang].pickup;
 
+  document.getElementById("pickupSubtitle")
+    .innerText=TEXT[lang].pickupSub;
 
-  document.getElementById(
-    "cartTitle"
-  ).innerText =
-    TEXT[lang].cart;
+  document.getElementById("asapMode")
+    .innerText=TEXT[lang].asap;
 
+  document.getElementById("exactMode")
+    .innerText=TEXT[lang].choose;
 
-  document.getElementById(
-    "pickupTitle"
-  ).innerText =
-    TEXT[lang].pickup;
+  document.getElementById("orderButton")
+    .innerText=TEXT[lang].order;
 
+  document.getElementById("extraText")
+    .innerText=TEXT[lang].extra;
 
-  document.getElementById(
-    "pickupSubtitle"
-  ).innerText =
-    TEXT[lang].pickupSub;
+  document.getElementById("bobaText")
+    .innerText=TEXT[lang].boba;
 
-
-  document.getElementById(
-    "asapMode"
-  ).innerText =
-    TEXT[lang].asap;
-
-
-  document.getElementById(
-    "exactMode"
-  ).innerText =
-    TEXT[lang].choose;
-
-
-  document.getElementById(
-    "orderButton"
-  ).innerText =
-    TEXT[lang].order;
-
-
-  document.getElementById(
-    "extraText"
-  ).innerText =
-    TEXT[lang].extra;
-
-
-  document.getElementById(
-    "bobaText"
-  ).innerText =
-    TEXT[lang].boba;
-
-
-  document.getElementById(
-    "modalAdd"
-  ).innerText =
-    TEXT[lang].addOrder;
+  document.getElementById("modalAdd")
+    .innerText=TEXT[lang].addOrder;
 
 
   renderMenu();
@@ -1887,24 +1899,26 @@ function changeLanguage(lang){
 }
 
 
-/* =====================================
+/* =========================================
    LOAD MENU
-===================================== */
+========================================= */
 
 async function loadMenu(){
 
   try{
 
-    const response =
+    const response=
       await fetch("/api/menu");
 
 
     if(!response.ok){
-      throw new Error();
+      throw new Error(
+        "Could not load menu"
+      );
     }
 
 
-    menu =
+    menu=
       await response.json();
 
 
@@ -1923,20 +1937,19 @@ async function loadMenu(){
 }
 
 
-/* =====================================
+/* =========================================
    CATEGORY
-===================================== */
+========================================= */
 
 function showCategory(cat,button){
 
-  category = cat;
+  category=cat;
 
 
   document
     .querySelectorAll(".tab")
     .forEach(
-      x =>
-        x.classList.remove("active")
+      x=>x.classList.remove("active")
     );
 
 
@@ -1947,9 +1960,9 @@ function showCategory(cat,button){
 }
 
 
-/* =====================================
+/* =========================================
    PRODUCT TEXT
-===================================== */
+========================================= */
 
 function productText(id){
 
@@ -1964,8 +1977,8 @@ function productText(id){
   }
 
 
-  const p =
-    menu.find(x => x.id === id);
+  const p=
+    menu.find(x=>x.id===id);
 
 
   return [
@@ -1975,61 +1988,56 @@ function productText(id){
 }
 
 
-/* =====================================
-   DRINK TYPE
-===================================== */
+/* =========================================
+   DRINK CLASS
+========================================= */
 
 function drinkClass(id){
 
-  if(id === "espresso")
+  if(id==="espresso")
     return "espresso";
 
-  if(id === "americano")
+  if(id==="americano")
     return "americano";
 
   if(
-    id === "cappuccino" ||
-    id === "latte" ||
-    id === "flatwhite"
+    id==="cappuccino" ||
+    id==="latte" ||
+    id==="flatwhite"
   )
     return "milkcoffee";
 
-  if(id === "icedlatte")
+  if(id==="icedlatte")
     return "icedcoffee";
 
-  if(id === "thai")
+  if(id==="thai")
     return "thai";
 
-  if(id === "green")
+  if(id==="green")
     return "greentea";
 
-  if(id === "lime")
+  if(id==="lime")
     return "limetea";
 
-  if(id === "bumble")
+  if(id==="bumble")
     return "bumble";
 
-  if(id === "tonic")
+  if(id==="tonic")
     return "tonic";
 
   return "americano";
 }
 
 
-/* =====================================
+/* =========================================
    DRINK VISUAL
-===================================== */
+========================================= */
 
 function drinkVisual(id){
 
-  /*
-    Hot milk coffees get
-    a ceramic cup.
-  */
-
   if(
-    id === "cappuccino" ||
-    id === "flatwhite"
+    id==="cappuccino" ||
+    id==="flatwhite"
   ){
 
     return `
@@ -2041,13 +2049,13 @@ function drinkVisual(id){
   }
 
 
-  const lime =
-    id === "lime"
+  const lime=
+    id==="lime"
       ? `<span class="lime"></span>`
       : "";
 
 
-  const ice =
+  const ice=
     [
       "icedlatte",
       "thai",
@@ -2056,7 +2064,9 @@ function drinkVisual(id){
       "bumble",
       "tonic"
     ].includes(id)
+
       ? `<span class="ice">◇ ◇</span>`
+
       : "";
 
 
@@ -2080,9 +2090,9 @@ function drinkVisual(id){
 }
 
 
-/* =====================================
+/* =========================================
    EXTRA SHOT
-===================================== */
+========================================= */
 
 function canExtra(id){
 
@@ -2099,126 +2109,121 @@ function canExtra(id){
 }
 
 
-/* =====================================
+/* =========================================
    RENDER MENU
-===================================== */
+========================================= */
 
 function renderMenu(){
 
-  const filtered =
+  const filtered=
     menu.filter(
-      x => x.category === category
+      x=>x.category===category
     );
 
 
-  let title =
+  let title=
     TEXT[language].coffeeTitle;
 
 
-  let icon = "☕";
+  let icon="☕";
 
 
-  if(category === "tea"){
+  if(category==="tea"){
 
-    title =
+    title=
       TEXT[language].teaTitle;
 
-    icon = "🍃";
+    icon="🍃";
 
   }
 
 
-  if(category === "special"){
+  if(category==="special"){
 
-    title =
+    title=
       TEXT[language].specialTitle;
 
-    icon = "✦";
+    icon="✦";
 
   }
 
 
-  document.getElementById(
-    "menu"
-  ).innerHTML = `
+  document.getElementById("menu")
+    .innerHTML=`
 
-    <section class="section">
+      <section class="section">
 
-      <div class="section-header">
+        <div class="section-header">
 
-        <span class="section-icon">
-          ${icon}
-        </span>
+          <span class="section-icon">
+            ${icon}
+          </span>
 
-        <span class="section-title">
-          ${title}
-        </span>
+          <span class="section-title">
+            ${title}
+          </span>
 
-        <span class="section-line"></span>
+          <span class="section-line"></span>
 
-      </div>
-
-
-      <div class="products">
-
-        ${filtered.map(p=>{
-
-          const text =
-            productText(p.id);
+        </div>
 
 
-          return `
+        <div class="products">
 
-            <article class="product">
+          ${filtered.map(p=>{
 
-              ${drinkVisual(p.id)}
-
-
-              <div class="product-name">
-                ${text[0]}
-              </div>
+            const text=
+              productText(p.id);
 
 
-              <div class="product-desc">
-                ${text[1]}
-              </div>
+            return `
 
+              <article class="product">
 
-              <div class="product-price">
-                ${p.price} RSD
-              </div>
+                ${drinkVisual(p.id)}
 
+                <div class="product-name">
+                  ${text[0]}
+                </div>
 
-              <button
-                class="add"
-                onclick="openProduct('${p.id}')"
-              >
-                + ${TEXT[language].add}
-              </button>
+                <div class="product-desc">
+                  ${text[1]}
+                </div>
 
-            </article>
+                <div class="product-price">
+                  ${p.price} RSD
+                </div>
 
-          `;
+                <button
+                  class="add"
+                  onclick="openProduct('${p.id}')"
+                >
+                  + ${TEXT[language].add}
+                </button>
 
-        }).join("")}
+              </article>
 
-      </div>
+            `;
 
-    </section>
+          }).join("")}
 
-  `;
+        </div>
+
+      </section>
+
+    `;
 }
 
 
-/* =====================================
+/* =========================================
    OPEN PRODUCT
-===================================== */
+========================================= */
 
 function openProduct(id){
 
-  selectedProduct =
+  selectedProduct=
     menu.find(
-      x => x.id === id
+      x=>x.id===id
     );
 
 
@@ -2226,65 +2231,47 @@ function openProduct(id){
     return;
 
 
-  modalExtra = false;
-  modalBoba = false;
+  modalExtra=false;
+  modalBoba=false;
 
 
-  const text =
+  const text=
     productText(id);
 
 
-  document.getElementById(
-    "modalName"
-  ).innerText =
-    text[0];
+  document.getElementById("modalName")
+    .innerText=text[0];
 
 
-  document.getElementById(
-    "modalPrice"
-  ).innerText =
-    selectedProduct.price
-    + " RSD";
+  document.getElementById("modalPrice")
+    .innerText=
+      selectedProduct.price+" RSD";
 
 
-  const extra =
-    document.getElementById(
-      "extraOption"
-    );
+  const extra=
+    document.getElementById("extraOption");
 
 
-  const boba =
-    document.getElementById(
-      "bobaOption"
-    );
+  const boba=
+    document.getElementById("bobaOption");
 
 
-  extra.style.display =
+  extra.style.display=
     canExtra(id)
       ? "flex"
       : "none";
 
 
-  boba.style.display =
+  boba.style.display=
     selectedProduct.boba
       ? "flex"
       : "none";
 
 
-  extra.classList.remove(
-    "selected"
-  );
+  extra.classList.remove("selected");
 
+  boba.classList.remove("selected");
 
-  boba.classList.remove(
-    "selected"
-  );
-
-
-  /*
-    If no extras exist,
-    add immediately.
-  */
 
   if(
     !canExtra(id)
@@ -2299,55 +2286,50 @@ function openProduct(id){
   }
 
 
-  document.getElementById(
-    "modalBg"
-  ).classList.add("open");
+  document.getElementById("modalBg")
+    .classList.add("open");
 }
 
 
-/* =====================================
+/* =========================================
    ADDONS
-===================================== */
+========================================= */
 
 function toggleAddon(type){
 
-  if(type === "extra"){
+  if(type==="extra"){
 
-    modalExtra =
-      !modalExtra;
+    modalExtra=!modalExtra;
 
 
-    document.getElementById(
-      "extraOption"
-    ).classList.toggle(
-      "selected",
-      modalExtra
-    );
+    document.getElementById("extraOption")
+      .classList.toggle(
+        "selected",
+        modalExtra
+      );
 
   }
 
 
-  if(type === "boba"){
+  if(type==="boba"){
 
-    modalBoba =
-      !modalBoba;
+    modalBoba=!modalBoba;
 
 
-    document.getElementById(
-      "bobaOption"
-    ).classList.toggle(
-      "selected",
-      modalBoba
-    );
+    document.getElementById("bobaOption")
+      .classList.toggle(
+        "selected",
+        modalBoba
+      );
 
   }
 
 }
 
 
-/* =====================================
+/* =========================================
    CONFIRM ADD
-===================================== */
+========================================= */
 
 function confirmAdd(){
 
@@ -2355,14 +2337,14 @@ function confirmAdd(){
     return;
 
 
-  const existing =
+  const existing=
     cart.find(
-      x =>
-        x.id === selectedProduct.id
+      x=>
+        x.id===selectedProduct.id
         &&
-        x.extra_shot === modalExtra
+        x.extra_shot===modalExtra
         &&
-        x.boba === modalBoba
+        x.boba===modalBoba
     );
 
 
@@ -2374,25 +2356,21 @@ function confirmAdd(){
 
     cart.push({
 
-      id:
-        selectedProduct.id,
+      id:selectedProduct.id,
 
       qty:1,
 
-      extra_shot:
-        modalExtra,
+      extra_shot:modalExtra,
 
-      boba:
-        modalBoba
+      boba:modalBoba
 
     });
 
   }
 
 
-  document.getElementById(
-    "modalBg"
-  ).classList.remove("open");
+  document.getElementById("modalBg")
+    .classList.remove("open");
 
 
   updateCart();
@@ -2408,34 +2386,31 @@ function confirmAdd(){
 }
 
 
-/* =====================================
+/* =========================================
    CLOSE MODAL
-===================================== */
+========================================= */
 
 function closeModal(event){
 
-  if(
-    event.target.id === "modalBg"
-  ){
+  if(event.target.id==="modalBg"){
 
-    document.getElementById(
-      "modalBg"
-    ).classList.remove("open");
+    document.getElementById("modalBg")
+      .classList.remove("open");
 
   }
 
 }
 
 
-/* =====================================
+/* =========================================
    ITEM PRICE
-===================================== */
+========================================= */
 
 function itemPrice(item){
 
-  const product =
+  const product=
     menu.find(
-      x => x.id === item.id
+      x=>x.id===item.id
     );
 
 
@@ -2443,81 +2418,70 @@ function itemPrice(item){
     return 0;
 
 
-  let price =
+  let price=
     Number(product.price);
 
 
   if(item.extra_shot)
-    price += 150;
+    price+=150;
 
 
   if(item.boba)
-    price += 100;
+    price+=100;
 
 
-  return price * item.qty;
+  return price*item.qty;
 }
 
 
-/* =====================================
+/* =========================================
    CART
-===================================== */
+========================================= */
 
 function updateCart(){
 
-  const count =
+  const count=
     cart.reduce(
       (sum,x)=>sum+x.qty,
       0
     );
 
 
-  const total =
+  const total=
     cart.reduce(
-      (sum,x)=>
-        sum+itemPrice(x),
+      (sum,x)=>sum+itemPrice(x),
       0
     );
 
 
-  document.getElementById(
-    "itemCount"
-  ).innerText =
+  document.getElementById("itemCount")
+    .innerText=
 
-    count
-    +
-    " "
-    +
-    (
-      count === 1
-      ? TEXT[language].item
-      : TEXT[language].items
-    );
+      count
+      +" "
+      +(
+        count===1
+          ? TEXT[language].item
+          : TEXT[language].items
+      );
 
 
-  document.getElementById(
-    "total"
-  ).innerText =
-    total+" RSD";
+  document.getElementById("total")
+    .innerText=
+      total+" RSD";
 
 
-  const section =
-    document.getElementById(
-      "cartSection"
-    );
+  const section=
+    document.getElementById("cartSection");
 
 
-  const box =
-    document.getElementById(
-      "cartItems"
-    );
+  const box=
+    document.getElementById("cartItems");
 
 
   if(!cart.length){
 
-    section.classList.remove(
-      "show"
-    );
+    section.classList.remove("show");
 
     box.innerHTML="";
 
@@ -2526,16 +2490,14 @@ function updateCart(){
   }
 
 
-  section.classList.add(
-    "show"
-  );
+  section.classList.add("show");
 
 
-  box.innerHTML =
+  box.innerHTML=
     cart.map(
       (item,index)=>{
 
-        const p =
+        const p=
           menu.find(
             x=>x.id===item.id
           );
@@ -2545,7 +2507,7 @@ function updateCart(){
           return "";
 
 
-        const text =
+        const text=
           productText(item.id);
 
 
@@ -2571,18 +2533,17 @@ function updateCart(){
             <div>
 
               <strong>
-                ${item.qty}×
-                ${text[0]}
+                ${item.qty}× ${text[0]}
               </strong>
 
               ${
                 extras.length
-                ? `
-                  <div class="cart-extra">
-                    ${extras.join(" · ")}
-                  </div>
-                `
-                : ""
+                  ? `
+                    <div class="cart-extra">
+                      ${extras.join(" · ")}
+                    </div>
+                  `
+                  : ""
               }
 
             </div>
@@ -2590,8 +2551,7 @@ function updateCart(){
 
             <div>
 
-              ${itemPrice(item)}
-              RSD
+              ${itemPrice(item)} RSD
 
               <button
                 class="remove"
@@ -2612,9 +2572,9 @@ function updateCart(){
 }
 
 
-/* =====================================
-   REMOVE
-===================================== */
+/* =========================================
+   REMOVE ITEM
+========================================= */
 
 function removeItem(index){
 
@@ -2633,37 +2593,29 @@ function removeItem(index){
 }
 
 
-/* =====================================
+/* =========================================
    PICKUP MODE
-===================================== */
+========================================= */
 
 function setPickupMode(mode){
 
   pickupMode=mode;
 
 
-  const asap =
-    document.getElementById(
-      "asapMode"
-    );
+  const asap=
+    document.getElementById("asapMode");
 
 
-  const exact =
-    document.getElementById(
-      "exactMode"
-    );
+  const exact=
+    document.getElementById("exactMode");
 
 
-  const times =
-    document.getElementById(
-      "asapTimes"
-    );
+  const times=
+    document.getElementById("asapTimes");
 
 
-  const box =
-    document.getElementById(
-      "exactBox"
-    );
+  const box=
+    document.getElementById("exactBox");
 
 
   if(mode==="asap"){
@@ -2697,9 +2649,9 @@ function setPickupMode(mode){
 }
 
 
-/* =====================================
-   ASAP
-===================================== */
+/* =========================================
+   ASAP TIME
+========================================= */
 
 function chooseTime(button,minutes){
 
@@ -2711,42 +2663,35 @@ function chooseTime(button,minutes){
   document
     .querySelectorAll(".time")
     .forEach(
-      x =>
-        x.classList.remove(
-          "selected"
-        )
+      x=>x.classList.remove("selected")
     );
 
 
-  button.classList.add(
-    "selected"
-  );
+  button.classList.add("selected");
 
 
   updatePickupInfo();
 }
 
 
-/* =====================================
+/* =========================================
    EXACT TIMES
-===================================== */
+========================================= */
 
 function generateExactTimes(){
 
-  const select =
-    document.getElementById(
-      "exactTime"
-    );
+  const select=
+    document.getElementById("exactTime");
 
 
   select.innerHTML="";
 
 
-  const now =
+  const now=
     new Date();
 
 
-  let first =
+  let first=
     new Date(
       now.getTime()
       +
@@ -2757,7 +2702,7 @@ function generateExactTimes(){
   first.setSeconds(0,0);
 
 
-  const remainder =
+  const remainder=
     first.getMinutes()%15;
 
 
@@ -2772,12 +2717,7 @@ function generateExactTimes(){
   }
 
 
-  /*
-    Current configured hours:
-    07:00 - 17:00
-  */
-
-  const opening =
+  const opening=
     new Date();
 
 
@@ -2786,7 +2726,7 @@ function generateExactTimes(){
   );
 
 
-  const closing =
+  const closing=
     new Date();
 
 
@@ -2797,50 +2737,46 @@ function generateExactTimes(){
 
   if(first<opening){
 
-    first =
+    first=
       new Date(opening);
 
   }
 
 
-  let current =
+  let current=
     new Date(first);
 
 
   while(current<closing){
 
-    const option =
-      document.createElement(
-        "option"
-      );
+    const option=
+      document.createElement("option");
 
 
-    const h =
+    const h=
       String(
         current.getHours()
       ).padStart(2,"0");
 
 
-    const m =
+    const m=
       String(
         current.getMinutes()
       ).padStart(2,"0");
 
 
-    option.value =
+    option.value=
       current.toISOString();
 
 
-    option.textContent =
+    option.textContent=
       h+":"+m;
 
 
-    select.appendChild(
-      option
-    );
+    select.appendChild(option);
 
 
-    current =
+    current=
       new Date(
         current.getTime()
         +
@@ -2852,28 +2788,25 @@ function generateExactTimes(){
 
   if(!select.options.length){
 
-    const option =
-      document.createElement(
-        "option"
-      );
+    const option=
+      document.createElement("option");
 
 
     option.value="";
 
-    option.textContent =
+
+    option.textContent=
       TEXT[language].noTimes;
 
 
-    select.appendChild(
-      option
-    );
+    select.appendChild(option);
 
 
     exactPickupDate=null;
 
   }else{
 
-    exactPickupDate =
+    exactPickupDate=
       new Date(
         select.value
       );
@@ -2885,19 +2818,18 @@ function generateExactTimes(){
 }
 
 
-/* =====================================
-   EXACT SELECT
-===================================== */
+/* =========================================
+   EXACT TIME
+========================================= */
 
 function chooseExactTime(){
 
-  const value =
-    document.getElementById(
-      "exactTime"
-    ).value;
+  const value=
+    document.getElementById("exactTime")
+      .value;
 
 
-  exactPickupDate =
+  exactPickupDate=
     value
       ? new Date(value)
       : null;
@@ -2907,21 +2839,19 @@ function chooseExactTime(){
 }
 
 
-/* =====================================
+/* =========================================
    PICKUP INFO
-===================================== */
+========================================= */
 
 function updatePickupInfo(){
 
-  const info =
-    document.getElementById(
-      "pickupInfo"
-    );
+  const info=
+    document.getElementById("pickupInfo");
 
 
   if(pickupMode==="asap"){
 
-    info.innerText =
+    info.innerText=
       TEXT[language].ready
       +" "
       +pickupMinutes
@@ -2935,7 +2865,7 @@ function updatePickupInfo(){
 
   if(!exactPickupDate){
 
-    info.innerText =
+    info.innerText=
       TEXT[language].noTimes;
 
     return;
@@ -2943,31 +2873,30 @@ function updatePickupInfo(){
   }
 
 
-  const h =
+  const h=
     String(
       exactPickupDate.getHours()
     ).padStart(2,"0");
 
 
-  const m =
+  const m=
     String(
       exactPickupDate.getMinutes()
     ).padStart(2,"0");
 
 
-  info.innerText =
+  info.innerText=
     TEXT[language].pickupAt
     +" "
     +h
     +":"
     +m;
-
 }
 
 
-/* =====================================
+/* =========================================
    PICKUP ISO
-===================================== */
+========================================= */
 
 function pickupISO(){
 
@@ -2988,23 +2917,20 @@ function pickupISO(){
     +
     pickupMinutes*60*1000
   ).toISOString();
-
 }
 
 
-/* =====================================
+/* =========================================
    MESSAGE
-===================================== */
+========================================= */
 
 function showMessage(text,type){
 
-  const box =
-    document.getElementById(
-      "message"
-    );
+  const box=
+    document.getElementById("message");
 
 
-  box.className =
+  box.className=
     "message "+type;
 
 
@@ -3018,13 +2944,12 @@ function showMessage(text,type){
     behavior:"smooth",
     block:"center"
   });
-
 }
 
 
-/* =====================================
+/* =========================================
    PLACE ORDER
-===================================== */
+========================================= */
 
 async function placeOrder(){
 
@@ -3040,7 +2965,7 @@ async function placeOrder(){
   }
 
 
-  const pickup =
+  const pickup=
     pickupISO();
 
 
@@ -3056,21 +2981,19 @@ async function placeOrder(){
   }
 
 
-  const button =
-    document.getElementById(
-      "orderButton"
-    );
+  const button=
+    document.getElementById("orderButton");
 
 
   button.disabled=true;
 
-  button.innerText =
+  button.innerText=
     TEXT[language].sending;
 
 
   try{
 
-    const response =
+    const response=
       await fetch(
         "/api/order",
         {
@@ -3085,19 +3008,17 @@ async function placeOrder(){
           body:JSON.stringify({
 
             /*
-              VERY IMPORTANT:
-              Telegram initData is still
-              sent to app.py.
+              IMPORTANT:
+              This is the Telegram
+              verification data.
             */
 
             initData:
               tg.initData || "",
 
-            pickup:
-              pickup,
+            pickup:pickup,
 
-            items:
-              cart
+            items:cart
 
           })
 
@@ -3105,7 +3026,7 @@ async function placeOrder(){
       );
 
 
-    const raw =
+    const raw=
       await response.text();
 
 
@@ -3114,10 +3035,10 @@ async function placeOrder(){
 
     try{
 
-      result =
+      result=
         raw
-        ? JSON.parse(raw)
-        : {};
+          ? JSON.parse(raw)
+          : {};
 
     }catch(e){
 
@@ -3198,7 +3119,7 @@ async function placeOrder(){
 
     button.disabled=false;
 
-    button.innerText =
+    button.innerText=
       TEXT[language].order;
 
   }
@@ -3206,9 +3127,9 @@ async function placeOrder(){
 }
 
 
-/* =====================================
+/* =========================================
    START
-===================================== */
+========================================= */
 
 loadMenu();
 
