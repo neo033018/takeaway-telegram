@@ -9,10 +9,7 @@
   content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"
 >
 
-<meta
-  name="theme-color"
-  content="#043923"
->
+<meta name="theme-color" content="#043923">
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
@@ -62,7 +59,9 @@ button{
 }
 
 
-/* HEADER */
+/* =========================================================
+   HEADER
+========================================================= */
 
 .header{
   padding:12px 17px 23px;
@@ -149,7 +148,9 @@ button{
 }
 
 
-/* PAGE */
+/* =========================================================
+   PAGE
+========================================================= */
 
 .page{
   display:none;
@@ -160,7 +161,9 @@ button{
 }
 
 
-/* CATEGORY TABS */
+/* =========================================================
+   CATEGORY TABS
+========================================================= */
 
 .tabs-wrap{
   position:sticky;
@@ -196,7 +199,9 @@ button{
 }
 
 
-/* MENU */
+/* =========================================================
+   MENU
+========================================================= */
 
 .section{
   padding:18px 13px 5px;
@@ -246,15 +251,20 @@ button{
 }
 
 
-/* DRINKS */
+/* =========================================================
+   DRINK VISUALS
+========================================================= */
 
 .drink{
   height:108px;
   display:flex;
-  align-items:center;
+  align-items:flex-end;
   justify-content:center;
   margin-bottom:6px;
 }
+
+
+/* Base transparent takeaway cup */
 
 .cup{
   position:relative;
@@ -264,17 +274,19 @@ button{
   border-radius:8px 8px 20px 20px;
   overflow:visible;
   box-shadow:0 10px 20px rgba(0,0,0,.18);
+  transition:.2s ease;
 }
 
 .cup:before{
   content:"";
   position:absolute;
-  z-index:4;
-  top:0;
-  left:0;
-  right:0;
-  height:9px;
-  background:rgba(255,255,255,.65);
+  z-index:6;
+  top:-1px;
+  left:-4px;
+  right:-4px;
+  height:8px;
+  border-radius:5px;
+  background:rgba(255,255,255,.72);
 }
 
 .liquid{
@@ -287,63 +299,243 @@ button{
   border-radius:4px 4px 15px 15px;
 }
 
-.espresso .liquid{
-  background:linear-gradient(#7b3515 0 12%,#24120b 12% 100%);
+
+/* ESPRESSO
+   Small cup + small amount of strong coffee */
+
+.cup.espresso{
+  width:54px;
+  height:58px;
+  border-radius:7px 7px 16px 16px;
+  margin-bottom:4px;
 }
 
-.americano .liquid{
-  background:linear-gradient(#75401f,#180e09);
+.cup.espresso .liquid{
+  left:3px;
+  right:3px;
+  bottom:3px;
+  height:36px;
+  border-radius:3px 3px 12px 12px;
+  background:
+    linear-gradient(
+      to bottom,
+      #c17a3f 0 10%,
+      #8d4a25 10% 20%,
+      #542714 20% 35%,
+      #25120b 35% 100%
+    );
 }
 
-.milkcoffee .liquid{
-  background:linear-gradient(#f4e4ca 0 28%,#c56c34 28% 100%);
+
+/* AMERICANO
+   Taller and mostly dark coffee */
+
+.cup.americano{
+  width:67px;
+  height:83px;
 }
 
-.icedcoffee .liquid{
-  background:linear-gradient(#eee0c5 0 22%,#7d351b 22% 100%);
+.cup.americano .liquid{
+  height:67px;
+  background:
+    linear-gradient(
+      to bottom,
+      #9a6139 0 7%,
+      #70401f 7% 17%,
+      #3a2113 17% 42%,
+      #1c100a 42% 100%
+    );
 }
 
-.thai .liquid{
-  background:linear-gradient(#fff1dc 0 25%,#ef731c 25% 100%);
+
+/* CAPPUCCINO
+   Compact cup with a thick milk foam top */
+
+.cup.cappuccino{
+  width:68px;
+  height:75px;
+  border-radius:8px 8px 19px 19px;
 }
 
-.greentea .liquid{
-  background:linear-gradient(#fff1dc 0 25%,#789537 25% 100%);
+.cup.cappuccino .liquid{
+  height:60px;
+  background:
+    linear-gradient(
+      to bottom,
+      #fff8ea 0 25%,
+      #f4e8d3 25% 34%,
+      #d7b58f 34% 48%,
+      #a8673f 48% 66%,
+      #5a2c19 66% 100%
+    );
 }
 
-.limetea .liquid{
-  background:linear-gradient(#74421f,#482612 45%,#21120b);
+
+/* LATTE
+   Tall, soft, milk-heavy */
+
+.cup.latte{
+  width:69px;
+  height:88px;
 }
 
-.bumble .liquid{
-  background:linear-gradient(#4d2416 0 46%,#f08b1d 46% 100%);
+.cup.latte .liquid{
+  height:72px;
+  background:
+    linear-gradient(
+      to bottom,
+      #fff6e8 0 12%,
+      #f1e0c5 12% 43%,
+      #d5ae84 43% 62%,
+      #aa6940 62% 79%,
+      #64331d 79% 100%
+    );
 }
 
-.tonic .liquid{
-  background:linear-gradient(#542a17 0 36%,#d9b55b 36% 52%,#e7e1cc 52%);
+
+/* FLAT WHITE
+   Shorter than latte, darker, thin microfoam */
+
+.cup.flatwhite{
+  width:68px;
+  height:70px;
+  border-radius:8px 8px 18px 18px;
 }
 
-.americanocream .liquid{
-  background:linear-gradient(#fff4e6 0 22%,#e7d0ad 22% 28%,#3b1d10 28%);
+.cup.flatwhite .liquid{
+  height:55px;
+  background:
+    linear-gradient(
+      to bottom,
+      #f5e7d1 0 10%,
+      #dfc3a1 10% 27%,
+      #bd8258 27% 50%,
+      #865034 50% 70%,
+      #4b2516 70% 100%
+    );
 }
 
-.matcha .liquid{
-  background:linear-gradient(#6e954a 0 31%,#f1e9da 31% 57%,#df6074 57% 100%);
+
+/* ICED LATTE */
+
+.cup.icedlatte .liquid{
+  background:
+    linear-gradient(
+      #eee0c5 0 22%,
+      #d4ae80 22% 47%,
+      #a3633c 47% 68%,
+      #71371f 68% 100%
+    );
 }
 
-.peanut .liquid{
-  background:linear-gradient(#f3e3c9 0 23%,#bd824c 23% 66%,#67351e 66% 100%);
+
+/* THAI MILK TEA */
+
+.cup.thai .liquid{
+  background:
+    linear-gradient(
+      #fff1dc 0 25%,
+      #ef731c 25% 100%
+    );
 }
+
+
+/* THAI GREEN TEA */
+
+.cup.greentea .liquid{
+  background:
+    linear-gradient(
+      #fff1dc 0 25%,
+      #789537 25% 100%
+    );
+}
+
+
+/* LIME TEA */
+
+.cup.limetea .liquid{
+  background:
+    linear-gradient(
+      #74421f,
+      #482612 45%,
+      #21120b
+    );
+}
+
+
+/* BUMBLE */
+
+.cup.bumble .liquid{
+  background:
+    linear-gradient(
+      #4d2416 0 46%,
+      #f08b1d 46% 100%
+    );
+}
+
+
+/* TONIC */
+
+.cup.tonic .liquid{
+  background:
+    linear-gradient(
+      #542a17 0 36%,
+      #d9b55b 36% 52%,
+      #e7e1cc 52%
+    );
+}
+
+
+/* AMERICANO CREAM */
+
+.cup.americanocream .liquid{
+  background:
+    linear-gradient(
+      #fff4e6 0 22%,
+      #e7d0ad 22% 28%,
+      #3b1d10 28%
+    );
+}
+
+
+/* STRAWBERRY MATCHA */
+
+.cup.matcha .liquid{
+  background:
+    linear-gradient(
+      #6e954a 0 31%,
+      #f1e9da 31% 57%,
+      #df6074 57% 100%
+    );
+}
+
+
+/* PEANUT LATTE */
+
+.cup.peanut .liquid{
+  background:
+    linear-gradient(
+      #f3e3c9 0 23%,
+      #bd824c 23% 66%,
+      #67351e 66% 100%
+    );
+}
+
+
+/* ICE */
 
 .ice{
   position:absolute;
-  z-index:3;
+  z-index:5;
   top:27px;
   left:14px;
   color:rgba(255,255,255,.72);
   font-size:21px;
   letter-spacing:-5px;
 }
+
+
+/* LIME */
 
 .lime{
   position:absolute;
@@ -357,40 +549,10 @@ button{
   background:#a4cb38;
 }
 
-.coffee-cup{
-  position:relative;
-  width:78px;
-  height:55px;
-  border-radius:6px 6px 28px 28px;
-  background:white;
-  box-shadow:0 11px 20px rgba(0,0,0,.2);
-}
 
-.coffee-cup:before{
-  content:"";
-  position:absolute;
-  left:7px;
-  right:7px;
-  top:6px;
-  height:15px;
-  border-radius:50%;
-  background:#512412;
-}
-
-.coffee-cup:after{
-  content:"";
-  position:absolute;
-  right:-18px;
-  top:12px;
-  width:23px;
-  height:25px;
-  border:6px solid white;
-  border-left:0;
-  border-radius:0 18px 18px 0;
-}
-
-
-/* PRODUCT */
+/* =========================================================
+   PRODUCT
+========================================================= */
 
 .product-name{
   min-height:38px;
@@ -429,7 +591,9 @@ button{
 }
 
 
-/* CART */
+/* =========================================================
+   CART
+========================================================= */
 
 .cart-section{
   margin:12px 13px;
@@ -504,7 +668,9 @@ button{
 }
 
 
-/* PICKUP */
+/* =========================================================
+   PICKUP
+========================================================= */
 
 .pickup{
   margin:18px 13px 12px;
@@ -589,7 +755,38 @@ button{
 }
 
 
-/* APP PAGE */
+/* =========================================================
+   PAYMENT NOTE
+========================================================= */
+
+.payment-note{
+  margin:12px 13px;
+  padding:15px;
+  border:1px solid rgba(214,179,106,.28);
+  border-radius:18px;
+  background:rgba(214,179,106,.08);
+}
+
+.payment-note-title{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--gold);
+  font-size:12px;
+  font-weight:800;
+}
+
+.payment-note-text{
+  margin-top:6px;
+  color:rgba(255,255,255,.68);
+  font-size:10px;
+  line-height:1.45;
+}
+
+
+/* =========================================================
+   APP PAGE
+========================================================= */
 
 .app-page{
   padding:15px 13px 20px;
@@ -612,7 +809,9 @@ button{
 }
 
 
-/* ORDERS */
+/* =========================================================
+   ORDERS
+========================================================= */
 
 .order-card{
   margin-bottom:10px;
@@ -705,7 +904,9 @@ button{
 }
 
 
-/* PROFILE */
+/* =========================================================
+   PROFILE
+========================================================= */
 
 .profile-card{
   padding:24px 18px;
@@ -806,7 +1007,9 @@ button{
 }
 
 
-/* EMPTY / LOADING */
+/* =========================================================
+   EMPTY
+========================================================= */
 
 .empty-state{
   padding:40px 20px;
@@ -832,7 +1035,9 @@ button{
 }
 
 
-/* MESSAGE */
+/* =========================================================
+   MESSAGE
+========================================================= */
 
 .message{
   display:none;
@@ -857,7 +1062,9 @@ button{
 }
 
 
-/* ORDER BAR */
+/* =========================================================
+   ORDER BAR
+========================================================= */
 
 .order-bar{
   position:fixed;
@@ -893,7 +1100,7 @@ button{
 }
 
 .order-button{
-  min-width:135px;
+  min-width:150px;
   border:0;
   padding:12px;
   border-radius:12px;
@@ -908,7 +1115,9 @@ button{
 }
 
 
-/* BOTTOM NAVIGATION */
+/* =========================================================
+   BOTTOM NAV
+========================================================= */
 
 .bottom-nav{
   position:fixed;
@@ -953,7 +1162,9 @@ button{
 }
 
 
-/* MODAL */
+/* =========================================================
+   MODALS
+========================================================= */
 
 .modal-bg{
   position:fixed;
@@ -1052,6 +1263,103 @@ button{
 }
 
 
+/* =========================================================
+   PAYMENT MODAL
+========================================================= */
+
+.payment-modal{
+  text-align:center;
+  padding-bottom:34px;
+}
+
+.payment-lock{
+  width:58px;
+  height:58px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 auto 14px;
+  border-radius:50%;
+  background:#e4ece7;
+  font-size:25px;
+}
+
+.payment-modal h2{
+  font-family:Georgia,serif;
+  font-size:25px;
+}
+
+.payment-modal-copy{
+  max-width:350px;
+  margin:10px auto 0;
+  color:#66736c;
+  font-size:12px;
+  line-height:1.55;
+}
+
+.payment-total-label{
+  margin-top:20px;
+  color:#7c837f;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:1.5px;
+}
+
+.payment-total{
+  margin-top:3px;
+  color:var(--green);
+  font-family:Georgia,serif;
+  font-size:31px;
+  font-weight:700;
+}
+
+.payment-methods{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:18px;
+}
+
+.payment-method{
+  padding:7px 9px;
+  border:1px solid #ded8cd;
+  border-radius:9px;
+  background:white;
+  color:#35473e;
+  font-size:10px;
+  font-weight:800;
+}
+
+.payment-bank{
+  margin-top:17px;
+  color:#6f7772;
+  font-size:10px;
+}
+
+.payment-pending{
+  margin-top:18px;
+  padding:13px;
+  border-radius:13px;
+  background:#eee7d7;
+  color:#675629;
+  font-size:11px;
+  line-height:1.5;
+}
+
+.payment-close{
+  width:100%;
+  margin-top:15px;
+  padding:14px;
+  border:0;
+  border-radius:13px;
+  background:var(--green);
+  color:white;
+  font-size:12px;
+  font-weight:800;
+}
+
+
 @media(max-width:390px){
 
   .cart-item{
@@ -1064,6 +1372,7 @@ button{
     justify-content:space-between;
   }
 }
+
 
 @media(min-width:600px){
 
@@ -1096,19 +1405,25 @@ button{
         id="lang-en"
         class="lang active"
         onclick="changeLanguage('en')"
-      >🇬🇧</button>
+      >
+        🇬🇧
+      </button>
 
       <button
         id="lang-sr"
         class="lang"
         onclick="changeLanguage('sr')"
-      >🇷🇸</button>
+      >
+        🇷🇸
+      </button>
 
       <button
         id="lang-ru"
         class="lang"
         onclick="changeLanguage('ru')"
-      >🇷🇺</button>
+      >
+        🇷🇺
+      </button>
 
     </div>
 
@@ -1143,7 +1458,9 @@ button{
 </header>
 
 
-<!-- MENU PAGE -->
+<!-- ======================================================
+     MENU PAGE
+======================================================= -->
 
 <div
   id="menuPage"
@@ -1215,6 +1532,7 @@ button{
     >
       When should we prepare your order?
     </div>
+
 
     <div class="pickup-modes">
 
@@ -1295,6 +1613,25 @@ button{
   </section>
 
 
+  <div class="payment-note">
+
+    <div class="payment-note-title">
+      🔒
+      <span id="paymentNoteTitle">
+        Secure online payment
+      </span>
+    </div>
+
+    <div
+      id="paymentNoteText"
+      class="payment-note-text"
+    >
+      Payment is completed online before your order is sent to TAKE AWAY.
+    </div>
+
+  </div>
+
+
   <div
     id="message"
     class="message"
@@ -1303,7 +1640,9 @@ button{
 </div>
 
 
-<!-- ORDERS PAGE -->
+<!-- ======================================================
+     ORDERS PAGE
+======================================================= -->
 
 <div
   id="ordersPage"
@@ -1337,7 +1676,9 @@ button{
 </div>
 
 
-<!-- PROFILE PAGE -->
+<!-- ======================================================
+     PROFILE PAGE
+======================================================= -->
 
 <div
   id="profilePage"
@@ -1371,7 +1712,9 @@ button{
 </div>
 
 
-<!-- ORDER BAR -->
+<!-- ======================================================
+     ORDER BAR
+======================================================= -->
 
 <div
   id="orderBar"
@@ -1398,13 +1741,15 @@ button{
     class="order-button"
     onclick="placeOrder()"
   >
-    Place order →
+    🔒 PAY ONLINE →
   </button>
 
 </div>
 
 
-<!-- NAVIGATION -->
+<!-- ======================================================
+     NAVIGATION
+======================================================= -->
 
 <nav class="bottom-nav">
 
@@ -1461,7 +1806,9 @@ button{
 </nav>
 
 
-<!-- PRODUCT MODAL -->
+<!-- ======================================================
+     PRODUCT MODAL
+======================================================= -->
 
 <div
   id="modalBg"
@@ -1560,10 +1907,106 @@ button{
 </div>
 
 
+<!-- ======================================================
+     PAYMENT MODAL
+======================================================= -->
+
+<div
+  id="paymentModalBg"
+  class="modal-bg"
+  onclick="closePaymentModal(event)"
+>
+
+  <div class="modal payment-modal">
+
+    <div class="payment-lock">
+      🔒
+    </div>
+
+    <h2 id="paymentModalTitle">
+      Secure online payment
+    </h2>
+
+    <div
+      id="paymentModalCopy"
+      class="payment-modal-copy"
+    >
+      Your order will be sent to TAKE AWAY only after successful payment.
+    </div>
+
+
+    <div
+      id="paymentTotalLabel"
+      class="payment-total-label"
+    >
+      ORDER TOTAL
+    </div>
+
+    <div
+      id="paymentModalTotal"
+      class="payment-total"
+    >
+      0 RSD
+    </div>
+
+
+    <div class="payment-methods">
+
+      <div class="payment-method">
+        VISA
+      </div>
+
+      <div class="payment-method">
+        Mastercard
+      </div>
+
+      <div class="payment-method">
+        Apple Pay
+      </div>
+
+      <div class="payment-method">
+        Google Pay
+      </div>
+
+    </div>
+
+
+    <div
+      id="paymentBank"
+      class="payment-bank"
+    >
+      Secure payment integration
+    </div>
+
+
+    <div
+      id="paymentPendingText"
+      class="payment-pending"
+    >
+      Online payment is currently being activated with Raiffeisen Bank.
+      No payment will be charged during this demonstration.
+    </div>
+
+
+    <button
+      id="paymentCloseButton"
+      class="payment-close"
+      onclick="closePaymentModal()"
+    >
+      CLOSE
+    </button>
+
+  </div>
+
+</div>
+
+
 <script>
 
 
-/* TELEGRAM */
+/* =========================================================
+   TELEGRAM
+========================================================= */
 
 function getTelegramWebApp(){
 
@@ -1580,7 +2023,7 @@ function getTelegramWebApp(){
 
 function initializeTelegram(){
 
-  const telegram =
+  const telegram=
     getTelegramWebApp();
 
   if(!telegram){
@@ -1606,7 +2049,9 @@ function initializeTelegram(){
 initializeTelegram();
 
 
-/* TEXT */
+/* =========================================================
+   TEXT
+========================================================= */
 
 const TEXT={
 
@@ -1637,8 +2082,8 @@ const TEXT={
 
     quantity:"Quantity",
 
-    order:"Place order →",
-    sending:"Sending...",
+    order:"🔒 PAY ONLINE →",
+    sending:"Connecting...",
 
     extra:"Extra espresso shot",
     boba:"Add boba",
@@ -1647,8 +2092,7 @@ const TEXT={
     empty:"Please add a drink first.",
     choosePickup:"Please choose a pickup time.",
 
-    success:"Order confirmed!",
-    pay:"Pay when you collect.",
+    success:"Payment confirmed. Order received!",
 
     noTimes:"No pickup times available today.",
 
@@ -1666,7 +2110,7 @@ const TEXT={
     profileSub:"Your TAKE AWAY account",
 
     noOrders:"No orders yet",
-    noOrdersCopy:"Your orders will appear here after you place them.",
+    noOrdersCopy:"Your paid orders will appear here.",
 
     reorder:"Order again",
 
@@ -1686,7 +2130,26 @@ const TEXT={
     completedStatus:"Completed",
     cancelledStatus:"Cancelled",
 
-    maxOrder:"Maximum 30 drinks per order."
+    maxOrder:"Maximum 30 drinks per order.",
+
+    paymentNoteTitle:"Secure online payment",
+
+    paymentNoteText:
+      "Payment is completed online before your order is sent to TAKE AWAY.",
+
+    paymentTitle:"Secure online payment",
+
+    paymentCopy:
+      "Your order will be sent to TAKE AWAY only after successful payment.",
+
+    paymentTotal:"Order total",
+
+    paymentBank:"Secure payment integration",
+
+    paymentPending:
+      "Online payment is currently being activated with Raiffeisen Bank. No payment will be charged during this demonstration.",
+
+    paymentClose:"CLOSE"
   },
 
 
@@ -1717,8 +2180,8 @@ const TEXT={
 
     quantity:"Količina",
 
-    order:"Poruči →",
-    sending:"Šaljem...",
+    order:"🔒 PLATI ONLINE →",
+    sending:"Povezivanje...",
 
     extra:"Dodatni espresso",
     boba:"Dodaj boba kuglice",
@@ -1727,8 +2190,7 @@ const TEXT={
     empty:"Prvo dodajte piće.",
     choosePickup:"Izaberite vreme preuzimanja.",
 
-    success:"Porudžbina potvrđena!",
-    pay:"Plaćanje prilikom preuzimanja.",
+    success:"Plaćanje potvrđeno. Porudžbina je primljena!",
 
     noTimes:"Danas nema dostupnih termina.",
 
@@ -1746,7 +2208,7 @@ const TEXT={
     profileSub:"Vaš TAKE AWAY nalog",
 
     noOrders:"Još nema porudžbina",
-    noOrdersCopy:"Vaše porudžbine će se pojaviti ovde.",
+    noOrdersCopy:"Vaše plaćene porudžbine će se pojaviti ovde.",
 
     reorder:"Poruči ponovo",
 
@@ -1766,7 +2228,26 @@ const TEXT={
     completedStatus:"Završeno",
     cancelledStatus:"Otkazano",
 
-    maxOrder:"Maksimalno 30 pića po porudžbini."
+    maxOrder:"Maksimalno 30 pića po porudžbini.",
+
+    paymentNoteTitle:"Sigurno online plaćanje",
+
+    paymentNoteText:
+      "Plaćanje se vrši online pre nego što porudžbina bude poslata u TAKE AWAY.",
+
+    paymentTitle:"Sigurno online plaćanje",
+
+    paymentCopy:
+      "Porudžbina će biti poslata u TAKE AWAY tek nakon uspešnog plaćanja.",
+
+    paymentTotal:"Ukupno",
+
+    paymentBank:"Sigurna integracija plaćanja",
+
+    paymentPending:
+      "Online plaćanje se trenutno aktivira sa Raiffeisen bankom. Tokom ove demonstracije novac neće biti naplaćen.",
+
+    paymentClose:"ZATVORI"
   },
 
 
@@ -1797,8 +2278,8 @@ const TEXT={
 
     quantity:"Количество",
 
-    order:"Заказать →",
-    sending:"Отправляем...",
+    order:"🔒 ОПЛАТИТЬ ОНЛАЙН →",
+    sending:"Подключение...",
 
     extra:"Дополнительный эспрессо",
     boba:"Добавить боба",
@@ -1807,8 +2288,7 @@ const TEXT={
     empty:"Сначала добавьте напиток.",
     choosePickup:"Выберите время получения.",
 
-    success:"Заказ подтвержден!",
-    pay:"Оплата при получении.",
+    success:"Оплата подтверждена. Заказ принят!",
 
     noTimes:"На сегодня свободного времени нет.",
 
@@ -1826,7 +2306,7 @@ const TEXT={
     profileSub:"Ваш аккаунт TAKE AWAY",
 
     noOrders:"Заказов пока нет",
-    noOrdersCopy:"Здесь появится история ваших заказов.",
+    noOrdersCopy:"Здесь появятся ваши оплаченные заказы.",
 
     reorder:"Повторить",
 
@@ -1846,11 +2326,34 @@ const TEXT={
     completedStatus:"Завершён",
     cancelledStatus:"Отменён",
 
-    maxOrder:"Максимум 30 напитков в одном заказе."
+    maxOrder:"Максимум 30 напитков в одном заказе.",
+
+    paymentNoteTitle:"Безопасная онлайн-оплата",
+
+    paymentNoteText:
+      "Оплата производится онлайн до того, как заказ будет отправлен в TAKE AWAY.",
+
+    paymentTitle:"Безопасная онлайн-оплата",
+
+    paymentCopy:
+      "Заказ будет отправлен в TAKE AWAY только после успешной оплаты.",
+
+    paymentTotal:"Сумма заказа",
+
+    paymentBank:"Безопасная интеграция оплаты",
+
+    paymentPending:
+      "Онлайн-оплата сейчас подключается через Raiffeisen Bank. В демонстрационном режиме деньги списываться не будут.",
+
+    paymentClose:"ЗАКРЫТЬ"
   }
 
 };
 
+
+/* =========================================================
+   PRODUCT TEXT
+========================================================= */
 
 const PRODUCT_TEXT={
 
@@ -1941,7 +2444,9 @@ const PRODUCT_TEXT={
 };
 
 
-/* STATE */
+/* =========================================================
+   STATE
+========================================================= */
 
 let language="en";
 
@@ -1966,11 +2471,13 @@ let customerOrders=[];
 let customerProfile=null;
 
 
-/* HELPERS */
+/* =========================================================
+   HELPERS
+========================================================= */
 
 function getTelegramInitData(){
 
-  const telegram =
+  const telegram=
     getTelegramWebApp();
 
   if(!telegram){
@@ -1990,6 +2497,15 @@ function totalCartQuantity(){
 }
 
 
+function cartTotal(){
+
+  return cart.reduce(
+    (sum,item)=>sum+itemPrice(item),
+    0
+  );
+}
+
+
 function escapeHtml(value){
 
   return String(value ?? "")
@@ -2001,7 +2517,9 @@ function escapeHtml(value){
 }
 
 
-/* LANGUAGE */
+/* =========================================================
+   LANGUAGE
+========================================================= */
 
 function changeLanguage(lang){
 
@@ -2078,6 +2596,31 @@ function changeLanguage(lang){
     TEXT[lang].profileSub;
 
 
+  document.getElementById("paymentNoteTitle").innerText=
+    TEXT[lang].paymentNoteTitle;
+
+  document.getElementById("paymentNoteText").innerText=
+    TEXT[lang].paymentNoteText;
+
+  document.getElementById("paymentModalTitle").innerText=
+    TEXT[lang].paymentTitle;
+
+  document.getElementById("paymentModalCopy").innerText=
+    TEXT[lang].paymentCopy;
+
+  document.getElementById("paymentTotalLabel").innerText=
+    TEXT[lang].paymentTotal;
+
+  document.getElementById("paymentBank").innerText=
+    TEXT[lang].paymentBank;
+
+  document.getElementById("paymentPendingText").innerText=
+    TEXT[lang].paymentPending;
+
+  document.getElementById("paymentCloseButton").innerText=
+    TEXT[lang].paymentClose;
+
+
   renderMenu();
   updateCart();
   renderOrders();
@@ -2095,7 +2638,9 @@ function changeLanguage(lang){
 }
 
 
-/* PAGES */
+/* =========================================================
+   PAGES
+========================================================= */
 
 function showPage(page){
 
@@ -2157,7 +2702,9 @@ function showPage(page){
 }
 
 
-/* LOAD MENU */
+/* =========================================================
+   LOAD MENU
+========================================================= */
 
 async function loadMenu(){
 
@@ -2192,7 +2739,9 @@ async function loadMenu(){
 }
 
 
-/* CATEGORY */
+/* =========================================================
+   CATEGORY
+========================================================= */
 
 function showCategory(cat,button){
 
@@ -2210,7 +2759,9 @@ function showCategory(cat,button){
 }
 
 
-/* PRODUCT COPY */
+/* =========================================================
+   PRODUCT COPY
+========================================================= */
 
 function productText(id){
 
@@ -2231,48 +2782,73 @@ function productText(id){
 }
 
 
-/* DRINK */
+/* =========================================================
+   DRINK VISUAL
+========================================================= */
 
 function drinkClass(id){
 
-  if(id==="espresso") return "espresso";
-  if(id==="americano") return "americano";
-
-  if(
-    id==="cappuccino" ||
-    id==="latte" ||
-    id==="flatwhite"
-  ){
-    return "milkcoffee";
+  if(id==="espresso"){
+    return "espresso";
   }
 
-  if(id==="icedlatte") return "icedcoffee";
-  if(id==="thai") return "thai";
-  if(id==="green") return "greentea";
-  if(id==="lime") return "limetea";
-  if(id==="bumble") return "bumble";
-  if(id==="tonic") return "tonic";
-  if(id==="americanocream") return "americanocream";
-  if(id==="strawberrymatcha") return "matcha";
-  if(id==="peanutlatte") return "peanut";
+  if(id==="americano"){
+    return "americano";
+  }
+
+  if(id==="cappuccino"){
+    return "cappuccino";
+  }
+
+  if(id==="latte"){
+    return "latte";
+  }
+
+  if(id==="flatwhite"){
+    return "flatwhite";
+  }
+
+  if(id==="icedlatte"){
+    return "icedlatte";
+  }
+
+  if(id==="thai"){
+    return "thai";
+  }
+
+  if(id==="green"){
+    return "greentea";
+  }
+
+  if(id==="lime"){
+    return "limetea";
+  }
+
+  if(id==="bumble"){
+    return "bumble";
+  }
+
+  if(id==="tonic"){
+    return "tonic";
+  }
+
+  if(id==="americanocream"){
+    return "americanocream";
+  }
+
+  if(id==="strawberrymatcha"){
+    return "matcha";
+  }
+
+  if(id==="peanutlatte"){
+    return "peanut";
+  }
 
   return "americano";
 }
 
 
 function drinkVisual(id){
-
-  if(
-    id==="cappuccino" ||
-    id==="flatwhite"
-  ){
-
-    return`
-      <div class="drink">
-        <div class="coffee-cup"></div>
-      </div>
-    `;
-  }
 
   const lime=
     id==="lime"
@@ -2294,11 +2870,17 @@ function drinkVisual(id){
 
   return`
     <div class="drink">
+
       <div class="cup ${drinkClass(id)}">
+
         <div class="liquid"></div>
+
         ${ice}
+
         ${lime}
+
       </div>
+
     </div>
   `;
 }
@@ -2321,7 +2903,9 @@ function canExtra(id){
 }
 
 
-/* RENDER MENU */
+/* =========================================================
+   RENDER MENU
+========================================================= */
 
 function renderMenu(){
 
@@ -2336,14 +2920,21 @@ function renderMenu(){
   let icon="☕";
 
   if(category==="tea"){
-    title=TEXT[language].teaTitle;
+
+    title=
+      TEXT[language].teaTitle;
+
     icon="🍃";
   }
 
   if(category==="special"){
-    title=TEXT[language].specialTitle;
+
+    title=
+      TEXT[language].specialTitle;
+
     icon="✦";
   }
+
 
   document.getElementById("menu").innerHTML=`
 
@@ -2363,6 +2954,7 @@ function renderMenu(){
 
       </div>
 
+
       <div class="products">
 
         ${
@@ -2378,11 +2970,11 @@ function renderMenu(){
                 ${drinkVisual(p.id)}
 
                 <div class="product-name">
-                  ${copy[0]}
+                  ${escapeHtml(copy[0])}
                 </div>
 
                 <div class="product-desc">
-                  ${copy[1]}
+                  ${escapeHtml(copy[1])}
                 </div>
 
                 <div class="product-price">
@@ -2409,7 +3001,9 @@ function renderMenu(){
 }
 
 
-/* PRODUCT MODAL */
+/* =========================================================
+   PRODUCT MODAL
+========================================================= */
 
 function openProduct(id){
 
@@ -2438,11 +3032,17 @@ function openProduct(id){
   document.getElementById("modalQuantity").innerText=
     "1";
 
+
   const extra=
-    document.getElementById("extraOption");
+    document.getElementById(
+      "extraOption"
+    );
 
   const boba=
-    document.getElementById("bobaOption");
+    document.getElementById(
+      "bobaOption"
+    );
+
 
   extra.style.display=
     canExtra(id)
@@ -2454,10 +3054,18 @@ function openProduct(id){
       ? "flex"
       : "none";
 
-  extra.classList.remove("selected");
-  boba.classList.remove("selected");
+
+  extra.classList.remove(
+    "selected"
+  );
+
+  boba.classList.remove(
+    "selected"
+  );
+
 
   updateModalAddButton();
+
 
   document
     .getElementById("modalBg")
@@ -2469,7 +3077,8 @@ function toggleAddon(type){
 
   if(type==="extra"){
 
-    modalExtra=!modalExtra;
+    modalExtra=
+      !modalExtra;
 
     document
       .getElementById("extraOption")
@@ -2479,9 +3088,11 @@ function toggleAddon(type){
       );
   }
 
+
   if(type==="boba"){
 
-    modalBoba=!modalBoba;
+    modalBoba=
+      !modalBoba;
 
     document
       .getElementById("bobaOption")
@@ -2491,6 +3102,7 @@ function toggleAddon(type){
       );
   }
 
+
   updateModalAddButton();
 }
 
@@ -2498,7 +3110,8 @@ function toggleAddon(type){
 function changeModalQuantity(change){
 
   let next=
-    modalQuantity+change;
+    modalQuantity+
+    change;
 
   if(next<1){
     next=1;
@@ -2508,8 +3121,10 @@ function changeModalQuantity(change){
     next=10;
   }
 
+
   const currentCart=
     totalCartQuantity();
+
 
   if(
     change>0 &&
@@ -2524,10 +3139,16 @@ function changeModalQuantity(change){
     return;
   }
 
-  modalQuantity=next;
 
-  document.getElementById("modalQuantity").innerText=
-    modalQuantity;
+  modalQuantity=
+    next;
+
+
+  document
+    .getElementById("modalQuantity")
+    .innerText=
+      modalQuantity;
+
 
   updateModalAddButton();
 }
@@ -2539,24 +3160,30 @@ function updateModalAddButton(){
     return;
   }
 
+
   let unit=
     Number(
       selectedProduct.price
     );
 
+
   if(modalExtra){
     unit+=150;
   }
+
 
   if(modalBoba){
     unit+=100;
   }
 
-  document.getElementById("modalAdd").innerText=
-    TEXT[language].addOrder+
-    " — "+
-    (unit*modalQuantity)+
-    " RSD";
+
+  document
+    .getElementById("modalAdd")
+    .innerText=
+      TEXT[language].addOrder+
+      " — "+
+      (unit*modalQuantity)+
+      " RSD";
 }
 
 
@@ -2566,11 +3193,15 @@ function confirmAdd(){
     return;
   }
 
+
   const current=
     totalCartQuantity();
 
+
   if(
-    current+modalQuantity>30
+    current+
+    modalQuantity>
+    30
   ){
 
     showMessage(
@@ -2581,6 +3212,7 @@ function confirmAdd(){
     return;
   }
 
+
   const existing=
     cart.find(
       x=>
@@ -2589,30 +3221,46 @@ function confirmAdd(){
         x.boba===modalBoba
     );
 
+
   if(existing){
 
     if(
       existing.qty+
-      modalQuantity>10
+      modalQuantity>
+      10
     ){
+
       existing.qty=10;
+
     }else{
-      existing.qty+=modalQuantity;
+
+      existing.qty+=
+        modalQuantity;
     }
 
   }else{
 
     cart.push({
-      id:selectedProduct.id,
-      qty:modalQuantity,
-      extra_shot:modalExtra,
-      boba:modalBoba
+
+      id:
+        selectedProduct.id,
+
+      qty:
+        modalQuantity,
+
+      extra_shot:
+        modalExtra,
+
+      boba:
+        modalBoba
     });
   }
+
 
   document
     .getElementById("modalBg")
     .classList.remove("open");
+
 
   updateCart();
 }
@@ -2621,7 +3269,8 @@ function confirmAdd(){
 function closeModal(event){
 
   if(
-    event.target.id==="modalBg"
+    event.target.id===
+    "modalBg"
   ){
 
     document
@@ -2631,7 +3280,9 @@ function closeModal(event){
 }
 
 
-/* CART */
+/* =========================================================
+   CART
+========================================================= */
 
 function itemPrice(item){
 
@@ -2640,22 +3291,30 @@ function itemPrice(item){
       x=>x.id===item.id
     );
 
+
   if(!product){
     return 0;
   }
 
+
   let price=
-    Number(product.price);
+    Number(
+      product.price
+    );
+
 
   if(item.extra_shot){
     price+=150;
   }
 
+
   if(item.boba){
     price+=100;
   }
 
-  return price*item.qty;
+
+  return price*
+    item.qty;
 }
 
 
@@ -2665,124 +3324,163 @@ function updateCart(){
     totalCartQuantity();
 
   const total=
-    cart.reduce(
-      (sum,item)=>
-        sum+itemPrice(item),
-      0
-    );
+    cartTotal();
 
-  document.getElementById("itemCount").innerText=
-    count+
-    " "+
-    (
-      count===1
-        ? TEXT[language].item
-        : TEXT[language].items
-    );
 
-  document.getElementById("total").innerText=
-    total+" RSD";
+  document
+    .getElementById("itemCount")
+    .innerText=
+      count+
+      " "+
+      (
+        count===1
+          ? TEXT[language].item
+          : TEXT[language].items
+      );
+
+
+  document
+    .getElementById("total")
+    .innerText=
+      total+
+      " RSD";
+
 
   const section=
-    document.getElementById("cartSection");
+    document.getElementById(
+      "cartSection"
+    );
 
   const box=
-    document.getElementById("cartItems");
+    document.getElementById(
+      "cartItems"
+    );
+
 
   if(!cart.length){
 
-    section.classList.remove("show");
+    section
+      .classList
+      .remove("show");
+
     box.innerHTML="";
+
     return;
   }
 
-  section.classList.add("show");
+
+  section
+    .classList
+    .add("show");
+
 
   box.innerHTML=
-    cart.map((item,index)=>{
+    cart.map(
+      (item,index)=>{
 
-      const copy=
-        productText(item.id);
+        const copy=
+          productText(
+            item.id
+          );
 
-      let extras=[];
+        let extras=[];
 
-      if(item.extra_shot){
-        extras.push(
-          TEXT[language].extra
-        );
-      }
 
-      if(item.boba){
-        extras.push(
-          TEXT[language].boba
-        );
-      }
+        if(item.extra_shot){
 
-      return`
+          extras.push(
+            TEXT[language].extra
+          );
+        }
 
-        <div class="cart-item">
 
-          <div class="cart-item-info">
+        if(item.boba){
 
-            <strong>
-              ${copy[0]}
-            </strong>
+          extras.push(
+            TEXT[language].boba
+          );
+        }
 
-            ${
-              extras.length
-                ? `
-                  <div class="cart-extra">
-                    ${extras.join(" · ")}
-                  </div>
-                `
-                : ""
-            }
 
-          </div>
+        return`
 
-          <div class="cart-right">
+          <div class="cart-item">
 
-            <div class="cart-quantity">
+            <div class="cart-item-info">
 
-              <button
-                class="cart-qty-btn"
-                onclick="changeCartQuantity(${index},-1)"
-              >−</button>
+              <strong>
+                ${escapeHtml(copy[0])}
+              </strong>
 
-              <span class="cart-qty-number">
-                ${item.qty}
-              </span>
-
-              <button
-                class="cart-qty-btn"
-                onclick="changeCartQuantity(${index},1)"
-              >+</button>
+              ${
+                extras.length
+                  ? `
+                    <div class="cart-extra">
+                      ${escapeHtml(extras.join(" · "))}
+                    </div>
+                  `
+                  : ""
+              }
 
             </div>
 
-            <div class="cart-price">
-              ${itemPrice(item)} RSD
+
+            <div class="cart-right">
+
+              <div class="cart-quantity">
+
+                <button
+                  class="cart-qty-btn"
+                  onclick="changeCartQuantity(${index},-1)"
+                >
+                  −
+                </button>
+
+                <span class="cart-qty-number">
+                  ${item.qty}
+                </span>
+
+                <button
+                  class="cart-qty-btn"
+                  onclick="changeCartQuantity(${index},1)"
+                >
+                  +
+                </button>
+
+              </div>
+
+
+              <div class="cart-price">
+                ${itemPrice(item)} RSD
+              </div>
+
+
+              <button
+                class="remove"
+                onclick="deleteCartItem(${index})"
+              >
+                ×
+              </button>
+
             </div>
 
-            <button
-              class="remove"
-              onclick="deleteCartItem(${index})"
-            >×</button>
-
           </div>
+        `;
 
-        </div>
-      `;
-
-    }).join("");
+      }
+    ).join("");
 }
 
 
-function changeCartQuantity(index,change){
+function changeCartQuantity(
+  index,
+  change
+){
 
   if(!cart[index]){
     return;
   }
+
 
   if(
     change>0 &&
@@ -2797,18 +3495,25 @@ function changeCartQuantity(index,change){
     return;
   }
 
+
   const next=
     cart[index].qty+
     change;
 
+
   if(next<=0){
 
-    cart.splice(index,1);
+    cart.splice(
+      index,
+      1
+    );
 
   }else if(next<=10){
 
-    cart[index].qty=next;
+    cart[index].qty=
+      next;
   }
+
 
   updateCart();
 }
@@ -2816,67 +3521,117 @@ function changeCartQuantity(index,change){
 
 function deleteCartItem(index){
 
-  cart.splice(index,1);
+  cart.splice(
+    index,
+    1
+  );
 
   updateCart();
 }
 
 
-/* PICKUP */
+/* =========================================================
+   PICKUP
+========================================================= */
 
 function setPickupMode(mode){
 
-  pickupMode=mode;
+  pickupMode=
+    mode;
+
 
   const asap=
-    document.getElementById("asapMode");
+    document.getElementById(
+      "asapMode"
+    );
 
   const exact=
-    document.getElementById("exactMode");
+    document.getElementById(
+      "exactMode"
+    );
 
   const times=
-    document.getElementById("asapTimes");
+    document.getElementById(
+      "asapTimes"
+    );
 
   const box=
-    document.getElementById("exactBox");
+    document.getElementById(
+      "exactBox"
+    );
+
 
   if(mode==="asap"){
 
-    asap.classList.add("active");
-    exact.classList.remove("active");
+    asap
+      .classList
+      .add("active");
 
-    times.style.display="grid";
-    box.classList.remove("show");
+    exact
+      .classList
+      .remove("active");
 
-    exactPickupDate=null;
+    times.style.display=
+      "grid";
+
+    box
+      .classList
+      .remove("show");
+
+    exactPickupDate=
+      null;
 
   }else{
 
-    exact.classList.add("active");
-    asap.classList.remove("active");
+    exact
+      .classList
+      .add("active");
 
-    times.style.display="none";
-    box.classList.add("show");
+    asap
+      .classList
+      .remove("active");
+
+    times.style.display=
+      "none";
+
+    box
+      .classList
+      .add("show");
 
     generateExactTimes();
   }
+
 
   updatePickupInfo();
 }
 
 
-function chooseTime(button,minutes){
+function chooseTime(
+  button,
+  minutes
+){
 
-  pickupMode="asap";
-  pickupMinutes=minutes;
+  pickupMode=
+    "asap";
+
+  pickupMinutes=
+    minutes;
+
 
   document
     .querySelectorAll(".time")
     .forEach(
-      x=>x.classList.remove("selected")
+      x=>
+        x.classList.remove(
+          "selected"
+        )
     );
 
-  button.classList.add("selected");
+
+  button
+    .classList
+    .add("selected");
+
 
   updatePickupInfo();
 }
@@ -2885,17 +3640,17 @@ function chooseTime(button,minutes){
 function generateExactTimes(){
 
   const select=
-    document.getElementById("exactTime");
+    document.getElementById(
+      "exactTime"
+    );
+
 
   select.innerHTML="";
+
 
   const now=
     new Date();
 
-  /*
-    11 minutes instead of exactly 10
-    gives a small network safety margin.
-  */
 
   let first=
     new Date(
@@ -2903,10 +3658,17 @@ function generateExactTimes(){
       11*60*1000
     );
 
-  first.setSeconds(0,0);
+
+  first.setSeconds(
+    0,
+    0
+  );
+
 
   const remainder=
-    first.getMinutes()%15;
+    first.getMinutes()%
+    15;
+
 
   if(remainder!==0){
 
@@ -2916,51 +3678,85 @@ function generateExactTimes(){
     );
   }
 
+
   const opening=
     new Date();
 
+
   opening.setHours(
-    7,0,0,0
+    7,
+    0,
+    0,
+    0
   );
+
 
   const closing=
     new Date();
 
+
   closing.setHours(
-    17,0,0,0
+    17,
+    0,
+    0,
+    0
   );
 
+
   if(first<opening){
-    first=new Date(opening);
+
+    first=
+      new Date(opening);
   }
+
 
   let current=
     new Date(first);
 
-  while(current<closing){
+
+  while(
+    current<
+    closing
+  ){
 
     const option=
       document.createElement(
         "option"
       );
 
+
     const h=
       String(
         current.getHours()
-      ).padStart(2,"0");
+      ).padStart(
+        2,
+        "0"
+      );
+
 
     const m=
       String(
         current.getMinutes()
-      ).padStart(2,"0");
+      ).padStart(
+        2,
+        "0"
+      );
+
 
     option.value=
       current.toISOString();
 
-    option.textContent=
-      h+":"+m;
 
-    select.appendChild(option);
+    option.textContent=
+      h+
+      ":"+
+      m;
+
+
+    select.appendChild(
+      option
+    );
+
 
     current=
       new Date(
@@ -2969,26 +3765,39 @@ function generateExactTimes(){
       );
   }
 
-  if(!select.options.length){
+
+  if(
+    !select.options.length
+  ){
 
     const option=
       document.createElement(
         "option"
       );
 
+
     option.value="";
+
     option.textContent=
       TEXT[language].noTimes;
 
-    select.appendChild(option);
 
-    exactPickupDate=null;
+    select.appendChild(
+      option
+    );
+
+
+    exactPickupDate=
+      null;
 
   }else{
 
     exactPickupDate=
-      new Date(select.value);
+      new Date(
+        select.value
+      );
   }
+
 
   updatePickupInfo();
 }
@@ -2998,13 +3807,17 @@ function chooseExactTime(){
 
   const value=
     document
-      .getElementById("exactTime")
+      .getElementById(
+        "exactTime"
+      )
       .value;
+
 
   exactPickupDate=
     value
       ? new Date(value)
       : null;
+
 
   updatePickupInfo();
 }
@@ -3017,7 +3830,11 @@ function updatePickupInfo(){
       "pickupInfo"
     );
 
-  if(pickupMode==="asap"){
+
+  if(
+    pickupMode===
+    "asap"
+  ){
 
     info.innerText=
       TEXT[language].ready+
@@ -3029,7 +3846,10 @@ function updatePickupInfo(){
     return;
   }
 
-  if(!exactPickupDate){
+
+  if(
+    !exactPickupDate
+  ){
 
     info.innerText=
       TEXT[language].noTimes;
@@ -3037,15 +3857,24 @@ function updatePickupInfo(){
     return;
   }
 
+
   const h=
     String(
       exactPickupDate.getHours()
-    ).padStart(2,"0");
+    ).padStart(
+      2,
+      "0"
+    );
+
 
   const m=
     String(
       exactPickupDate.getMinutes()
-    ).padStart(2,"0");
+    ).padStart(
+      2,
+      "0"
+    );
+
 
   info.innerText=
     TEXT[language].pickupAt+
@@ -3058,43 +3887,65 @@ function updatePickupInfo(){
 
 function pickupISO(){
 
-  if(pickupMode==="exact"){
+  if(
+    pickupMode===
+    "exact"
+  ){
 
-    if(!exactPickupDate){
+    if(
+      !exactPickupDate
+    ){
       return null;
     }
 
-    return exactPickupDate.toISOString();
+
+    return exactPickupDate
+      .toISOString();
   }
 
-  /*
-    Add a 45 second network buffer.
-    UI still says 10/15/20/30 minutes.
-  */
 
   return new Date(
     Date.now()+
-    pickupMinutes*60*1000+
+    pickupMinutes*
+    60*
+    1000+
     45000
   ).toISOString();
 }
 
 
-/* MESSAGE */
+/* =========================================================
+   MESSAGE
+========================================================= */
 
-function showMessage(text,type){
+function showMessage(
+  text,
+  type
+){
 
   const box=
-    document.getElementById("message");
+    document.getElementById(
+      "message"
+    );
+
 
   box.className=
-    "message "+type;
+    "message "+
+    type;
 
-  box.innerText=text;
 
-  box.style.display="block";
+  box.innerText=
+    text;
 
-  if(currentPage==="menu"){
+
+  box.style.display=
+    "block";
+
+
+  if(
+    currentPage===
+    "menu"
+  ){
 
     box.scrollIntoView({
       behavior:"smooth",
@@ -3104,11 +3955,108 @@ function showMessage(text,type){
 }
 
 
-/* PLACE ORDER */
+/* =========================================================
+   PAYMENT MODAL
+========================================================= */
+
+function openPaymentModal(){
+
+  document
+    .getElementById(
+      "paymentModalTotal"
+    )
+    .innerText=
+      cartTotal()+
+      " RSD";
+
+
+  document
+    .getElementById(
+      "paymentModalTitle"
+    )
+    .innerText=
+      TEXT[language].paymentTitle;
+
+
+  document
+    .getElementById(
+      "paymentModalCopy"
+    )
+    .innerText=
+      TEXT[language].paymentCopy;
+
+
+  document
+    .getElementById(
+      "paymentTotalLabel"
+    )
+    .innerText=
+      TEXT[language].paymentTotal;
+
+
+  document
+    .getElementById(
+      "paymentBank"
+    )
+    .innerText=
+      TEXT[language].paymentBank;
+
+
+  document
+    .getElementById(
+      "paymentPendingText"
+    )
+    .innerText=
+      TEXT[language].paymentPending;
+
+
+  document
+    .getElementById(
+      "paymentCloseButton"
+    )
+    .innerText=
+      TEXT[language].paymentClose;
+
+
+  document
+    .getElementById(
+      "paymentModalBg"
+    )
+    .classList
+    .add("open");
+}
+
+
+function closePaymentModal(event){
+
+  if(
+    event &&
+    event.target &&
+    event.target.id!==
+    "paymentModalBg"
+  ){
+    return;
+  }
+
+
+  document
+    .getElementById(
+      "paymentModalBg"
+    )
+    .classList
+    .remove("open");
+}
+
+
+/* =========================================================
+   PAY ONLINE
+========================================================= */
 
 async function placeOrder(){
 
-  if(!cart.length){
+  if(
+    !cart.length
+  ){
 
     showMessage(
       TEXT[language].empty,
@@ -3118,10 +4066,14 @@ async function placeOrder(){
     return;
   }
 
+
   const pickup=
     pickupISO();
 
-  if(!pickup){
+
+  if(
+    !pickup
+  ){
 
     showMessage(
       TEXT[language].choosePickup,
@@ -3131,10 +4083,14 @@ async function placeOrder(){
     return;
   }
 
+
   const initData=
     getTelegramInitData();
 
-  if(!initData){
+
+  if(
+    !initData
+  ){
 
     showMessage(
       "❌ "+
@@ -3145,136 +4101,80 @@ async function placeOrder(){
     return;
   }
 
-  const button=
-    document.getElementById(
-      "orderButton"
-    );
 
-  button.disabled=true;
+  /*
+    DEMO PAYMENT MODE
 
-  button.innerText=
-    TEXT[language].sending;
+    We intentionally DO NOT call /api/order.
+
+    Current flow:
+
+    Cart
+      ↓
+    Pickup time
+      ↓
+    PAY ONLINE
+      ↓
+    Payment demonstration screen
+
+    No order is created.
+    Nothing is sent to the barista.
+    No money is charged.
+
+    After RaiAccept activation:
+
+    PAY ONLINE
+      ↓
+    Backend creates secure payment
+      ↓
+    Raiffeisen payment page
+      ↓
+    Bank verifies successful payment
+      ↓
+    Backend creates order
+      ↓
+    Barista receives Telegram order
+  */
+
+
+  openPaymentModal();
+
+
+  const telegram=
+    getTelegramWebApp();
+
 
   try{
 
-    const payload={
+    if(
+      telegram &&
+      telegram.HapticFeedback
+    ){
 
-      initData:initData,
-
-      pickup:pickup,
-
-      items:cart.map(
-        item=>({
-          id:item.id,
-          qty:item.qty,
-          extra_shot:
-            Boolean(item.extra_shot),
-          boba:
-            Boolean(item.boba)
-        })
-      )
-    };
-
-    const response=
-      await fetch(
-        "/api/order",
-        {
-          method:"POST",
-
-          headers:{
-            "Content-Type":
-              "application/json"
-          },
-
-          cache:"no-store",
-
-          credentials:"same-origin",
-
-          body:JSON.stringify(
-            payload
-          )
-        }
-      );
-
-    const result=
-      await response.json();
-
-    if(!response.ok){
-
-      throw new Error(
-        result.error ||
-        "Order failed."
-      );
+      telegram
+        .HapticFeedback
+        .impactOccurred(
+          "light"
+        );
     }
 
-    cart=[];
-
-    updateCart();
-
-    showMessage(
-      "✅ "+
-      TEXT[language].success+
-      "\n\n"+
-      "#"+
-      result.order_id+
-      "\n"+
-      TEXT[language].pickup+
-      ": "+
-      result.pickup+
-      "\n"+
-      result.total+
-      " RSD"+
-      "\n\n"+
-      TEXT[language].pay,
-      "success"
-    );
-
-    loadOrders();
-    loadProfile();
-
-    const telegram=
-      getTelegramWebApp();
-
-    try{
-
-      if(
-        telegram &&
-        telegram.HapticFeedback
-      ){
-
-        telegram.HapticFeedback
-          .notificationOccurred(
-            "success"
-          );
-      }
-
-    }catch(e){}
-
-  }catch(error){
-
-    showMessage(
-      "❌ "+error.message,
-      "error"
-    );
-
-  }finally{
-
-    button.disabled=false;
-
-    button.innerText=
-      TEXT[language].order;
-  }
+  }catch(e){}
 }
 
 
-/* ORDERS */
+/* =========================================================
+   ORDERS
+========================================================= */
 
 async function loadOrders(){
 
   const initData=
     getTelegramInitData();
 
-  if(!initData){
+
+  if(
+    !initData
+  ){
 
     customerOrders=[];
 
@@ -3283,12 +4183,14 @@ async function loadOrders(){
     return;
   }
 
+
   try{
 
     const response=
       await fetch(
         "/api/orders",
         {
+
           method:"POST",
 
           headers:{
@@ -3296,34 +4198,47 @@ async function loadOrders(){
               "application/json"
           },
 
-          cache:"no-store",
+          cache:
+            "no-store",
 
-          body:JSON.stringify({
-            initData:initData
-          })
+          body:
+            JSON.stringify({
+              initData:initData
+            })
         }
       );
+
 
     const result=
       await response.json();
 
-    if(!response.ok){
+
+    if(
+      !response.ok
+    ){
 
       throw new Error(
-        result.error
+        result.error ||
+        "Could not load orders."
       );
     }
 
+
     customerOrders=
-      result.orders || [];
+      result.orders ||
+      [];
+
 
     renderOrders();
 
   }catch(error){
 
     document
-      .getElementById("ordersContent")
+      .getElementById(
+        "ordersContent"
+      )
       .innerHTML=`
+
         <div class="empty-state">
           ${escapeHtml(error.message)}
         </div>
@@ -3334,25 +4249,40 @@ async function loadOrders(){
 
 function statusText(status){
 
-  if(status==="new"){
+  if(
+    status==="new"
+  ){
     return TEXT[language].newStatus;
   }
 
-  if(status==="preparing"){
+
+  if(
+    status==="preparing"
+  ){
     return TEXT[language].preparingStatus;
   }
 
-  if(status==="ready"){
+
+  if(
+    status==="ready"
+  ){
     return TEXT[language].readyStatus;
   }
 
-  if(status==="completed"){
+
+  if(
+    status==="completed"
+  ){
     return TEXT[language].completedStatus;
   }
 
-  if(status==="cancelled"){
+
+  if(
+    status==="cancelled"
+  ){
     return TEXT[language].cancelledStatus;
   }
+
 
   return status;
 }
@@ -3365,7 +4295,10 @@ function renderOrders(){
       "ordersContent"
     );
 
-  if(!customerOrders.length){
+
+  if(
+    !customerOrders.length
+  ){
 
     box.innerHTML=`
 
@@ -3386,133 +4319,181 @@ function renderOrders(){
       </div>
     `;
 
+
     return;
   }
 
+
   box.innerHTML=
-    customerOrders.map(order=>{
+    customerOrders
+      .map(
+        order=>{
 
-      const items=
-        Array.isArray(order.items)
-          ? order.items
-          : [];
-
-      return`
-
-        <div class="order-card">
-
-          <div class="order-card-top">
-
-            <div>
-
-              <div class="order-number">
-                Order #${order.id}
-              </div>
-
-              <div class="order-date">
-                ${escapeHtml(order.created)}
-                ·
-                ${escapeHtml(order.pickup)}
-              </div>
-
-            </div>
-
-            <div class="status ${escapeHtml(order.status)}">
-              ${escapeHtml(statusText(order.status))}
-            </div>
-
-          </div>
+          const items=
+            Array.isArray(
+              order.items
+            )
+              ? order.items
+              : [];
 
 
-          <div class="order-products">
+          return`
 
-            ${
-              items.map(item=>{
+            <div class="order-card">
 
-                const copy=
-                  productText(item.id);
+              <div class="order-card-top">
 
-                let extras=[];
+                <div>
 
-                if(item.extra_shot){
-                  extras.push(
-                    TEXT[language].extra
-                  );
-                }
-
-                if(item.boba){
-                  extras.push(
-                    TEXT[language].boba
-                  );
-                }
-
-                return`
-
-                  <div class="order-product-line">
-
-                    <span>
-                      ${item.qty}×
-                      ${escapeHtml(copy[0])}
-                      ${
-                        extras.length
-                          ? `<small> · ${escapeHtml(extras.join(", "))}</small>`
-                          : ""
-                      }
-                    </span>
-
-                    <strong>
-                      ${item.line_total} RSD
-                    </strong>
-
+                  <div class="order-number">
+                    Order #${order.id}
                   </div>
-                `;
 
-              }).join("")
-            }
+                  <div class="order-date">
+                    ${escapeHtml(order.created)}
+                    ·
+                    ${escapeHtml(order.pickup)}
+                  </div>
 
-          </div>
+                </div>
 
 
-          <div class="order-card-bottom">
+                <div
+                  class="status ${escapeHtml(order.status)}"
+                >
+                  ${escapeHtml(statusText(order.status))}
+                </div>
 
-            <div class="order-total">
-              ${order.total} RSD
+              </div>
+
+
+              <div class="order-products">
+
+                ${
+                  items
+                    .map(
+                      item=>{
+
+                        const copy=
+                          productText(
+                            item.id
+                          );
+
+
+                        let extras=[];
+
+
+                        if(
+                          item.extra_shot
+                        ){
+
+                          extras.push(
+                            TEXT[language].extra
+                          );
+                        }
+
+
+                        if(
+                          item.boba
+                        ){
+
+                          extras.push(
+                            TEXT[language].boba
+                          );
+                        }
+
+
+                        return`
+
+                          <div class="order-product-line">
+
+                            <span>
+
+                              ${item.qty}×
+
+                              ${escapeHtml(copy[0])}
+
+                              ${
+                                extras.length
+                                  ? `
+                                    <small>
+                                      · ${escapeHtml(extras.join(", "))}
+                                    </small>
+                                  `
+                                  : ""
+                              }
+
+                            </span>
+
+                            <strong>
+                              ${item.line_total} RSD
+                            </strong>
+
+                          </div>
+                        `;
+
+                      }
+                    )
+                    .join("")
+                }
+
+              </div>
+
+
+              <div class="order-card-bottom">
+
+                <div class="order-total">
+                  ${order.total} RSD
+                </div>
+
+
+                ${
+                  order.status!=="cancelled"
+                    ? `
+                      <button
+                        class="reorder"
+                        onclick="reorder(${order.id})"
+                      >
+                        ${TEXT[language].reorder}
+                      </button>
+                    `
+                    : ""
+                }
+
+              </div>
+
             </div>
+          `;
 
-            ${
-              order.status!=="cancelled"
-                ? `
-                  <button
-                    class="reorder"
-                    onclick="reorder(${order.id})"
-                  >
-                    ${TEXT[language].reorder}
-                  </button>
-                `
-                : ""
-            }
-
-          </div>
-
-        </div>
-      `;
-
-    }).join("");
+        }
+      )
+      .join("");
 }
 
+
+/* =========================================================
+   REORDER
+========================================================= */
 
 function reorder(orderId){
 
   const order=
     customerOrders.find(
-      item=>item.id===orderId
+      item=>
+        item.id===
+        orderId
     );
 
-  if(!order){
+
+  if(
+    !order
+  ){
     return;
   }
 
+
   const newCart=[];
+
 
   for(
     const item
@@ -3521,38 +4502,66 @@ function reorder(orderId){
 
     const product=
       menu.find(
-        p=>p.id===item.id
+        p=>
+          p.id===
+          item.id
       );
 
-    if(!product){
+
+    if(
+      !product
+    ){
       continue;
     }
+
 
     const qty=
       Math.min(
         10,
-        Number(item.qty) || 1
+        Number(
+          item.qty
+        ) || 1
       );
 
+
     newCart.push({
-      id:item.id,
-      qty:qty,
+
+      id:
+        item.id,
+
+      qty:
+        qty,
+
       extra_shot:
-        Boolean(item.extra_shot),
+        Boolean(
+          item.extra_shot
+        ),
+
       boba:
-        Boolean(item.boba)
+        Boolean(
+          item.boba
+        )
     });
   }
 
+
   let running=0;
+
 
   cart=[];
 
-  for(const item of newCart){
 
-    if(running>=30){
+  for(
+    const item
+    of newCart
+  ){
+
+    if(
+      running>=30
+    ){
       break;
     }
+
 
     const allowed=
       Math.min(
@@ -3560,45 +4569,69 @@ function reorder(orderId){
         30-running
       );
 
-    if(allowed>0){
+
+    if(
+      allowed>0
+    ){
 
       cart.push({
         ...item,
         qty:allowed
       });
 
-      running+=allowed;
+
+      running+=
+        allowed;
     }
   }
 
+
   updateCart();
 
-  showPage("menu");
 
-  document
-    .getElementById("cartSection")
-    .scrollIntoView({
-      behavior:"smooth",
-      block:"center"
-    });
+  showPage(
+    "menu"
+  );
+
+
+  if(
+    cart.length
+  ){
+
+    document
+      .getElementById(
+        "cartSection"
+      )
+      .scrollIntoView({
+        behavior:"smooth",
+        block:"center"
+      });
+  }
 }
 
 
-/* PROFILE */
+/* =========================================================
+   PROFILE
+========================================================= */
 
 async function loadProfile(){
 
   const initData=
     getTelegramInitData();
 
-  if(!initData){
 
-    customerProfile=null;
+  if(
+    !initData
+  ){
+
+    customerProfile=
+      null;
 
     renderProfile();
 
     return;
   }
+
 
   try{
 
@@ -3606,40 +4639,55 @@ async function loadProfile(){
       await fetch(
         "/api/profile",
         {
-          method:"POST",
+
+          method:
+            "POST",
 
           headers:{
             "Content-Type":
               "application/json"
           },
 
-          cache:"no-store",
+          cache:
+            "no-store",
 
-          body:JSON.stringify({
-            initData:initData
-          })
+          body:
+            JSON.stringify({
+              initData:initData
+            })
         }
       );
+
 
     const result=
       await response.json();
 
-    if(!response.ok){
+
+    if(
+      !response.ok
+    ){
 
       throw new Error(
-        result.error
+        result.error ||
+        "Could not load profile."
       );
     }
 
-    customerProfile=result;
+
+    customerProfile=
+      result;
+
 
     renderProfile();
 
   }catch(error){
 
     document
-      .getElementById("profileContent")
+      .getElementById(
+        "profileContent"
+      )
       .innerHTML=`
+
         <div class="empty-state">
           ${escapeHtml(error.message)}
         </div>
@@ -3655,25 +4703,36 @@ function renderProfile(){
       "profileContent"
     );
 
-  if(!customerProfile){
+
+  if(
+    !customerProfile
+  ){
 
     box.innerHTML=`
+
       <div class="empty-state">
+
         ${TEXT[language].telegramRequired}
+
       </div>
     `;
 
+
     return;
   }
+
 
   const name=
     customerProfile.name ||
     "TAKE AWAY Member";
 
+
   const username=
     customerProfile.username
-      ? "@"+customerProfile.username
+      ? "@"+
+        customerProfile.username
       : "";
+
 
   const initial=
     (
@@ -3684,8 +4743,10 @@ function renderProfile(){
     .charAt(0)
     .toUpperCase();
 
+
   let favorite=
     TEXT[language].noFavorite;
+
 
   if(
     customerProfile.favorite &&
@@ -3694,9 +4755,12 @@ function renderProfile(){
 
     favorite=
       productText(
-        customerProfile.favorite.id
+        customerProfile
+          .favorite
+          .id
       )[0];
   }
+
 
   box.innerHTML=`
 
@@ -3710,6 +4774,7 @@ function renderProfile(){
         ${escapeHtml(name)}
       </div>
 
+
       ${
         username
           ? `
@@ -3719,6 +4784,7 @@ function renderProfile(){
           `
           : ""
       }
+
 
       <div class="member">
         ${TEXT[language].member}
@@ -3794,7 +4860,9 @@ function renderProfile(){
 }
 
 
-/* START */
+/* =========================================================
+   START
+========================================================= */
 
 document.addEventListener(
   "DOMContentLoaded",
@@ -3802,19 +4870,34 @@ document.addEventListener(
 
     initializeTelegram();
 
+
+    /*
+      English is default
+    */
+
+    changeLanguage(
+      "en"
+    );
+
+
+    /*
+      Load menu from Flask
+    */
+
     await loadMenu();
+
 
     updateCart();
 
     updatePickupInfo();
 
+
     /*
-      Preload account data quietly.
-      This makes Orders/Profile faster
-      when customer opens those tabs.
+      Preload orders/profile
     */
 
     loadOrders();
+
     loadProfile();
   }
 );
