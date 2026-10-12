@@ -201,6 +201,22 @@ def init_db():
             )
         """)
 
+        # Safe migrations for existing Render databases.
+        columns = {
+            row[1]
+            for row in connection.execute("PRAGMA table_info(orders)").fetchall()
+        }
+
+        if "payment_status" not in columns:
+            connection.execute(
+                "ALTER TABLE orders ADD COLUMN payment_status TEXT DEFAULT 'paid'"
+            )
+
+        if "payment_provider" not in columns:
+            connection.execute(
+                "ALTER TABLE orders ADD COLUMN payment_provider TEXT DEFAULT 'legacy'"
+            )
+
         connection.commit()
 
     finally:
@@ -605,7 +621,7 @@ def barista_order_text(
         f"🕐 Pickup: {pickup_text}\n\n"
         f"{details_text}\n\n"
         f"💰 TOTAL: {order['total']} RSD\n"
-        f"💵 Payment at pickup"
+        f"💳 Payment: ONLINE • PAID"
     )
 
     if status == "ready":
@@ -781,7 +797,8 @@ def health():
         "bot_token": bool(TOKEN),
         "order_chat": bool(ADMIN),
         "app_url": URL,
-        "menu_items": len(MENU)
+        "menu_items": len(MENU),
+        "payment_mode": "raiaccept_pending"
     })
 
 
@@ -972,6 +989,16 @@ def customer_orders():
     methods=["POST"]
 )
 def create_order():
+
+    # IMPORTANT: orders must only be created after a verified RaiAccept
+    # payment callback. Until the bank activates e-commerce, this endpoint
+    # intentionally refuses direct order creation so unpaid orders can never
+    # reach the barista.
+    if os.environ.get("RAIACCEPT_LIVE", "0") != "1":
+        return jsonify({
+            "error": "Online payment is being activated with Raiffeisen Bank.",
+            "payment_pending": True
+        }), 503
 
     data = request.get_json(
         silent=True
@@ -1390,8 +1417,8 @@ def create_order():
         "Please wait for confirmation. ☕\n\n"
         "🇷🇸 Porudžbina je primljena.\n"
         "Sačekajte potvrdu.\n\n"
-        "💵 Pay at pickup / "
-        "Plaćanje pri preuzimanju."
+        "💳 Paid online / "
+        "Plaćeno online."
     )
 
     tg(
@@ -1680,9 +1707,8 @@ def handle_callback(callback):
                     "🇷🇸 Vaša porudžbina "
                     "je spremna za "
                     "preuzimanje.\n\n"
-                    "💵 Pay at pickup / "
-                    "Plaćanje pri "
-                    "preuzimanju."
+                    "💳 Paid online / "
+                    "Plaćeno online."
             }
         )
 
@@ -1985,14 +2011,13 @@ def bot_webhook():
             "select a pickup time "
             "and we'll prepare "
             "everything for you.\n\n"
-            "💵 Pay at pickup.\n\n"
+            "💳 Online payment only.\n\n"
             "🇷🇸 DOBRODOŠLI U "
             "TAKE AWAY\n\n"
             "Izaberite piće i vreme "
             "preuzimanja, a mi ćemo "
             "pripremiti porudžbinu.\n\n"
-            "💵 Plaćanje pri "
-            "preuzimanju.\n\n"
+            "💳 Samo online plaćanje.\n\n"
             "👇 ORDER / PORUČI"
         )
 
@@ -2030,13 +2055,12 @@ def bot_webhook():
                     "Choose your drinks "
                     "and pickup time.\n"
                     "Pickup: 07:00–17:00\n"
-                    "Payment: at pickup.\n\n"
+                    "Payment: online only.\n\n"
                     "🇷🇸 Izaberite piće "
                     "i vreme preuzimanja.\n"
                     "Preuzimanje: "
                     "07:00–17:00\n"
-                    "Plaćanje pri "
-                    "preuzimanju.",
+                    "Samo online plaćanje.",
 
                 "reply_markup":
                     order_keyboard()
