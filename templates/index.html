@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 
 <meta
@@ -9,7 +8,7 @@
   content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"
 >
 
-<meta name="theme-color" content="#043923">
+<meta name="theme-color" content="#032f20">
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
@@ -17,14 +16,29 @@
 
 <style>
 
+/* =========================================================
+   PREMIUM TAKE AWAY — DESIGN SYSTEM
+========================================================= */
+
 :root{
   --green:#043923;
-  --green-dark:#032c1b;
+  --green-deep:#022b1c;
+  --green-black:#021d14;
   --green-light:#0b5136;
-  --gold:#d6b36a;
-  --cream:#f6f0e5;
-  --white:#fff;
-  --muted:rgba(255,255,255,.65);
+
+  --gold:#d9b86c;
+  --gold-soft:#ead49d;
+
+  --cream:#f7f3ea;
+  --cream-dark:#eee8dc;
+
+  --white:#ffffff;
+  --text:#f9f7f1;
+
+  --muted:rgba(255,255,255,.60);
+  --line:rgba(255,255,255,.11);
+
+  --shadow:0 20px 55px rgba(0,0,0,.22);
 }
 
 *{
@@ -35,21 +49,48 @@
 }
 
 html{
-  background:var(--green);
+  background:var(--green-deep);
+  scroll-behavior:smooth;
 }
 
 body{
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Arial,
+    sans-serif;
+
   background:
-    radial-gradient(circle at 100% 0%,#116342 0%,transparent 30%),
-    radial-gradient(circle at 0% 40%,#0c5237 0%,transparent 35%),
-    linear-gradient(180deg,#063d27,#032c1b);
-  color:white;
+    radial-gradient(
+      circle at 85% -5%,
+      rgba(29,111,76,.55) 0%,
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at -10% 32%,
+      rgba(15,86,57,.50) 0%,
+      transparent 35%
+    ),
+    linear-gradient(
+      180deg,
+      #06452e 0%,
+      #033724 38%,
+      #022b1c 100%
+    );
+
+  color:var(--text);
+
   min-height:100vh;
-  padding-bottom:155px;
+
+  padding-bottom:
+    calc(160px + env(safe-area-inset-bottom));
+
+  overflow-x:hidden;
 }
 
-button,select{
+button,
+select{
   font:inherit;
   cursor:pointer;
 }
@@ -58,98 +99,210 @@ button{
   -webkit-appearance:none;
 }
 
+button:active{
+  transform:scale(.975);
+}
+
 
 /* =========================================================
    HEADER
 ========================================================= */
 
 .header{
-  padding:12px 17px 23px;
-  text-align:center;
   position:relative;
+  padding:
+    calc(13px + env(safe-area-inset-top))
+    16px
+    28px;
+
+  text-align:center;
   overflow:hidden;
+}
+
+.header:after{
+  content:"";
+  position:absolute;
+  width:280px;
+  height:280px;
+  left:50%;
+  top:70px;
+
+  transform:translateX(-50%);
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(217,184,108,.09),
+      transparent 67%
+    );
+
+  pointer-events:none;
 }
 
 .top{
   display:flex;
   justify-content:flex-end;
+
   position:relative;
-  z-index:2;
+  z-index:4;
 }
+
+
+/* =========================================================
+   LANGUAGE SWITCHER
+========================================================= */
 
 .languages{
   display:flex;
-  gap:4px;
+  gap:3px;
+
   padding:4px;
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:15px;
-  background:rgba(0,0,0,.15);
+
+  border:1px solid rgba(255,255,255,.11);
+  border-radius:16px;
+
+  background:rgba(0,20,13,.28);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.05);
+
+  backdrop-filter:blur(15px);
 }
 
 .lang{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  gap:5px;
+
+  min-width:57px;
+
   border:0;
-  padding:7px 9px;
-  border-radius:11px;
+  border-radius:12px;
+
+  padding:8px 8px;
+
   background:transparent;
-  font-size:17px;
+
+  color:rgba(255,255,255,.65);
+
+  font-size:10px;
+  font-weight:800;
+
+  letter-spacing:.5px;
+
+  transition:
+    background .2s ease,
+    color .2s ease,
+    transform .15s ease;
+}
+
+.lang .flag{
+  font-size:15px;
 }
 
 .lang.active{
-  background:white;
+  background:var(--cream);
+  color:var(--green-deep);
+
+  box-shadow:
+    0 4px 14px rgba(0,0,0,.18);
 }
 
+
+/* =========================================================
+   BRAND
+========================================================= */
+
 .brand{
-  margin-top:-4px;
+  position:relative;
+  z-index:2;
+
+  margin-top:-3px;
 }
 
 .walking-logo{
-  width:125px;
-  height:125px;
-  margin:-2px auto 0;
+  width:128px;
+  height:128px;
+
+  margin:-5px auto 0;
 }
 
 .walking-logo img{
   width:100%;
   height:100%;
+
   object-fit:contain;
-  filter:drop-shadow(0 4px 8px rgba(0,0,0,.18));
+
+  filter:
+    drop-shadow(
+      0 9px 18px rgba(0,0,0,.20)
+    );
 }
 
 .logo{
-  margin-top:1px;
+  margin-top:0;
   margin-left:9px;
-  font-family:Georgia,serif;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
   font-size:31px;
-  font-weight:600;
+  font-weight:500;
+
   letter-spacing:9px;
 }
 
 .subtitle{
   margin-top:10px;
   margin-left:5px;
-  font-family:Georgia,serif;
-  font-size:11px;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:10px;
+
   letter-spacing:5px;
+
+  color:rgba(255,255,255,.78);
 }
 
 .brand-line{
-  width:31px;
+  width:35px;
   height:1px;
-  background:rgba(255,255,255,.8);
-  margin:12px auto 0;
+
+  margin:14px auto 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      var(--gold-soft),
+      transparent
+    );
 }
 
 .tagline{
-  margin-top:14px;
+  margin-top:13px;
+
   color:var(--gold);
-  font-family:Georgia,serif;
-  font-size:9px;
+
+  font-size:8px;
+  font-weight:700;
+
   letter-spacing:3px;
 }
 
 
 /* =========================================================
-   PAGE
+   PAGES
 ========================================================= */
 
 .page{
@@ -158,44 +311,89 @@ button{
 
 .page.active{
   display:block;
+
+  animation:
+    pageIn .24s ease;
+}
+
+@keyframes pageIn{
+
+  from{
+    opacity:0;
+    transform:translateY(4px);
+  }
+
+  to{
+    opacity:1;
+    transform:none;
+  }
 }
 
 
 /* =========================================================
-   CATEGORY TABS
+   CATEGORY NAVIGATION
 ========================================================= */
 
 .tabs-wrap{
   position:sticky;
   top:0;
   z-index:20;
-  padding:8px 12px 9px;
-  background:rgba(3,44,27,.94);
-  backdrop-filter:blur(15px);
+
+  padding:8px 12px 10px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(3,52,34,.98),
+      rgba(3,45,30,.94)
+    );
+
+  backdrop-filter:blur(20px);
+
+  border-bottom:
+    1px solid rgba(255,255,255,.045);
 }
 
 .tabs{
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:5px;
+
+  gap:4px;
+
   padding:4px;
-  border-radius:16px;
-  background:rgba(0,0,0,.18);
+
+  border:
+    1px solid rgba(255,255,255,.07);
+
+  border-radius:17px;
+
+  background:
+    rgba(0,0,0,.16);
 }
 
 .tab{
-  min-height:42px;
+  min-height:43px;
+
   border:0;
-  border-radius:12px;
+  border-radius:13px;
+
   background:transparent;
-  color:rgba(255,255,255,.65);
-  font-size:13px;
-  font-weight:700;
+
+  color:rgba(255,255,255,.56);
+
+  font-size:12px;
+  font-weight:750;
+
+  transition:.2s ease;
 }
 
 .tab.active{
-  background:white;
-  color:var(--green);
+  background:var(--cream);
+
+  color:var(--green-deep);
+
+  box-shadow:
+    0 5px 18px rgba(0,0,0,.18);
 }
 
 
@@ -204,50 +402,117 @@ button{
 ========================================================= */
 
 .section{
-  padding:18px 13px 5px;
+  padding:21px 13px 7px;
 }
 
 .section-header{
   display:flex;
   align-items:center;
+
   gap:10px;
-  margin:0 4px 15px;
+
+  margin:0 4px 17px;
 }
 
 .section-icon{
   color:var(--gold);
-  font-size:21px;
+
+  font-size:18px;
 }
 
 .section-title{
-  font-family:Georgia,serif;
-  font-size:24px;
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:22px;
+
   letter-spacing:4px;
 }
 
 .section-line{
   height:1px;
   flex:1;
-  background:rgba(255,255,255,.3);
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(217,184,108,.55),
+      transparent
+    );
 }
 
 .products{
   display:grid;
   grid-template-columns:repeat(2,1fr);
-  gap:10px;
+
+  gap:11px;
 }
 
+
+/* =========================================================
+   PRODUCT CARD
+========================================================= */
+
 .product{
-  min-height:260px;
-  padding:13px 12px 14px;
-  border:1px solid rgba(255,255,255,.10);
-  border-radius:22px;
-  background:linear-gradient(
-    145deg,
-    rgba(255,255,255,.09),
-    rgba(255,255,255,.035)
-  );
-  box-shadow:0 10px 30px rgba(0,0,0,.12);
+  position:relative;
+
+  min-height:275px;
+
+  padding:14px 12px 13px;
+
+  overflow:hidden;
+
+  border:
+    1px solid rgba(255,255,255,.10);
+
+  border-radius:24px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.095),
+      rgba(255,255,255,.028)
+    );
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.06),
+    0 15px 35px rgba(0,0,0,.12);
+
+  transition:
+    transform .2s ease,
+    border-color .2s ease;
+}
+
+.product:before{
+  content:"";
+
+  position:absolute;
+
+  width:120px;
+  height:120px;
+
+  left:50%;
+  top:22px;
+
+  transform:
+    translateX(-50%);
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(255,255,255,.065),
+      transparent 67%
+    );
+
+  pointer-events:none;
+}
+
+.product:active{
+  transform:scale(.985);
 }
 
 
@@ -256,338 +521,587 @@ button{
 ========================================================= */
 
 .drink{
-  height:108px;
+  position:relative;
+
+  height:116px;
+
   display:flex;
   align-items:flex-end;
   justify-content:center;
-  margin-bottom:6px;
+
+  margin-bottom:7px;
 }
 
 
-/* Base transparent takeaway cup */
+/* ---------------------------------------------------------
+   BASE TAKEAWAY CUP
+--------------------------------------------------------- */
 
 .cup{
   position:relative;
+
   width:72px;
   height:88px;
-  border:2px solid rgba(255,255,255,.72);
-  border-radius:8px 8px 20px 20px;
+
+  border:
+    1.7px solid rgba(255,255,255,.74);
+
+  border-radius:
+    8px 8px 20px 20px;
+
   overflow:visible;
-  box-shadow:0 10px 20px rgba(0,0,0,.18);
-  transition:.2s ease;
+
+  filter:
+    drop-shadow(
+      0 12px 12px rgba(0,0,0,.15)
+    );
+
+  transition:
+    transform .2s ease;
+}
+
+.product:active .cup{
+  transform:translateY(-2px);
 }
 
 .cup:before{
   content:"";
+
   position:absolute;
-  z-index:6;
-  top:-1px;
+
+  z-index:8;
+
+  top:-2px;
   left:-4px;
   right:-4px;
+
   height:8px;
-  border-radius:5px;
-  background:rgba(255,255,255,.72);
+
+  border-radius:6px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,.93),
+      rgba(255,255,255,.63)
+    );
+
+  box-shadow:
+    0 2px 4px rgba(0,0,0,.10);
+}
+
+.cup:after{
+  content:"TAKE AWAY";
+
+  position:absolute;
+
+  z-index:10;
+
+  left:50%;
+  top:55%;
+
+  transform:
+    translate(-50%,-50%);
+
+  color:
+    rgba(255,255,255,.72);
+
+  font-size:5px;
+  font-weight:900;
+
+  letter-spacing:.7px;
+
+  white-space:nowrap;
+
+  text-shadow:
+    0 1px 2px rgba(0,0,0,.15);
 }
 
 .liquid{
   position:absolute;
+
   left:3px;
   right:3px;
   bottom:3px;
+
   height:72px;
+
   overflow:hidden;
-  border-radius:4px 4px 15px 15px;
+
+  border-radius:
+    4px 4px 15px 15px;
+
+  box-shadow:
+    inset 7px 0 12px rgba(255,255,255,.05),
+    inset -6px 0 10px rgba(0,0,0,.09);
 }
 
 
-/* ESPRESSO
-   Small cup + small amount of strong coffee */
+/* ---------------------------------------------------------
+   ESPRESSO
+   Small cup, concentrated coffee
+--------------------------------------------------------- */
 
 .cup.espresso{
-  width:54px;
-  height:58px;
-  border-radius:7px 7px 16px 16px;
-  margin-bottom:4px;
+  width:52px;
+  height:56px;
+
+  margin-bottom:5px;
+
+  border-radius:
+    7px 7px 15px 15px;
+}
+
+.cup.espresso:after{
+  font-size:4px;
+  letter-spacing:.45px;
 }
 
 .cup.espresso .liquid{
-  left:3px;
-  right:3px;
-  bottom:3px;
-  height:36px;
-  border-radius:3px 3px 12px 12px;
+  height:34px;
+
+  border-radius:
+    3px 3px 11px 11px;
+
   background:
     linear-gradient(
       to bottom,
-      #c17a3f 0 10%,
-      #8d4a25 10% 20%,
-      #542714 20% 35%,
-      #25120b 35% 100%
+      #c58143 0 9%,
+      #9b5529 9% 18%,
+      #5b2b17 18% 36%,
+      #27130c 36% 100%
     );
 }
 
 
-/* AMERICANO
-   Taller and mostly dark coffee */
+/* ---------------------------------------------------------
+   AMERICANO
+--------------------------------------------------------- */
 
 .cup.americano{
-  width:67px;
+  width:66px;
   height:83px;
 }
 
 .cup.americano .liquid{
   height:67px;
+
   background:
     linear-gradient(
       to bottom,
-      #9a6139 0 7%,
-      #70401f 7% 17%,
-      #3a2113 17% 42%,
-      #1c100a 42% 100%
+      #a36b40 0 7%,
+      #75411f 7% 16%,
+      #442414 16% 38%,
+      #21120b 38% 100%
     );
 }
 
 
-/* CAPPUCCINO
-   Compact cup with a thick milk foam top */
+/* ---------------------------------------------------------
+   CAPPUCCINO
+   Strong foam cap
+--------------------------------------------------------- */
 
 .cup.cappuccino{
   width:68px;
   height:75px;
-  border-radius:8px 8px 19px 19px;
+
+  border-radius:
+    8px 8px 19px 19px;
 }
 
 .cup.cappuccino .liquid{
   height:60px;
+
   background:
     linear-gradient(
       to bottom,
-      #fff8ea 0 25%,
-      #f4e8d3 25% 34%,
-      #d7b58f 34% 48%,
-      #a8673f 48% 66%,
-      #5a2c19 66% 100%
+      #fffaf0 0 25%,
+      #f3e5ce 25% 36%,
+      #d7b38c 36% 50%,
+      #a5663e 50% 68%,
+      #582b18 68% 100%
     );
 }
 
 
-/* LATTE
-   Tall, soft, milk-heavy */
+/* ---------------------------------------------------------
+   LATTE
+   Tall + milk forward
+--------------------------------------------------------- */
 
 .cup.latte{
   width:69px;
-  height:88px;
+  height:89px;
 }
 
 .cup.latte .liquid{
-  height:72px;
+  height:73px;
+
   background:
     linear-gradient(
       to bottom,
-      #fff6e8 0 12%,
-      #f1e0c5 12% 43%,
-      #d5ae84 43% 62%,
-      #aa6940 62% 79%,
-      #64331d 79% 100%
+      #fff8ec 0 13%,
+      #f1e1c8 13% 43%,
+      #d7b389 43% 62%,
+      #a96841 62% 79%,
+      #62311c 79% 100%
     );
 }
 
 
-/* FLAT WHITE
-   Shorter than latte, darker, thin microfoam */
+/* ---------------------------------------------------------
+   FLAT WHITE
+   DOUBLE ESPRESSO + THIN MICROFOAM
+--------------------------------------------------------- */
 
 .cup.flatwhite{
   width:68px;
-  height:70px;
-  border-radius:8px 8px 18px 18px;
+  height:72px;
+
+  border-radius:
+    8px 8px 18px 18px;
 }
 
 .cup.flatwhite .liquid{
-  height:55px;
+  height:57px;
+
   background:
     linear-gradient(
       to bottom,
-      #f5e7d1 0 10%,
-      #dfc3a1 10% 27%,
-      #bd8258 27% 50%,
-      #865034 50% 70%,
-      #4b2516 70% 100%
+
+      #f5e6d0 0 7%,
+
+      #d5ad87 7% 16%,
+
+      #9c5b37 16% 31%,
+
+      #67331c 31% 48%,
+
+      #402014 48% 66%,
+
+      #21110b 66% 100%
     );
 }
 
 
-/* ICED LATTE */
+/* ---------------------------------------------------------
+   ICED LATTE
+--------------------------------------------------------- */
+
+.cup.icedlatte{
+  height:91px;
+}
 
 .cup.icedlatte .liquid{
+  height:75px;
+
   background:
     linear-gradient(
-      #eee0c5 0 22%,
-      #d4ae80 22% 47%,
-      #a3633c 47% 68%,
+      #f0e4ce 0 25%,
+      #d5b287 25% 48%,
+      #a5633c 48% 68%,
       #71371f 68% 100%
     );
 }
 
 
-/* THAI MILK TEA */
+/* ---------------------------------------------------------
+   THAI TEA
+--------------------------------------------------------- */
+
+.cup.thai{
+  height:91px;
+}
 
 .cup.thai .liquid{
+  height:75px;
+
   background:
     linear-gradient(
-      #fff1dc 0 25%,
-      #ef731c 25% 100%
+      #fff1dc 0 24%,
+      #f6a055 24% 29%,
+      #ef731c 29% 100%
     );
 }
 
 
-/* THAI GREEN TEA */
+/* ---------------------------------------------------------
+   THAI GREEN
+--------------------------------------------------------- */
+
+.cup.greentea{
+  height:91px;
+}
 
 .cup.greentea .liquid{
+  height:75px;
+
   background:
     linear-gradient(
-      #fff1dc 0 25%,
-      #789537 25% 100%
+      #fff2dd 0 24%,
+      #b5c477 24% 29%,
+      #789537 29% 100%
     );
 }
 
 
-/* LIME TEA */
+/* ---------------------------------------------------------
+   LIME TEA
+--------------------------------------------------------- */
+
+.cup.limetea{
+  height:91px;
+}
 
 .cup.limetea .liquid{
+  height:75px;
+
   background:
     linear-gradient(
-      #74421f,
-      #482612 45%,
-      #21120b
+      #84502c 0%,
+      #573018 38%,
+      #27150d 100%
     );
 }
 
 
-/* BUMBLE */
+/* ---------------------------------------------------------
+   BUMBLE
+--------------------------------------------------------- */
+
+.cup.bumble{
+  height:91px;
+}
 
 .cup.bumble .liquid{
+  height:75px;
+
   background:
     linear-gradient(
-      #4d2416 0 46%,
-      #f08b1d 46% 100%
+      #472115 0 42%,
+      #70351c 42% 48%,
+      #f18c20 48% 100%
     );
 }
 
 
-/* TONIC */
+/* ---------------------------------------------------------
+   TONIC
+--------------------------------------------------------- */
+
+.cup.tonic{
+  height:91px;
+}
 
 .cup.tonic .liquid{
+  height:75px;
+
   background:
     linear-gradient(
-      #542a17 0 36%,
-      #d9b55b 36% 52%,
-      #e7e1cc 52%
+      #482315 0 31%,
+      #76502c 31% 39%,
+      #e4d7a9 39% 100%
     );
 }
 
 
-/* AMERICANO CREAM */
+/* ---------------------------------------------------------
+   AMERICANO CREAM
+--------------------------------------------------------- */
+
+.cup.americanocream{
+  height:91px;
+}
 
 .cup.americanocream .liquid{
+  height:75px;
+
   background:
     linear-gradient(
-      #fff4e6 0 22%,
-      #e7d0ad 22% 28%,
-      #3b1d10 28%
+      #fff7ea 0 21%,
+      #e5cba6 21% 27%,
+      #482414 27% 48%,
+      #25130c 48% 100%
     );
 }
 
 
-/* STRAWBERRY MATCHA */
+/* ---------------------------------------------------------
+   STRAWBERRY MATCHA
+--------------------------------------------------------- */
+
+.cup.matcha{
+  height:91px;
+}
 
 .cup.matcha .liquid{
+  height:75px;
+
   background:
     linear-gradient(
       #6e954a 0 31%,
-      #f1e9da 31% 57%,
+      #f2eadb 31% 57%,
       #df6074 57% 100%
     );
 }
 
 
-/* PEANUT LATTE */
+/* ---------------------------------------------------------
+   PEANUT LATTE
+--------------------------------------------------------- */
+
+.cup.peanut{
+  height:91px;
+}
 
 .cup.peanut .liquid{
+  height:75px;
+
   background:
     linear-gradient(
-      #f3e3c9 0 23%,
-      #bd824c 23% 66%,
-      #67351e 66% 100%
+      #f4e5cf 0 22%,
+      #c28a55 22% 63%,
+      #704025 63% 78%,
+      #482414 78% 100%
     );
 }
 
 
-/* ICE */
+/* =========================================================
+   ICE
+========================================================= */
 
 .ice{
   position:absolute;
+
   z-index:5;
+
   top:27px;
-  left:14px;
-  color:rgba(255,255,255,.72);
-  font-size:21px;
+  left:12px;
+
+  color:
+    rgba(255,255,255,.72);
+
+  font-size:20px;
+
   letter-spacing:-5px;
-}
 
+  transform:rotate(-4deg);
 
-/* LIME */
-
-.lime{
-  position:absolute;
-  z-index:10;
-  width:32px;
-  height:32px;
-  right:-12px;
-  top:14px;
-  border:3px solid #b9d83f;
-  border-radius:50%;
-  background:#a4cb38;
+  text-shadow:
+    0 1px 2px rgba(0,0,0,.10);
 }
 
 
 /* =========================================================
-   PRODUCT
+   LIME
+========================================================= */
+
+.lime{
+  position:absolute;
+
+  z-index:12;
+
+  width:31px;
+  height:31px;
+
+  right:-12px;
+  top:13px;
+
+  border:
+    3px solid #c3df49;
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(
+      circle,
+      #d8ed78 0 28%,
+      #a8ce3d 29% 100%
+    );
+
+  box-shadow:
+    0 4px 8px rgba(0,0,0,.16);
+}
+
+
+/* =========================================================
+   PRODUCT COPY
 ========================================================= */
 
 .product-name{
-  min-height:38px;
+  min-height:39px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
   text-align:center;
-  font-family:Georgia,serif;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
   font-size:15px;
-  line-height:1.15;
+
+  line-height:1.16;
 }
 
 .product-desc{
   min-height:40px;
-  margin-top:3px;
+
+  margin-top:4px;
+
   text-align:center;
-  color:rgba(255,255,255,.60);
+
+  color:
+    rgba(255,255,255,.57);
+
   font-size:10px;
-  line-height:1.3;
+
+  line-height:1.4;
 }
 
 .product-price{
   margin-top:7px;
+
   text-align:center;
-  font-family:Georgia,serif;
+
+  color:#fff;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
   font-size:19px;
 }
 
 .add{
   width:100%;
+
   margin-top:10px;
-  padding:10px 7px;
+
+  padding:11px 7px;
+
   border:0;
-  border-radius:12px;
-  background:white;
-  color:var(--green);
-  font-size:12px;
-  font-weight:800;
+  border-radius:13px;
+
+  background:var(--cream);
+
+  color:var(--green-deep);
+
+  box-shadow:
+    0 6px 16px rgba(0,0,0,.12);
+
+  font-size:11px;
+  font-weight:850;
+
+  letter-spacing:.4px;
+
+  transition:.15s ease;
 }
 
 
@@ -596,8 +1110,9 @@ button{
 ========================================================= */
 
 .cart-section{
-  margin:12px 13px;
   display:none;
+
+  margin:18px 13px 12px;
 }
 
 .cart-section.show{
@@ -605,20 +1120,39 @@ button{
 }
 
 .cart-title{
-  font-family:Georgia,serif;
-  font-size:20px;
-  margin-bottom:9px;
+  margin-bottom:10px;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:21px;
 }
 
 .cart-item{
   display:flex;
+
   justify-content:space-between;
   align-items:center;
+
   gap:8px;
-  margin-bottom:6px;
-  padding:11px;
-  border-radius:13px;
-  background:rgba(255,255,255,.08);
+
+  margin-bottom:7px;
+
+  padding:12px;
+
+  border:
+    1px solid rgba(255,255,255,.08);
+
+  border-radius:15px;
+
+  background:
+    rgba(255,255,255,.065);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.03);
+
   font-size:12px;
 }
 
@@ -626,21 +1160,35 @@ button{
   flex:1;
 }
 
+.cart-item-info strong{
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:13px;
+}
+
 .cart-extra{
-  margin-top:3px;
-  color:rgba(255,255,255,.55);
-  font-size:10px;
+  margin-top:4px;
+
+  color:
+    rgba(255,255,255,.52);
+
+  font-size:9px;
 }
 
 .cart-right{
   display:flex;
   align-items:center;
+
   gap:7px;
 }
 
 .cart-quantity{
   display:flex;
   align-items:center;
+
   gap:4px;
 }
 
@@ -648,22 +1196,31 @@ button{
 .remove{
   width:29px;
   height:29px;
+
   border:0;
-  border-radius:8px;
-  background:rgba(255,255,255,.15);
+  border-radius:9px;
+
+  background:
+    rgba(255,255,255,.11);
+
   color:white;
-  font-size:18px;
+
+  font-size:17px;
 }
 
 .cart-qty-number{
-  min-width:21px;
+  min-width:20px;
+
   text-align:center;
+
   font-weight:800;
 }
 
 .cart-price{
   min-width:68px;
+
   text-align:right;
+
   font-weight:800;
 }
 
@@ -674,59 +1231,98 @@ button{
 
 .pickup{
   margin:18px 13px 12px;
-  padding:17px;
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:22px;
-  background:rgba(255,255,255,.07);
+
+  padding:18px;
+
+  border:
+    1px solid rgba(255,255,255,.10);
+
+  border-radius:23px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.085),
+      rgba(255,255,255,.035)
+    );
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.04);
 }
 
 .pickup h2{
-  font-family:Georgia,serif;
-  font-size:19px;
   margin-bottom:5px;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:20px;
 }
 
 .pickup-subtitle{
+  margin-bottom:15px;
+
   color:var(--muted);
+
   font-size:11px;
-  margin-bottom:14px;
 }
 
 .pickup-modes{
   display:grid;
   grid-template-columns:1fr 1fr;
+
   gap:6px;
+
   margin-bottom:9px;
 }
 
 .pickup-mode,
 .time{
-  border:1px solid rgba(255,255,255,.15);
-  border-radius:12px;
-  background:rgba(0,0,0,.15);
+  border:
+    1px solid rgba(255,255,255,.12);
+
+  border-radius:13px;
+
+  background:
+    rgba(0,0,0,.14);
+
   color:white;
-  font-size:12px;
-  font-weight:700;
+
+  font-size:11px;
+  font-weight:750;
+
+  transition:.15s ease;
 }
 
 .pickup-mode{
-  min-height:43px;
+  min-height:44px;
 }
 
 .pickup-mode.active,
 .time.selected{
-  background:white;
-  color:var(--green);
+  background:var(--cream);
+
+  color:var(--green-deep);
+
+  border-color:transparent;
+
+  box-shadow:
+    0 5px 15px rgba(0,0,0,.14);
 }
 
 .times{
   display:grid;
-  grid-template-columns:repeat(4,1fr);
+
+  grid-template-columns:
+    repeat(4,1fr);
+
   gap:6px;
 }
 
 .time{
-  height:40px;
+  height:41px;
 }
 
 .exact-box{
@@ -739,48 +1335,126 @@ button{
 
 .exact-select{
   width:100%;
-  height:47px;
+  height:48px;
+
   border:0;
-  border-radius:12px;
+  border-radius:13px;
+
   padding:0 13px;
-  background:white;
-  color:var(--green);
-  font-weight:700;
+
+  background:var(--cream);
+
+  color:var(--green-deep);
+
+  font-weight:750;
+
+  outline:none;
 }
 
 .pickup-info{
-  margin-top:10px;
-  color:rgba(255,255,255,.7);
-  font-size:11px;
+  margin-top:11px;
+
+  color:
+    rgba(255,255,255,.68);
+
+  font-size:10px;
 }
 
 
 /* =========================================================
-   PAYMENT NOTE
+   PAYMENT PREVIEW
 ========================================================= */
 
 .payment-note{
   margin:12px 13px;
-  padding:15px;
-  border:1px solid rgba(214,179,106,.28);
-  border-radius:18px;
-  background:rgba(214,179,106,.08);
+
+  padding:16px;
+
+  border:
+    1px solid rgba(217,184,108,.25);
+
+  border-radius:20px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(217,184,108,.09),
+      rgba(255,255,255,.025)
+    );
+}
+
+.payment-note-top{
+  display:flex;
+
+  align-items:center;
+  justify-content:space-between;
+
+  gap:10px;
 }
 
 .payment-note-title{
   display:flex;
+
   align-items:center;
+
   gap:8px;
-  color:var(--gold);
-  font-size:12px;
-  font-weight:800;
+
+  color:var(--gold-soft);
+
+  font-size:11px;
+  font-weight:850;
+}
+
+.secure-dot{
+  width:7px;
+  height:7px;
+
+  border-radius:50%;
+
+  background:#8fca9a;
+
+  box-shadow:
+    0 0 0 4px rgba(143,202,154,.09);
 }
 
 .payment-note-text{
-  margin-top:6px;
-  color:rgba(255,255,255,.68);
+  margin-top:7px;
+
+  color:
+    rgba(255,255,255,.60);
+
   font-size:10px;
-  line-height:1.45;
+
+  line-height:1.5;
+}
+
+.payment-mini-methods{
+  display:flex;
+  align-items:center;
+
+  gap:5px;
+
+  margin-top:12px;
+}
+
+.mini-pay{
+  height:23px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:0 7px;
+
+  border-radius:7px;
+
+  background:
+    rgba(255,255,255,.92);
+
+  color:#111;
+
+  font-size:8px;
+  font-weight:850;
 }
 
 
@@ -789,23 +1463,32 @@ button{
 ========================================================= */
 
 .app-page{
-  padding:15px 13px 20px;
+  padding:17px 13px 20px;
 }
 
 .page-heading{
-  margin:5px 3px 18px;
+  margin:
+    5px 3px
+    20px;
 }
 
 .page-heading h1{
-  font-family:Georgia,serif;
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
   font-size:29px;
-  letter-spacing:2px;
+
+  letter-spacing:1px;
 }
 
 .page-heading p{
   margin-top:6px;
+
   color:var(--muted);
-  font-size:12px;
+
+  font-size:11px;
 }
 
 
@@ -815,36 +1498,59 @@ button{
 
 .order-card{
   margin-bottom:10px;
+
   padding:16px;
-  border:1px solid rgba(255,255,255,.11);
-  border-radius:19px;
-  background:rgba(255,255,255,.075);
+
+  border:
+    1px solid rgba(255,255,255,.09);
+
+  border-radius:20px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.08),
+      rgba(255,255,255,.035)
+    );
 }
 
 .order-card-top{
   display:flex;
+
   justify-content:space-between;
   align-items:flex-start;
+
   gap:10px;
 }
 
 .order-number{
-  font-family:Georgia,serif;
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
   font-size:18px;
 }
 
 .order-date{
   margin-top:4px;
+
   color:var(--muted);
-  font-size:10px;
+
+  font-size:9px;
 }
 
 .status{
   padding:7px 9px;
+
   border-radius:10px;
-  background:rgba(255,255,255,.12);
-  font-size:10px;
-  font-weight:800;
+
+  background:
+    rgba(255,255,255,.11);
+
+  font-size:9px;
+  font-weight:850;
+
   text-transform:uppercase;
 }
 
@@ -859,7 +1565,8 @@ button{
 }
 
 .status.completed{
-  background:rgba(255,255,255,.14);
+  background:
+    rgba(255,255,255,.14);
 }
 
 .status.cancelled{
@@ -869,38 +1576,55 @@ button{
 
 .order-products{
   margin-top:15px;
+
   padding-top:12px;
-  border-top:1px solid rgba(255,255,255,.1);
+
+  border-top:
+    1px solid rgba(255,255,255,.08);
 }
 
 .order-product-line{
   display:flex;
+
   justify-content:space-between;
+
   gap:10px;
+
   margin-bottom:7px;
-  font-size:12px;
+
+  font-size:11px;
 }
 
 .order-card-bottom{
   display:flex;
+
   align-items:center;
   justify-content:space-between;
+
   margin-top:13px;
 }
 
 .order-total{
-  font-family:Georgia,serif;
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
   font-size:18px;
 }
 
 .reorder{
   border:0;
   border-radius:11px;
+
   padding:10px 13px;
-  background:white;
-  color:var(--green);
-  font-size:11px;
-  font-weight:800;
+
+  background:var(--cream);
+
+  color:var(--green-deep);
+
+  font-size:10px;
+  font-weight:850;
 }
 
 
@@ -909,93 +1633,161 @@ button{
 ========================================================= */
 
 .profile-card{
-  padding:24px 18px;
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:25px;
-  background:linear-gradient(
-    145deg,
-    rgba(255,255,255,.11),
-    rgba(255,255,255,.04)
-  );
+  padding:27px 18px;
+
+  border:
+    1px solid rgba(255,255,255,.10);
+
+  border-radius:26px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.10),
+      rgba(255,255,255,.035)
+    );
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.04);
+
   text-align:center;
 }
 
 .avatar{
-  width:72px;
-  height:72px;
-  margin:0 auto 12px;
+  width:74px;
+  height:74px;
+
+  margin:
+    0 auto
+    13px;
+
   display:flex;
+
   align-items:center;
   justify-content:center;
-  border:1px solid rgba(255,255,255,.22);
+
+  border:
+    1px solid rgba(217,184,108,.35);
+
   border-radius:50%;
-  background:rgba(255,255,255,.12);
-  font-family:Georgia,serif;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(217,184,108,.16),
+      rgba(255,255,255,.06)
+    );
+
+  color:var(--gold-soft);
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
   font-size:28px;
 }
 
 .profile-name{
-  font-family:Georgia,serif;
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
   font-size:24px;
 }
 
 .profile-user{
   margin-top:4px;
+
   color:var(--muted);
-  font-size:12px;
+
+  font-size:11px;
 }
 
 .member{
   display:inline-block;
-  margin-top:13px;
+
+  margin-top:14px;
+
   padding:7px 12px;
-  border:1px solid rgba(214,179,106,.45);
+
+  border:
+    1px solid rgba(217,184,108,.38);
+
   border-radius:20px;
+
   color:var(--gold);
-  font-size:9px;
-  font-weight:800;
+
+  font-size:8px;
+  font-weight:850;
+
   letter-spacing:2px;
 }
 
 .stats{
   display:grid;
-  grid-template-columns:repeat(2,1fr);
+
+  grid-template-columns:
+    repeat(2,1fr);
+
   gap:8px;
+
   margin-top:13px;
 }
 
 .stat{
-  padding:18px 10px;
-  border-radius:18px;
-  background:rgba(255,255,255,.075);
+  padding:19px 10px;
+
+  border-radius:19px;
+
+  background:
+    rgba(255,255,255,.065);
+
   text-align:center;
 }
 
 .stat-number{
-  font-family:Georgia,serif;
-  font-size:25px;
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:26px;
 }
 
 .stat-label{
   margin-top:5px;
+
   color:var(--muted);
-  font-size:10px;
+
+  font-size:9px;
 }
 
 .profile-info{
   margin-top:13px;
+
   padding:5px 16px;
+
   border-radius:19px;
-  background:rgba(255,255,255,.075);
+
+  background:
+    rgba(255,255,255,.065);
 }
 
 .profile-row{
   display:flex;
+
   justify-content:space-between;
+
   gap:10px;
+
   padding:14px 0;
-  border-bottom:1px solid rgba(255,255,255,.08);
-  font-size:12px;
+
+  border-bottom:
+    1px solid rgba(255,255,255,.07);
+
+  font-size:11px;
 }
 
 .profile-row:last-child{
@@ -1012,25 +1804,35 @@ button{
 ========================================================= */
 
 .empty-state{
-  padding:40px 20px;
+  padding:42px 20px;
+
   text-align:center;
+
   color:var(--muted);
 }
 
 .empty-icon{
   margin-bottom:12px;
+
   font-size:35px;
 }
 
 .empty-title{
   color:white;
-  font-family:Georgia,serif;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
   font-size:20px;
 }
 
 .empty-copy{
   margin-top:7px;
-  font-size:11px;
+
+  font-size:10px;
+
   line-height:1.5;
 }
 
@@ -1041,23 +1843,33 @@ button{
 
 .message{
   display:none;
+
   margin:12px 13px;
+
   padding:13px;
+
   border-radius:14px;
-  font-size:12px;
+
+  font-size:11px;
+
   line-height:1.5;
+
   white-space:pre-line;
 }
 
 .message.error{
   display:block;
+
   background:#f4ded9;
+
   color:#702d27;
 }
 
 .message.success{
   display:block;
+
   background:#dcecdc;
+
   color:#244c2b;
 }
 
@@ -1068,19 +1880,44 @@ button{
 
 .order-bar{
   position:fixed;
+
   z-index:35;
+
   left:9px;
   right:9px;
-  bottom:76px;
+
+  bottom:
+    calc(
+      77px +
+      env(safe-area-inset-bottom)
+    );
+
   display:flex;
+
   align-items:center;
   justify-content:space-between;
+
   gap:10px;
-  padding:9px 10px 9px 15px;
-  border:1px solid rgba(255,255,255,.14);
-  border-radius:18px;
-  background:rgba(3,28,19,.97);
-  box-shadow:0 12px 30px rgba(0,0,0,.3);
+
+  padding:
+    10px
+    10px
+    10px
+    16px;
+
+  border:
+    1px solid rgba(255,255,255,.12);
+
+  border-radius:20px;
+
+  background:
+    rgba(2,28,19,.96);
+
+  box-shadow:
+    0 18px 40px rgba(0,0,0,.35),
+    inset 0 1px 0 rgba(255,255,255,.05);
+
+  backdrop-filter:blur(20px);
 }
 
 .order-bar.hidden{
@@ -1089,25 +1926,49 @@ button{
 
 .order-bar small{
   display:block;
-  color:rgba(255,255,255,.55);
-  font-size:10px;
+
+  color:
+    rgba(255,255,255,.52);
+
+  font-size:9px;
 }
 
 .total{
   margin-top:2px;
-  font-size:18px;
-  font-weight:800;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:19px;
 }
 
 .order-button{
-  min-width:150px;
+  min-width:155px;
+
   border:0;
-  padding:12px;
-  border-radius:12px;
-  background:white;
-  color:var(--green);
-  font-size:12px;
-  font-weight:800;
+
+  padding:13px 13px;
+
+  border-radius:13px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #fffdf8,
+      #eee8dc
+    );
+
+  color:var(--green-deep);
+
+  box-shadow:
+    0 7px 20px rgba(0,0,0,.18);
+
+  font-size:10px;
+  font-weight:900;
+
+  letter-spacing:.4px;
 }
 
 .order-button:disabled{
@@ -1121,32 +1982,63 @@ button{
 
 .bottom-nav{
   position:fixed;
+
   z-index:40;
+
   left:9px;
   right:9px;
-  bottom:9px;
-  height:59px;
+
+  bottom:
+    calc(
+      9px +
+      env(safe-area-inset-bottom)
+    );
+
+  height:60px;
+
   display:grid;
-  grid-template-columns:repeat(3,1fr);
-  border:1px solid rgba(255,255,255,.14);
-  border-radius:20px;
-  background:rgba(3,28,19,.98);
-  backdrop-filter:blur(15px);
-  box-shadow:0 15px 35px rgba(0,0,0,.35);
+
+  grid-template-columns:
+    repeat(3,1fr);
+
+  border:
+    1px solid rgba(255,255,255,.11);
+
+  border-radius:21px;
+
+  background:
+    rgba(2,28,19,.97);
+
+  backdrop-filter:blur(22px);
+
+  box-shadow:
+    0 18px 40px rgba(0,0,0,.35),
+    inset 0 1px 0 rgba(255,255,255,.04);
+
   overflow:hidden;
 }
 
 .nav-button{
+  position:relative;
+
   border:0;
+
   background:transparent;
-  color:rgba(255,255,255,.48);
+
+  color:
+    rgba(255,255,255,.42);
+
   display:flex;
+
   flex-direction:column;
+
   align-items:center;
   justify-content:center;
+
   gap:3px;
-  font-size:9px;
-  font-weight:700;
+
+  font-size:8px;
+  font-weight:750;
 }
 
 .nav-icon{
@@ -1157,8 +2049,23 @@ button{
   color:white;
 }
 
+.nav-button.active:after{
+  content:"";
+
+  position:absolute;
+
+  bottom:4px;
+
+  width:18px;
+  height:2px;
+
+  border-radius:5px;
+
+  background:var(--gold);
+}
+
 .nav-button.active .nav-icon{
-  color:var(--gold);
+  color:var(--gold-soft);
 }
 
 
@@ -1168,12 +2075,19 @@ button{
 
 .modal-bg{
   position:fixed;
+
   inset:0;
+
   z-index:60;
+
   display:none;
+
   align-items:flex-end;
-  background:rgba(0,0,0,.55);
-  backdrop-filter:blur(4px);
+
+  background:
+    rgba(0,0,0,.61);
+
+  backdrop-filter:blur(8px);
 }
 
 .modal-bg.open{
@@ -1182,183 +2096,548 @@ button{
 
 .modal{
   width:100%;
-  padding:21px 17px 28px;
-  border-radius:25px 25px 0 0;
-  background:var(--cream);
+
+  padding:
+    23px
+    18px
+    calc(
+      29px +
+      env(safe-area-inset-bottom)
+    );
+
+  border-radius:
+    28px 28px 0 0;
+
+  background:
+    linear-gradient(
+      180deg,
+      #fbf8f1,
+      #f3ede2
+    );
+
   color:#13291f;
+
+  box-shadow:
+    0 -20px 50px rgba(0,0,0,.20);
+
+  animation:
+    modalIn .25s ease;
+}
+
+@keyframes modalIn{
+
+  from{
+    transform:translateY(25px);
+    opacity:.7;
+  }
+
+  to{
+    transform:none;
+    opacity:1;
+  }
 }
 
 .modal h2{
-  font-family:Georgia,serif;
-  font-size:23px;
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:24px;
 }
 
 .modal-price{
-  margin:4px 0 16px;
+  margin:
+    5px 0
+    17px;
+
   color:#777;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
 }
 
 .addon{
   width:100%;
+
   display:flex;
+
   justify-content:space-between;
+
   padding:14px;
+
   margin-bottom:7px;
-  border:1px solid #ddd4c5;
-  border-radius:13px;
+
+  border:
+    1px solid #ddd4c5;
+
+  border-radius:14px;
+
   background:white;
+
   color:#183326;
 }
 
 .addon.selected{
-  border:2px solid var(--green);
-  background:#e5eee8;
+  border:
+    2px solid var(--green);
+
+  background:#e6eee9;
 }
 
 .quantity-label{
-  margin-top:18px;
+  margin-top:19px;
+
   text-align:center;
+
   color:#6c746f;
-  font-size:11px;
-  font-weight:700;
+
+  font-size:10px;
+  font-weight:750;
+
   text-transform:uppercase;
+
   letter-spacing:1px;
 }
 
 .quantity-wrap{
   display:flex;
+
   align-items:center;
   justify-content:center;
+
   gap:22px;
-  margin:9px 0 15px;
+
+  margin:
+    10px 0
+    16px;
 }
 
 .qty-btn{
   width:45px;
   height:45px;
+
   border:0;
+
   border-radius:50%;
+
   background:var(--green);
+
   color:white;
-  font-size:25px;
+
+  font-size:24px;
 }
 
 .qty-number{
   min-width:34px;
+
   text-align:center;
+
   color:var(--green);
+
   font-size:24px;
   font-weight:800;
 }
 
 .modal-add{
   width:100%;
+
   margin-top:5px;
+
   padding:15px 10px;
+
   border:0;
-  border-radius:13px;
-  background:var(--green);
+  border-radius:14px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #06452e,
+      #033724
+    );
+
   color:white;
-  font-weight:800;
+
+  box-shadow:
+    0 8px 20px rgba(4,57,35,.20);
+
+  font-size:11px;
+  font-weight:850;
 }
 
 
 /* =========================================================
-   PAYMENT MODAL
+   PREMIUM PAYMENT MODAL
 ========================================================= */
 
 .payment-modal{
+  padding-top:20px;
+
   text-align:center;
-  padding-bottom:34px;
+}
+
+.payment-handle{
+  width:36px;
+  height:4px;
+
+  margin:
+    -7px auto
+    18px;
+
+  border-radius:10px;
+
+  background:#d7d1c7;
 }
 
 .payment-lock{
   width:58px;
   height:58px;
+
   display:flex;
+
   align-items:center;
   justify-content:center;
-  margin:0 auto 14px;
+
+  margin:
+    0 auto
+    13px;
+
+  border:
+    1px solid rgba(4,57,35,.10);
+
   border-radius:50%;
-  background:#e4ece7;
-  font-size:25px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #e9f0eb,
+      #dce7e0
+    );
+
+  color:var(--green);
+
+  font-size:22px;
+
+  box-shadow:
+    0 8px 20px rgba(4,57,35,.08);
 }
 
 .payment-modal h2{
-  font-family:Georgia,serif;
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
   font-size:25px;
 }
 
 .payment-modal-copy{
   max-width:350px;
-  margin:10px auto 0;
-  color:#66736c;
-  font-size:12px;
+
+  margin:
+    9px auto 0;
+
+  color:#68736d;
+
+  font-size:11px;
+
   line-height:1.55;
 }
 
+.payment-total-card{
+  margin-top:18px;
+
+  padding:15px;
+
+  border:
+    1px solid #e3ddd2;
+
+  border-radius:18px;
+
+  background:
+    rgba(255,255,255,.62);
+}
+
 .payment-total-label{
-  margin-top:20px;
-  color:#7c837f;
-  font-size:10px;
+  color:#818782;
+
+  font-size:9px;
+  font-weight:750;
+
   text-transform:uppercase;
-  letter-spacing:1.5px;
+
+  letter-spacing:1.6px;
 }
 
 .payment-total{
-  margin-top:3px;
-  color:var(--green);
-  font-family:Georgia,serif;
-  font-size:31px;
-  font-weight:700;
+  margin-top:4px;
+
+  color:var(--green-deep);
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:32px;
+  font-weight:600;
 }
 
+
+/* =========================================================
+   PAYMENT BRANDS
+========================================================= */
+
 .payment-methods{
-  display:flex;
-  justify-content:center;
-  flex-wrap:wrap;
+  display:grid;
+
+  grid-template-columns:
+    repeat(4,1fr);
+
   gap:6px;
-  margin-top:18px;
+
+  margin-top:13px;
 }
 
 .payment-method{
-  padding:7px 9px;
-  border:1px solid #ded8cd;
-  border-radius:9px;
+  height:45px;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  border:
+    1px solid #e2ddd4;
+
+  border-radius:12px;
+
   background:white;
-  color:#35473e;
-  font-size:10px;
-  font-weight:800;
+
+  box-shadow:
+    0 4px 10px rgba(0,0,0,.035);
 }
 
-.payment-bank{
-  margin-top:17px;
-  color:#6f7772;
-  font-size:10px;
+
+/* VISA */
+
+.visa-logo{
+  color:#1434cb;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size:15px;
+
+  font-style:italic;
+  font-weight:900;
+
+  letter-spacing:-1px;
+}
+
+
+/* MASTERCARD */
+
+.mastercard-logo{
+  position:relative;
+
+  width:37px;
+  height:21px;
+}
+
+.mc-circle{
+  position:absolute;
+
+  top:2px;
+
+  width:19px;
+  height:19px;
+
+  border-radius:50%;
+}
+
+.mc-red{
+  left:2px;
+
+  background:#eb001b;
+}
+
+.mc-orange{
+  right:2px;
+
+  background:#f79e1b;
+
+  opacity:.92;
+}
+
+.mc-name{
+  position:absolute;
+
+  left:50%;
+  bottom:-8px;
+
+  transform:
+    translateX(-50%);
+
+  color:#242424;
+
+  font-size:5px;
+  font-weight:700;
+
+  white-space:nowrap;
+}
+
+
+/* APPLE PAY */
+
+.apple-pay-logo{
+  display:flex;
+
+  align-items:center;
+
+  gap:3px;
+
+  color:#050505;
+
+  font-size:12px;
+  font-weight:750;
+}
+
+.apple-symbol{
+  font-size:17px;
+  line-height:1;
+}
+
+
+/* GOOGLE PAY */
+
+.google-pay-logo{
+  display:flex;
+
+  align-items:center;
+
+  gap:2px;
+
+  font-size:11px;
+  font-weight:700;
+}
+
+.google-g{
+  font-size:16px;
+  font-weight:900;
+
+  background:
+    conic-gradient(
+      #4285f4 0 25%,
+      #34a853 25% 45%,
+      #fbbc05 45% 67%,
+      #ea4335 67% 82%,
+      #4285f4 82%
+    );
+
+  -webkit-background-clip:text;
+  background-clip:text;
+
+  color:transparent;
+}
+
+.google-pay-text{
+  color:#343434;
+}
+
+
+/* =========================================================
+   PAYMENT SECURITY
+========================================================= */
+
+.payment-security{
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  gap:6px;
+
+  margin-top:15px;
+
+  color:#707a74;
+
+  font-size:9px;
+}
+
+.payment-security-icon{
+  width:18px;
+  height:18px;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  border-radius:50%;
+
+  background:#e2ebe5;
+
+  color:var(--green);
+
+  font-size:9px;
 }
 
 .payment-pending{
-  margin-top:18px;
+  margin-top:15px;
+
   padding:13px;
-  border-radius:13px;
-  background:#eee7d7;
+
+  border:
+    1px solid #e4dcc7;
+
+  border-radius:14px;
+
+  background:#f1ead9;
+
   color:#675629;
-  font-size:11px;
+
+  font-size:10px;
+
   line-height:1.5;
 }
 
 .payment-close{
   width:100%;
-  margin-top:15px;
-  padding:14px;
+
+  margin-top:14px;
+
+  padding:15px;
+
   border:0;
-  border-radius:13px;
-  background:var(--green);
+
+  border-radius:14px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #06452e,
+      #033724
+    );
+
   color:white;
-  font-size:12px;
-  font-weight:800;
+
+  box-shadow:
+    0 8px 20px rgba(4,57,35,.20);
+
+  font-size:10px;
+  font-weight:850;
+
+  letter-spacing:.6px;
 }
 
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
 
 @media(max-width:390px){
 
@@ -1369,7 +2648,17 @@ button{
 
   .cart-right{
     width:100%;
-    justify-content:space-between;
+
+    justify-content:
+      space-between;
+  }
+
+  .lang{
+    min-width:53px;
+  }
+
+  .payment-methods{
+    gap:5px;
   }
 }
 
@@ -1384,8 +2673,11 @@ button{
   .order-bar,
   .bottom-nav{
     max-width:580px;
-    margin:auto;
+
+    margin-left:auto;
+    margin-right:auto;
   }
+
 }
 
 </style>
@@ -1394,6 +2686,10 @@ button{
 
 <body>
 
+
+<!-- ======================================================
+     HEADER
+======================================================= -->
 
 <header class="header">
 
@@ -1406,7 +2702,8 @@ button{
         class="lang active"
         onclick="changeLanguage('en')"
       >
-        🇬🇧
+        <span class="flag">🇬🇧</span>
+        <span>EN</span>
       </button>
 
       <button
@@ -1414,7 +2711,8 @@ button{
         class="lang"
         onclick="changeLanguage('sr')"
       >
-        🇷🇸
+        <span class="flag">🇷🇸</span>
+        <span>SR</span>
       </button>
 
       <button
@@ -1422,7 +2720,8 @@ button{
         class="lang"
         onclick="changeLanguage('ru')"
       >
-        🇷🇺
+        <span class="flag">🇷🇺</span>
+        <span>RU</span>
       </button>
 
     </div>
@@ -1433,21 +2732,27 @@ button{
   <div class="brand">
 
     <div class="walking-logo">
+
       <img
         src="/static/logo.png"
         alt="TAKE AWAY"
       >
+
     </div>
+
 
     <div class="logo">
       TAKE AWAY
     </div>
 
+
     <div class="subtitle">
       THAI TEA &amp; COFFEE
     </div>
 
+
     <div class="brand-line"></div>
+
 
     <div class="tagline">
       SAME GOOD ENERGY DAILY
@@ -1503,6 +2808,8 @@ button{
   <div id="menu"></div>
 
 
+  <!-- CART -->
+
   <div
     id="cartSection"
     class="cart-section"
@@ -1519,6 +2826,8 @@ button{
 
   </div>
 
+
+  <!-- PICKUP -->
 
   <section class="pickup">
 
@@ -1613,20 +2922,59 @@ button{
   </section>
 
 
+  <!-- PAYMENT PREVIEW -->
+
   <div class="payment-note">
 
-    <div class="payment-note-title">
-      🔒
-      <span id="paymentNoteTitle">
-        Secure online payment
+    <div class="payment-note-top">
+
+      <div class="payment-note-title">
+
+        <span class="secure-dot"></span>
+
+        <span id="paymentNoteTitle">
+          Secure online payment
+        </span>
+
+      </div>
+
+      <span style="
+        color:rgba(255,255,255,.38);
+        font-size:9px;
+        letter-spacing:1px;
+      ">
+        SECURE
       </span>
+
     </div>
+
 
     <div
       id="paymentNoteText"
       class="payment-note-text"
     >
       Payment is completed online before your order is sent to TAKE AWAY.
+    </div>
+
+
+    <div class="payment-mini-methods">
+
+      <span class="mini-pay">
+        VISA
+      </span>
+
+      <span class="mini-pay">
+        ●●
+      </span>
+
+      <span class="mini-pay">
+         Pay
+      </span>
+
+      <span class="mini-pay">
+        G Pay
+      </span>
+
     </div>
 
   </div>
@@ -1663,6 +3011,7 @@ button{
 
     </div>
 
+
     <div id="ordersContent">
 
       <div class="empty-state">
@@ -1698,6 +3047,7 @@ button{
       </p>
 
     </div>
+
 
     <div id="profileContent">
 
@@ -1736,6 +3086,7 @@ button{
 
   </div>
 
+
   <button
     id="orderButton"
     class="order-button"
@@ -1748,7 +3099,7 @@ button{
 
 
 <!-- ======================================================
-     NAVIGATION
+     BOTTOM NAVIGATION
 ======================================================= -->
 
 <nav class="bottom-nav">
@@ -1908,7 +3259,7 @@ button{
 
 
 <!-- ======================================================
-     PAYMENT MODAL
+     PREMIUM PAYMENT MODAL
 ======================================================= -->
 
 <div
@@ -1919,13 +3270,18 @@ button{
 
   <div class="modal payment-modal">
 
+    <div class="payment-handle"></div>
+
+
     <div class="payment-lock">
       🔒
     </div>
 
+
     <h2 id="paymentModalTitle">
       Secure online payment
     </h2>
+
 
     <div
       id="paymentModalCopy"
@@ -1935,37 +3291,105 @@ button{
     </div>
 
 
-    <div
-      id="paymentTotalLabel"
-      class="payment-total-label"
-    >
-      ORDER TOTAL
+    <div class="payment-total-card">
+
+      <div
+        id="paymentTotalLabel"
+        class="payment-total-label"
+      >
+        ORDER TOTAL
+      </div>
+
+      <div
+        id="paymentModalTotal"
+        class="payment-total"
+      >
+        0 RSD
+      </div>
+
     </div>
 
-    <div
-      id="paymentModalTotal"
-      class="payment-total"
-    >
-      0 RSD
-    </div>
 
+    <!-- PAYMENT BRANDS -->
 
     <div class="payment-methods">
 
-      <div class="payment-method">
-        VISA
+
+      <!-- VISA -->
+
+      <div
+        class="payment-method"
+        aria-label="Visa"
+      >
+        <span class="visa-logo">
+          VISA
+        </span>
       </div>
 
-      <div class="payment-method">
-        Mastercard
+
+      <!-- MASTERCARD -->
+
+      <div
+        class="payment-method"
+        aria-label="Mastercard"
+      >
+
+        <div class="mastercard-logo">
+
+          <span class="mc-circle mc-red"></span>
+
+          <span class="mc-circle mc-orange"></span>
+
+          <span class="mc-name">
+            mastercard
+          </span>
+
+        </div>
+
       </div>
 
-      <div class="payment-method">
-        Apple Pay
+
+      <!-- APPLE PAY -->
+
+      <div
+        class="payment-method"
+        aria-label="Apple Pay"
+      >
+
+        <div class="apple-pay-logo">
+
+          <span class="apple-symbol">
+            
+          </span>
+
+          <span>
+            Pay
+          </span>
+
+        </div>
+
       </div>
 
-      <div class="payment-method">
-        Google Pay
+
+      <!-- GOOGLE PAY -->
+
+      <div
+        class="payment-method"
+        aria-label="Google Pay"
+      >
+
+        <div class="google-pay-logo">
+
+          <span class="google-g">
+            G
+          </span>
+
+          <span class="google-pay-text">
+            Pay
+          </span>
+
+        </div>
+
       </div>
 
     </div>
@@ -1973,9 +3397,17 @@ button{
 
     <div
       id="paymentBank"
-      class="payment-bank"
+      class="payment-security"
     >
-      Secure payment integration
+
+      <span class="payment-security-icon">
+        ✓
+      </span>
+
+      <span>
+        Secure payment integration
+      </span>
+
     </div>
 
 
@@ -2002,7 +3434,6 @@ button{
 
 
 <script>
-
 
 /* =========================================================
    TELEGRAM
@@ -2033,7 +3464,9 @@ function initializeTelegram(){
   try{
 
     telegram.ready();
+
     telegram.expand();
+
 
     if(
       typeof telegram.disableVerticalSwipes
@@ -2043,6 +3476,7 @@ function initializeTelegram(){
     }
 
   }catch(e){}
+
 }
 
 
@@ -2050,12 +3484,13 @@ initializeTelegram();
 
 
 /* =========================================================
-   TEXT
+   TRANSLATIONS
 ========================================================= */
 
 const TEXT={
 
   en:{
+
     tea:"Thai Tea",
     coffee:"Coffee",
     specials:"Specials",
@@ -2068,13 +3503,16 @@ const TEXT={
     cart:"Your order",
 
     pickup:"Pickup time",
-    pickupSub:"When should we prepare your order?",
+
+    pickupSub:
+      "When should we prepare your order?",
 
     asap:"ASAP",
     choose:"Choose time",
 
     ready:"Ready in approximately",
     minutes:"minutes",
+
     pickupAt:"Pickup today at",
 
     item:"item",
@@ -2083,18 +3521,25 @@ const TEXT={
     quantity:"Quantity",
 
     order:"🔒 PAY ONLINE →",
+
     sending:"Connecting...",
 
     extra:"Extra espresso shot",
     boba:"Add boba",
+
     addOrder:"Add to order",
 
-    empty:"Please add a drink first.",
-    choosePickup:"Please choose a pickup time.",
+    empty:
+      "Please add a drink first.",
 
-    success:"Payment confirmed. Order received!",
+    choosePickup:
+      "Please choose a pickup time.",
 
-    noTimes:"No pickup times available today.",
+    success:
+      "Payment confirmed. Order received!",
+
+    noTimes:
+      "No pickup times available today.",
 
     telegramRequired:
       "Please open TAKE AWAY from the Order button inside our Telegram bot.",
@@ -2104,13 +3549,19 @@ const TEXT={
     profileNav:"Profile",
 
     ordersTitle:"My Orders",
-    ordersSub:"Your TAKE AWAY order history",
+
+    ordersSub:
+      "Your TAKE AWAY order history",
 
     profileTitle:"Profile",
-    profileSub:"Your TAKE AWAY account",
+
+    profileSub:
+      "Your TAKE AWAY account",
 
     noOrders:"No orders yet",
-    noOrdersCopy:"Your paid orders will appear here.",
+
+    noOrdersCopy:
+      "Your paid orders will appear here.",
 
     reorder:"Order again",
 
@@ -2120,6 +3571,7 @@ const TEXT={
     drinks:"Drinks",
 
     favorite:"Favourite drink",
+
     memberSince:"First order",
 
     noFavorite:"Not yet",
@@ -2130,21 +3582,26 @@ const TEXT={
     completedStatus:"Completed",
     cancelledStatus:"Cancelled",
 
-    maxOrder:"Maximum 30 drinks per order.",
+    maxOrder:
+      "Maximum 30 drinks per order.",
 
-    paymentNoteTitle:"Secure online payment",
+    paymentNoteTitle:
+      "Secure online payment",
 
     paymentNoteText:
       "Payment is completed online before your order is sent to TAKE AWAY.",
 
-    paymentTitle:"Secure online payment",
+    paymentTitle:
+      "Secure online payment",
 
     paymentCopy:
       "Your order will be sent to TAKE AWAY only after successful payment.",
 
-    paymentTotal:"Order total",
+    paymentTotal:
+      "Order total",
 
-    paymentBank:"Secure payment integration",
+    paymentBank:
+      "Secure payment integration",
 
     paymentPending:
       "Online payment is currently being activated with Raiffeisen Bank. No payment will be charged during this demonstration.",
@@ -2154,6 +3611,7 @@ const TEXT={
 
 
   sr:{
+
     tea:"Tajlandski čaj",
     coffee:"Kafa",
     specials:"Specijaliteti",
@@ -2163,17 +3621,24 @@ const TEXT={
     specialTitle:"SPECIJALITETI",
 
     add:"DODAJ",
+
     cart:"Vaša porudžbina",
 
     pickup:"Vreme preuzimanja",
-    pickupSub:"Kada želite da porudžbina bude spremna?",
+
+    pickupSub:
+      "Kada želite da porudžbina bude spremna?",
 
     asap:"Što pre",
+
     choose:"Izaberi vreme",
 
     ready:"Spremno za približno",
+
     minutes:"minuta",
-    pickupAt:"Preuzimanje danas u",
+
+    pickupAt:
+      "Preuzimanje danas u",
 
     item:"stavka",
     items:"stavki",
@@ -2181,77 +3646,120 @@ const TEXT={
     quantity:"Količina",
 
     order:"🔒 PLATI ONLINE →",
+
     sending:"Povezivanje...",
 
     extra:"Dodatni espresso",
+
     boba:"Dodaj boba kuglice",
-    addOrder:"Dodaj u porudžbinu",
 
-    empty:"Prvo dodajte piće.",
-    choosePickup:"Izaberite vreme preuzimanja.",
+    addOrder:
+      "Dodaj u porudžbinu",
 
-    success:"Plaćanje potvrđeno. Porudžbina je primljena!",
+    empty:
+      "Prvo dodajte piće.",
 
-    noTimes:"Danas nema dostupnih termina.",
+    choosePickup:
+      "Izaberite vreme preuzimanja.",
+
+    success:
+      "Plaćanje potvrđeno. Porudžbina je primljena!",
+
+    noTimes:
+      "Danas nema dostupnih termina.",
 
     telegramRequired:
       "Otvorite TAKE AWAY preko Order dugmeta u Telegram botu.",
 
     menuNav:"Meni",
+
     ordersNav:"Porudžbine",
+
     profileNav:"Profil",
 
-    ordersTitle:"Moje porudžbine",
-    ordersSub:"Istorija TAKE AWAY porudžbina",
+    ordersTitle:
+      "Moje porudžbine",
+
+    ordersSub:
+      "Istorija TAKE AWAY porudžbina",
 
     profileTitle:"Profil",
-    profileSub:"Vaš TAKE AWAY nalog",
 
-    noOrders:"Još nema porudžbina",
-    noOrdersCopy:"Vaše plaćene porudžbine će se pojaviti ovde.",
+    profileSub:
+      "Vaš TAKE AWAY nalog",
 
-    reorder:"Poruči ponovo",
+    noOrders:
+      "Još nema porudžbina",
 
-    member:"TAKE AWAY MEMBER",
+    noOrdersCopy:
+      "Vaše plaćene porudžbine će se pojaviti ovde.",
 
-    totalOrders:"Porudžbine",
+    reorder:
+      "Poruči ponovo",
+
+    member:
+      "TAKE AWAY MEMBER",
+
+    totalOrders:
+      "Porudžbine",
+
     drinks:"Pića",
 
-    favorite:"Omiljeno piće",
-    memberSince:"Prva porudžbina",
+    favorite:
+      "Omiljeno piće",
 
-    noFavorite:"Još nema",
+    memberSince:
+      "Prva porudžbina",
 
-    newStatus:"Primljeno",
-    preparingStatus:"Priprema",
-    readyStatus:"Spremno",
-    completedStatus:"Završeno",
-    cancelledStatus:"Otkazano",
+    noFavorite:
+      "Još nema",
 
-    maxOrder:"Maksimalno 30 pića po porudžbini.",
+    newStatus:
+      "Primljeno",
 
-    paymentNoteTitle:"Sigurno online plaćanje",
+    preparingStatus:
+      "Priprema",
+
+    readyStatus:
+      "Spremno",
+
+    completedStatus:
+      "Završeno",
+
+    cancelledStatus:
+      "Otkazano",
+
+    maxOrder:
+      "Maksimalno 30 pića po porudžbini.",
+
+    paymentNoteTitle:
+      "Sigurno online plaćanje",
 
     paymentNoteText:
       "Plaćanje se vrši online pre nego što porudžbina bude poslata u TAKE AWAY.",
 
-    paymentTitle:"Sigurno online plaćanje",
+    paymentTitle:
+      "Sigurno online plaćanje",
 
     paymentCopy:
       "Porudžbina će biti poslata u TAKE AWAY tek nakon uspešnog plaćanja.",
 
-    paymentTotal:"Ukupno",
+    paymentTotal:
+      "Ukupno",
 
-    paymentBank:"Sigurna integracija plaćanja",
+    paymentBank:
+      "Sigurna integracija plaćanja",
 
     paymentPending:
       "Online plaćanje se trenutno aktivira sa Raiffeisen bankom. Tokom ove demonstracije novac neće biti naplaćen.",
 
-    paymentClose:"ZATVORI"
+    paymentClose:
+      "ZATVORI"
   },
 
 
   ru:{
+
     tea:"Тайский чай",
     coffee:"Кофе",
     specials:"Спешл",
@@ -2261,184 +3769,439 @@ const TEXT={
     specialTitle:"СПЕШЛ",
 
     add:"ДОБАВИТЬ",
+
     cart:"Ваш заказ",
 
-    pickup:"Время получения",
-    pickupSub:"Когда приготовить ваш заказ?",
+    pickup:
+      "Время получения",
 
-    asap:"Как можно скорее",
-    choose:"Выбрать время",
+    pickupSub:
+      "Когда приготовить ваш заказ?",
 
-    ready:"Будет готово примерно через",
+    asap:
+      "Как можно скорее",
+
+    choose:
+      "Выбрать время",
+
+    ready:
+      "Будет готово примерно через",
+
     minutes:"мин.",
-    pickupAt:"Получение сегодня в",
+
+    pickupAt:
+      "Получение сегодня в",
 
     item:"позиция",
     items:"позиций",
 
-    quantity:"Количество",
+    quantity:
+      "Количество",
 
-    order:"🔒 ОПЛАТИТЬ ОНЛАЙН →",
-    sending:"Подключение...",
+    order:
+      "🔒 ОПЛАТИТЬ ОНЛАЙН →",
 
-    extra:"Дополнительный эспрессо",
-    boba:"Добавить боба",
-    addOrder:"Добавить в заказ",
+    sending:
+      "Подключение...",
 
-    empty:"Сначала добавьте напиток.",
-    choosePickup:"Выберите время получения.",
+    extra:
+      "Дополнительный эспрессо",
 
-    success:"Оплата подтверждена. Заказ принят!",
+    boba:
+      "Добавить боба",
 
-    noTimes:"На сегодня свободного времени нет.",
+    addOrder:
+      "Добавить в заказ",
+
+    empty:
+      "Сначала добавьте напиток.",
+
+    choosePickup:
+      "Выберите время получения.",
+
+    success:
+      "Оплата подтверждена. Заказ принят!",
+
+    noTimes:
+      "На сегодня свободного времени нет.",
 
     telegramRequired:
       "Откройте TAKE AWAY через кнопку Order внутри Telegram-бота.",
 
     menuNav:"Меню",
+
     ordersNav:"Заказы",
+
     profileNav:"Профиль",
 
-    ordersTitle:"Мои заказы",
-    ordersSub:"История заказов TAKE AWAY",
+    ordersTitle:
+      "Мои заказы",
 
-    profileTitle:"Профиль",
-    profileSub:"Ваш аккаунт TAKE AWAY",
+    ordersSub:
+      "История заказов TAKE AWAY",
 
-    noOrders:"Заказов пока нет",
-    noOrdersCopy:"Здесь появятся ваши оплаченные заказы.",
+    profileTitle:
+      "Профиль",
 
-    reorder:"Повторить",
+    profileSub:
+      "Ваш аккаунт TAKE AWAY",
 
-    member:"TAKE AWAY MEMBER",
+    noOrders:
+      "Заказов пока нет",
 
-    totalOrders:"Заказы",
-    drinks:"Напитки",
+    noOrdersCopy:
+      "Здесь появятся ваши оплаченные заказы.",
 
-    favorite:"Любимый напиток",
-    memberSince:"Первый заказ",
+    reorder:
+      "Повторить",
 
-    noFavorite:"Пока нет",
+    member:
+      "TAKE AWAY MEMBER",
 
-    newStatus:"Получен",
-    preparingStatus:"Готовится",
-    readyStatus:"Готов",
-    completedStatus:"Завершён",
-    cancelledStatus:"Отменён",
+    totalOrders:
+      "Заказы",
 
-    maxOrder:"Максимум 30 напитков в одном заказе.",
+    drinks:
+      "Напитки",
 
-    paymentNoteTitle:"Безопасная онлайн-оплата",
+    favorite:
+      "Любимый напиток",
+
+    memberSince:
+      "Первый заказ",
+
+    noFavorite:
+      "Пока нет",
+
+    newStatus:
+      "Получен",
+
+    preparingStatus:
+      "Готовится",
+
+    readyStatus:
+      "Готов",
+
+    completedStatus:
+      "Завершён",
+
+    cancelledStatus:
+      "Отменён",
+
+    maxOrder:
+      "Максимум 30 напитков в одном заказе.",
+
+    paymentNoteTitle:
+      "Безопасная онлайн-оплата",
 
     paymentNoteText:
       "Оплата производится онлайн до того, как заказ будет отправлен в TAKE AWAY.",
 
-    paymentTitle:"Безопасная онлайн-оплата",
+    paymentTitle:
+      "Безопасная онлайн-оплата",
 
     paymentCopy:
       "Заказ будет отправлен в TAKE AWAY только после успешной оплаты.",
 
-    paymentTotal:"Сумма заказа",
+    paymentTotal:
+      "Сумма заказа",
 
-    paymentBank:"Безопасная интеграция оплаты",
+    paymentBank:
+      "Безопасная интеграция оплаты",
 
     paymentPending:
       "Онлайн-оплата сейчас подключается через Raiffeisen Bank. В демонстрационном режиме деньги списываться не будут.",
 
-    paymentClose:"ЗАКРЫТЬ"
+    paymentClose:
+      "ЗАКРЫТЬ"
   }
 
 };
 
 
 /* =========================================================
-   PRODUCT TEXT
+   PRODUCT TRANSLATIONS
 ========================================================= */
 
 const PRODUCT_TEXT={
 
   espresso:{
-    en:["Espresso","Classic espresso"],
-    sr:["Espresso","Klasični espresso"],
-    ru:["Эспрессо","Классический эспрессо"]
+
+    en:[
+      "Espresso",
+      "Classic espresso"
+    ],
+
+    sr:[
+      "Espresso",
+      "Klasični espresso"
+    ],
+
+    ru:[
+      "Эспрессо",
+      "Классический эспрессо"
+    ]
+
   },
+
 
   americano:{
-    en:["Americano","Espresso + hot water"],
-    sr:["Amerikano","Espresso + topla voda"],
-    ru:["Американо","Эспрессо + горячая вода"]
+
+    en:[
+      "Americano",
+      "Espresso + hot water"
+    ],
+
+    sr:[
+      "Amerikano",
+      "Espresso + topla voda"
+    ],
+
+    ru:[
+      "Американо",
+      "Эспрессо + горячая вода"
+    ]
+
   },
+
 
   cappuccino:{
-    en:["Cappuccino","Espresso + milk foam"],
-    sr:["Kapućino","Espresso + mlečna pena"],
-    ru:["Капучино","Эспрессо + молочная пена"]
+
+    en:[
+      "Cappuccino",
+      "Espresso + milk foam"
+    ],
+
+    sr:[
+      "Kapućino",
+      "Espresso + mlečna pena"
+    ],
+
+    ru:[
+      "Капучино",
+      "Эспрессо + молочная пена"
+    ]
+
   },
+
 
   latte:{
-    en:["Latte","Espresso + milk"],
-    sr:["Latte","Espresso + mleko"],
-    ru:["Латте","Эспрессо + молоко"]
+
+    en:[
+      "Latte",
+      "Espresso + milk"
+    ],
+
+    sr:[
+      "Latte",
+      "Espresso + mleko"
+    ],
+
+    ru:[
+      "Латте",
+      "Эспрессо + молоко"
+    ]
+
   },
+
 
   flatwhite:{
-    en:["Flat White","Double espresso + milk"],
-    sr:["Flat White","Dupli espresso + mleko"],
-    ru:["Флэт уайт","Двойной эспрессо + молоко"]
+
+    en:[
+      "Flat White",
+      "Double espresso + silky milk"
+    ],
+
+    sr:[
+      "Flat White",
+      "Dupli espresso + kremasto mleko"
+    ],
+
+    ru:[
+      "Флэт уайт",
+      "Двойной эспрессо + нежное молоко"
+    ]
+
   },
+
 
   icedlatte:{
-    en:["Iced Latte","Espresso + milk + ice"],
-    sr:["Ledeni Latte","Espresso + mleko + led"],
-    ru:["Айс латте","Эспрессо + молоко + лёд"]
+
+    en:[
+      "Iced Latte",
+      "Espresso + milk + ice"
+    ],
+
+    sr:[
+      "Ledeni Latte",
+      "Espresso + mleko + led"
+    ],
+
+    ru:[
+      "Айс латте",
+      "Эспрессо + молоко + лёд"
+    ]
+
   },
+
 
   americanocream:{
-    en:["Iced Americano with Cream","Double espresso + water + ice + cream on top"],
-    sr:["Ledeni Amerikano sa kremom","Dupli espresso + voda + led + krem odozgo"],
-    ru:["Айс Американо с кремом","Двойной эспрессо + вода + лёд + крем сверху"]
+
+    en:[
+      "Iced Americano with Cream",
+      "Double espresso + water + ice + cream"
+    ],
+
+    sr:[
+      "Ledeni Amerikano sa kremom",
+      "Dupli espresso + voda + led + krem"
+    ],
+
+    ru:[
+      "Айс Американо с кремом",
+      "Двойной эспрессо + вода + лёд + крем"
+    ]
+
   },
+
 
   strawberrymatcha:{
-    en:["Strawberry Matcha Latte","Strawberry + matcha + milk"],
-    sr:["Strawberry Matcha Latte","Jagoda + matcha + mleko"],
-    ru:["Клубничный матча латте","Клубника + матча + молоко"]
+
+    en:[
+      "Strawberry Matcha Latte",
+      "Strawberry + matcha + milk"
+    ],
+
+    sr:[
+      "Strawberry Matcha Latte",
+      "Jagoda + matcha + mleko"
+    ],
+
+    ru:[
+      "Клубничный матча латте",
+      "Клубника + матча + молоко"
+    ]
+
   },
+
 
   peanutlatte:{
-    en:["Peanut Latte","Double espresso + peanut + milk"],
-    sr:["Peanut Latte","Dupli espresso + kikiriki + mleko"],
-    ru:["Арахисовый латте","Двойной эспрессо + арахис + молоко"]
+
+    en:[
+      "Peanut Latte",
+      "Double espresso + peanut + milk"
+    ],
+
+    sr:[
+      "Peanut Latte",
+      "Dupli espresso + kikiriki + mleko"
+    ],
+
+    ru:[
+      "Арахисовый латте",
+      "Двойной эспрессо + арахис + молоко"
+    ]
+
   },
+
 
   thai:{
-    en:["Classic Thai Milk Tea","Thai tea + milk + cream on top"],
-    sr:["Klasični tajski mlečni čaj","Tajski čaj + mleko + krem odozgo"],
-    ru:["Классический тайский чай","Тайский чай + молоко + крем сверху"]
+
+    en:[
+      "Classic Thai Milk Tea",
+      "Thai tea + milk + cream on top"
+    ],
+
+    sr:[
+      "Klasični tajski mlečni čaj",
+      "Tajski čaj + mleko + krem odozgo"
+    ],
+
+    ru:[
+      "Классический тайский чай",
+      "Тайский чай + молоко + крем сверху"
+    ]
+
   },
+
 
   green:{
-    en:["Thai Green Milk Tea","Thai green tea + milk + cream on top"],
-    sr:["Tajski zeleni mlečni čaj","Zeleni čaj + mleko + krem odozgo"],
-    ru:["Тайский зелёный чай","Зелёный чай + молоко + крем сверху"]
+
+    en:[
+      "Thai Green Milk Tea",
+      "Thai green tea + milk + cream on top"
+    ],
+
+    sr:[
+      "Tajski zeleni mlečni čaj",
+      "Zeleni čaj + mleko + krem odozgo"
+    ],
+
+    ru:[
+      "Тайский зелёный чай",
+      "Зелёный чай + молоко + крем сверху"
+    ]
+
   },
+
 
   lime:{
-    en:["Thai Iced Lime Tea","Black tea + fresh lime + ice"],
-    sr:["Tajski ledeni čaj sa limetom","Crni čaj + sveža limeta + led"],
-    ru:["Тайский чай с лаймом","Чёрный чай + свежий лайм + лёд"]
+
+    en:[
+      "Thai Iced Lime Tea",
+      "Black tea + fresh lime + ice"
+    ],
+
+    sr:[
+      "Tajski ledeni čaj sa limetom",
+      "Crni čaj + sveža limeta + led"
+    ],
+
+    ru:[
+      "Тайский чай с лаймом",
+      "Чёрный чай + свежий лайм + лёд"
+    ]
+
   },
+
 
   tonic:{
-    en:["Tonic Coffee","Espresso + tonic + ice"],
-    sr:["Tonic Coffee","Espresso + tonik + led"],
-    ru:["Тоник кофе","Эспрессо + тоник + лёд"]
+
+    en:[
+      "Tonic Coffee",
+      "Espresso + tonic + ice"
+    ],
+
+    sr:[
+      "Tonic Coffee",
+      "Espresso + tonik + led"
+    ],
+
+    ru:[
+      "Тоник кофе",
+      "Эспрессо + тоник + лёд"
+    ]
+
   },
 
+
   bumble:{
-    en:["Bumble Coffee","Espresso + orange juice + ice"],
-    sr:["Bumble Coffee","Espresso + sok od pomorandže + led"],
-    ru:["Бамбл кофе","Эспрессо + апельсиновый сок + лёд"]
+
+    en:[
+      "Bumble Coffee",
+      "Espresso + orange juice + ice"
+    ],
+
+    sr:[
+      "Bumble Coffee",
+      "Espresso + sok od pomorandže + led"
+    ],
+
+    ru:[
+      "Бамбл кофе",
+      "Эспрессо + апельсиновый сок + лёд"
+    ]
+
   }
 
 };
@@ -2454,20 +4217,25 @@ let menu=[];
 let cart=[];
 
 let category="tea";
+
 let currentPage="menu";
 
 let selectedProduct=null;
 
 let modalExtra=false;
+
 let modalBoba=false;
+
 let modalQuantity=1;
 
 let pickupMode="asap";
+
 let pickupMinutes=10;
 
 let exactPickupDate=null;
 
 let customerOrders=[];
+
 let customerProfile=null;
 
 
@@ -2491,29 +4259,51 @@ function getTelegramInitData(){
 function totalCartQuantity(){
 
   return cart.reduce(
-    (sum,item)=>sum+item.qty,
+    (sum,item)=>
+      sum+item.qty,
     0
   );
+
 }
 
 
 function cartTotal(){
 
   return cart.reduce(
-    (sum,item)=>sum+itemPrice(item),
+    (sum,item)=>
+      sum+itemPrice(item),
     0
   );
+
 }
 
 
 function escapeHtml(value){
 
-  return String(value ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+  return String(
+    value ?? ""
+  )
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
 }
 
 
@@ -2525,116 +4315,227 @@ function changeLanguage(lang){
 
   language=lang;
 
+
   document
     .querySelectorAll(".lang")
     .forEach(
-      x=>x.classList.remove("active")
+      x=>
+        x.classList.remove(
+          "active"
+        )
     );
 
+
   document
-    .getElementById("lang-"+lang)
-    .classList.add("active");
+    .getElementById(
+      "lang-"+lang
+    )
+    .classList.add(
+      "active"
+    );
 
 
-  document.getElementById("tab-tea").innerText=
+  document.getElementById(
+    "tab-tea"
+  ).innerText=
     TEXT[lang].tea;
 
-  document.getElementById("tab-coffee").innerText=
+
+  document.getElementById(
+    "tab-coffee"
+  ).innerText=
     TEXT[lang].coffee;
 
-  document.getElementById("tab-special").innerText=
+
+  document.getElementById(
+    "tab-special"
+  ).innerText=
     TEXT[lang].specials;
 
-  document.getElementById("cartTitle").innerText=
+
+  document.getElementById(
+    "cartTitle"
+  ).innerText=
     TEXT[lang].cart;
 
-  document.getElementById("pickupTitle").innerText=
+
+  document.getElementById(
+    "pickupTitle"
+  ).innerText=
     TEXT[lang].pickup;
 
-  document.getElementById("pickupSubtitle").innerText=
+
+  document.getElementById(
+    "pickupSubtitle"
+  ).innerText=
     TEXT[lang].pickupSub;
 
-  document.getElementById("asapMode").innerText=
+
+  document.getElementById(
+    "asapMode"
+  ).innerText=
     TEXT[lang].asap;
 
-  document.getElementById("exactMode").innerText=
+
+  document.getElementById(
+    "exactMode"
+  ).innerText=
     TEXT[lang].choose;
 
-  document.getElementById("orderButton").innerText=
+
+  document.getElementById(
+    "orderButton"
+  ).innerText=
     TEXT[lang].order;
 
-  document.getElementById("extraText").innerText=
+
+  document.getElementById(
+    "extraText"
+  ).innerText=
     TEXT[lang].extra;
 
-  document.getElementById("bobaText").innerText=
+
+  document.getElementById(
+    "bobaText"
+  ).innerText=
     TEXT[lang].boba;
 
-  document.getElementById("quantityLabel").innerText=
+
+  document.getElementById(
+    "quantityLabel"
+  ).innerText=
     TEXT[lang].quantity;
 
 
-  document.getElementById("navMenuText").innerText=
+  document.getElementById(
+    "navMenuText"
+  ).innerText=
     TEXT[lang].menuNav;
 
-  document.getElementById("navOrdersText").innerText=
+
+  document.getElementById(
+    "navOrdersText"
+  ).innerText=
     TEXT[lang].ordersNav;
 
-  document.getElementById("navProfileText").innerText=
+
+  document.getElementById(
+    "navProfileText"
+  ).innerText=
     TEXT[lang].profileNav;
 
 
-  document.getElementById("ordersHeading").innerText=
+  document.getElementById(
+    "ordersHeading"
+  ).innerText=
     TEXT[lang].ordersTitle;
 
-  document.getElementById("ordersSub").innerText=
+
+  document.getElementById(
+    "ordersSub"
+  ).innerText=
     TEXT[lang].ordersSub;
 
-  document.getElementById("profileHeading").innerText=
+
+  document.getElementById(
+    "profileHeading"
+  ).innerText=
     TEXT[lang].profileTitle;
 
-  document.getElementById("profileSub").innerText=
+
+  document.getElementById(
+    "profileSub"
+  ).innerText=
     TEXT[lang].profileSub;
 
 
-  document.getElementById("paymentNoteTitle").innerText=
+  document.getElementById(
+    "paymentNoteTitle"
+  ).innerText=
     TEXT[lang].paymentNoteTitle;
 
-  document.getElementById("paymentNoteText").innerText=
+
+  document.getElementById(
+    "paymentNoteText"
+  ).innerText=
     TEXT[lang].paymentNoteText;
 
-  document.getElementById("paymentModalTitle").innerText=
+
+  document.getElementById(
+    "paymentModalTitle"
+  ).innerText=
     TEXT[lang].paymentTitle;
 
-  document.getElementById("paymentModalCopy").innerText=
+
+  document.getElementById(
+    "paymentModalCopy"
+  ).innerText=
     TEXT[lang].paymentCopy;
 
-  document.getElementById("paymentTotalLabel").innerText=
+
+  document.getElementById(
+    "paymentTotalLabel"
+  ).innerText=
     TEXT[lang].paymentTotal;
 
-  document.getElementById("paymentBank").innerText=
-    TEXT[lang].paymentBank;
 
-  document.getElementById("paymentPendingText").innerText=
+  const paymentBank=
+    document.getElementById(
+      "paymentBank"
+    );
+
+
+  paymentBank.innerHTML=`
+
+    <span class="payment-security-icon">
+      ✓
+    </span>
+
+    <span>
+      ${escapeHtml(TEXT[lang].paymentBank)}
+    </span>
+  `;
+
+
+  document.getElementById(
+    "paymentPendingText"
+  ).innerText=
     TEXT[lang].paymentPending;
 
-  document.getElementById("paymentCloseButton").innerText=
+
+  document.getElementById(
+    "paymentCloseButton"
+  ).innerText=
     TEXT[lang].paymentClose;
 
 
   renderMenu();
+
   updateCart();
+
   renderOrders();
+
   renderProfile();
+
 
   if(selectedProduct){
     updateModalAddButton();
   }
 
-  if(pickupMode==="exact"){
+
+  if(
+    pickupMode===
+    "exact"
+  ){
+
     generateExactTimes();
+
   }else{
+
     updatePickupInfo();
+
   }
+
 }
 
 
@@ -2646,59 +4547,95 @@ function showPage(page){
 
   currentPage=page;
 
+
   document
     .querySelectorAll(".page")
     .forEach(
       element=>
-        element.classList.remove("active")
+        element.classList.remove(
+          "active"
+        )
     );
+
 
   document
     .querySelectorAll(".nav-button")
     .forEach(
       element=>
-        element.classList.remove("active")
+        element.classList.remove(
+          "active"
+        )
     );
 
 
   document
-    .getElementById(page+"Page")
-    .classList.add("active");
+    .getElementById(
+      page+"Page"
+    )
+    .classList.add(
+      "active"
+    );
+
 
   document
-    .getElementById("nav-"+page)
-    .classList.add("active");
+    .getElementById(
+      "nav-"+page
+    )
+    .classList.add(
+      "active"
+    );
 
 
   const orderBar=
-    document.getElementById("orderBar");
-
-  if(page==="menu"){
-
-    orderBar.classList.remove(
-      "hidden"
+    document.getElementById(
+      "orderBar"
     );
+
+
+  if(
+    page==="menu"
+  ){
+
+    orderBar
+      .classList
+      .remove(
+        "hidden"
+      );
 
   }else{
 
-    orderBar.classList.add(
-      "hidden"
-    );
+    orderBar
+      .classList
+      .add(
+        "hidden"
+      );
+
   }
 
 
-  if(page==="orders"){
+  if(
+    page==="orders"
+  ){
+
     loadOrders();
+
   }
 
-  if(page==="profile"){
+
+  if(
+    page==="profile"
+  ){
+
     loadProfile();
+
   }
+
 
   window.scrollTo({
     top:0,
     behavior:"smooth"
   });
+
 }
 
 
@@ -2712,20 +4649,28 @@ async function loadMenu(){
 
     const response=
       await fetch(
-        "/api/menu?ts="+Date.now(),
+        "/api/menu?ts="+
+        Date.now(),
         {
           cache:"no-store"
         }
       );
 
-    if(!response.ok){
+
+    if(
+      !response.ok
+    ){
+
       throw new Error(
         "Could not load menu."
       );
+
     }
+
 
     menu=
       await response.json();
+
 
     renderMenu();
 
@@ -2735,7 +4680,9 @@ async function loadMenu(){
       "Could not load menu.",
       "error"
     );
+
   }
+
 }
 
 
@@ -2743,19 +4690,33 @@ async function loadMenu(){
    CATEGORY
 ========================================================= */
 
-function showCategory(cat,button){
+function showCategory(
+  cat,
+  button
+){
 
   category=cat;
+
 
   document
     .querySelectorAll(".tab")
     .forEach(
-      x=>x.classList.remove("active")
+      x=>
+        x.classList.remove(
+          "active"
+        )
     );
 
-  button.classList.add("active");
+
+  button
+    .classList
+    .add(
+      "active"
+    );
+
 
   renderMenu();
+
 }
 
 
@@ -2769,16 +4730,26 @@ function productText(id){
     PRODUCT_TEXT[id] &&
     PRODUCT_TEXT[id][language]
   ){
+
     return PRODUCT_TEXT[id][language];
+
   }
 
+
   const product=
-    menu.find(x=>x.id===id);
+    menu.find(
+      x=>
+        x.id===id
+    );
+
 
   return[
-    product ? product.name : id,
+    product
+      ? product.name
+      : id,
     ""
   ];
+
 }
 
 
@@ -2845,6 +4816,7 @@ function drinkClass(id){
   }
 
   return "americano";
+
 }
 
 
@@ -2852,8 +4824,11 @@ function drinkVisual(id){
 
   const lime=
     id==="lime"
-      ? `<span class="lime"></span>`
+      ? `
+        <span class="lime"></span>
+      `
       : "";
+
 
   const ice=[
     "icedlatte",
@@ -2865,10 +4840,18 @@ function drinkVisual(id){
     "tonic",
     "strawberrymatcha"
   ].includes(id)
-    ? `<span class="ice">◇ ◇</span>`
+
+    ? `
+      <span class="ice">
+        ◇ ◇
+      </span>
+    `
+
     : "";
 
+
   return`
+
     <div class="drink">
 
       <div class="cup ${drinkClass(id)}">
@@ -2882,7 +4865,9 @@ function drinkVisual(id){
       </div>
 
     </div>
+
   `;
+
 }
 
 
@@ -2900,6 +4885,7 @@ function canExtra(id){
     "tonic",
     "bumble"
   ].includes(id);
+
 }
 
 
@@ -2911,93 +4897,122 @@ function renderMenu(){
 
   const filtered=
     menu.filter(
-      x=>x.category===category
+      x=>
+        x.category===
+        category
     );
 
+
   let title=
-    TEXT[language].coffeeTitle;
+    TEXT[language]
+      .coffeeTitle;
+
 
   let icon="☕";
 
-  if(category==="tea"){
+
+  if(
+    category==="tea"
+  ){
 
     title=
-      TEXT[language].teaTitle;
+      TEXT[language]
+        .teaTitle;
 
     icon="🍃";
+
   }
 
-  if(category==="special"){
+
+  if(
+    category==="special"
+  ){
 
     title=
-      TEXT[language].specialTitle;
+      TEXT[language]
+        .specialTitle;
 
     icon="✦";
+
   }
 
 
-  document.getElementById("menu").innerHTML=`
+  document
+    .getElementById(
+      "menu"
+    )
+    .innerHTML=`
 
-    <section class="section">
+      <section class="section">
 
-      <div class="section-header">
+        <div class="section-header">
 
-        <span class="section-icon">
-          ${icon}
-        </span>
+          <span class="section-icon">
+            ${icon}
+          </span>
 
-        <span class="section-title">
-          ${title}
-        </span>
+          <span class="section-title">
+            ${title}
+          </span>
 
-        <span class="section-line"></span>
+          <span class="section-line"></span>
 
-      </div>
+        </div>
 
 
-      <div class="products">
+        <div class="products">
 
-        ${
-          filtered.map(p=>{
+          ${
+            filtered
+              .map(
+                p=>{
 
-            const copy=
-              productText(p.id);
+                  const copy=
+                    productText(
+                      p.id
+                    );
 
-            return`
 
-              <article class="product">
+                  return`
 
-                ${drinkVisual(p.id)}
+                    <article class="product">
 
-                <div class="product-name">
-                  ${escapeHtml(copy[0])}
-                </div>
+                      ${drinkVisual(p.id)}
 
-                <div class="product-desc">
-                  ${escapeHtml(copy[1])}
-                </div>
+                      <div class="product-name">
+                        ${escapeHtml(copy[0])}
+                      </div>
 
-                <div class="product-price">
-                  ${p.price} RSD
-                </div>
+                      <div class="product-desc">
+                        ${escapeHtml(copy[1])}
+                      </div>
 
-                <button
-                  class="add"
-                  onclick="openProduct('${p.id}')"
-                >
-                  + ${TEXT[language].add}
-                </button>
+                      <div class="product-price">
+                        ${p.price} RSD
+                      </div>
 
-              </article>
-            `;
+                      <button
+                        class="add"
+                        onclick="openProduct('${p.id}')"
+                      >
+                        + ${TEXT[language].add}
+                      </button>
 
-          }).join("")
-        }
+                    </article>
 
-      </div>
+                  `;
 
-    </section>
-  `;
+                }
+              )
+              .join("")
+          }
+
+        </div>
+
+      </section>
+
+    `;
+
 }
 
 
@@ -3009,34 +5024,59 @@ function openProduct(id){
 
   selectedProduct=
     menu.find(
-      x=>x.id===id
+      x=>
+        x.id===id
     );
 
-  if(!selectedProduct){
+
+  if(
+    !selectedProduct
+  ){
     return;
   }
 
+
   modalExtra=false;
+
   modalBoba=false;
+
   modalQuantity=1;
+
 
   const copy=
     productText(id);
 
-  document.getElementById("modalName").innerText=
-    copy[0];
 
-  document.getElementById("modalPrice").innerText=
-    selectedProduct.price+" RSD";
+  document
+    .getElementById(
+      "modalName"
+    )
+    .innerText=
+      copy[0];
 
-  document.getElementById("modalQuantity").innerText=
-    "1";
+
+  document
+    .getElementById(
+      "modalPrice"
+    )
+    .innerText=
+      selectedProduct.price+
+      " RSD";
+
+
+  document
+    .getElementById(
+      "modalQuantity"
+    )
+    .innerText=
+      "1";
 
 
   const extra=
     document.getElementById(
       "extraOption"
     );
+
 
   const boba=
     document.getElementById(
@@ -3049,63 +5089,98 @@ function openProduct(id){
       ? "flex"
       : "none";
 
+
   boba.style.display=
     selectedProduct.boba
       ? "flex"
       : "none";
 
 
-  extra.classList.remove(
-    "selected"
-  );
+  extra
+    .classList
+    .remove(
+      "selected"
+    );
 
-  boba.classList.remove(
-    "selected"
-  );
+
+  boba
+    .classList
+    .remove(
+      "selected"
+    );
 
 
   updateModalAddButton();
 
 
   document
-    .getElementById("modalBg")
-    .classList.add("open");
+    .getElementById(
+      "modalBg"
+    )
+    .classList
+    .add(
+      "open"
+    );
+
 }
 
 
+/* =========================================================
+   ADDONS
+========================================================= */
+
 function toggleAddon(type){
 
-  if(type==="extra"){
+  if(
+    type==="extra"
+  ){
 
     modalExtra=
       !modalExtra;
 
+
     document
-      .getElementById("extraOption")
-      .classList.toggle(
+      .getElementById(
+        "extraOption"
+      )
+      .classList
+      .toggle(
         "selected",
         modalExtra
       );
+
   }
 
 
-  if(type==="boba"){
+  if(
+    type==="boba"
+  ){
 
     modalBoba=
       !modalBoba;
 
+
     document
-      .getElementById("bobaOption")
-      .classList.toggle(
+      .getElementById(
+        "bobaOption"
+      )
+      .classList
+      .toggle(
         "selected",
         modalBoba
       );
+
   }
 
 
   updateModalAddButton();
+
 }
 
+
+/* =========================================================
+   MODAL QUANTITY
+========================================================= */
 
 function changeModalQuantity(change){
 
@@ -3113,9 +5188,11 @@ function changeModalQuantity(change){
     modalQuantity+
     change;
 
+
   if(next<1){
     next=1;
   }
+
 
   if(next>10){
     next=10;
@@ -3137,6 +5214,7 @@ function changeModalQuantity(change){
     );
 
     return;
+
   }
 
 
@@ -3145,18 +5223,27 @@ function changeModalQuantity(change){
 
 
   document
-    .getElementById("modalQuantity")
+    .getElementById(
+      "modalQuantity"
+    )
     .innerText=
       modalQuantity;
 
 
   updateModalAddButton();
+
 }
 
 
+/* =========================================================
+   MODAL ADD BUTTON
+========================================================= */
+
 function updateModalAddButton(){
 
-  if(!selectedProduct){
+  if(
+    !selectedProduct
+  ){
     return;
   }
 
@@ -3167,29 +5254,50 @@ function updateModalAddButton(){
     );
 
 
-  if(modalExtra){
+  if(
+    modalExtra
+  ){
     unit+=150;
   }
 
 
-  if(modalBoba){
+  if(
+    modalBoba
+  ){
     unit+=100;
   }
 
 
   document
-    .getElementById("modalAdd")
+    .getElementById(
+      "modalAdd"
+    )
     .innerText=
-      TEXT[language].addOrder+
+
+      TEXT[language]
+        .addOrder+
+
       " — "+
-      (unit*modalQuantity)+
+
+      (
+        unit*
+        modalQuantity
+      )+
+
       " RSD";
+
 }
 
 
+/* =========================================================
+   CONFIRM ADD
+========================================================= */
+
 function confirmAdd(){
 
-  if(!selectedProduct){
+  if(
+    !selectedProduct
+  ){
     return;
   }
 
@@ -3210,19 +5318,29 @@ function confirmAdd(){
     );
 
     return;
+
   }
 
 
   const existing=
     cart.find(
       x=>
-        x.id===selectedProduct.id &&
-        x.extra_shot===modalExtra &&
-        x.boba===modalBoba
+
+        x.id===
+          selectedProduct.id &&
+
+        x.extra_shot===
+          modalExtra &&
+
+        x.boba===
+          modalBoba
+
     );
 
 
-  if(existing){
+  if(
+    existing
+  ){
 
     if(
       existing.qty+
@@ -3236,6 +5354,7 @@ function confirmAdd(){
 
       existing.qty+=
         modalQuantity;
+
     }
 
   }else{
@@ -3253,18 +5372,52 @@ function confirmAdd(){
 
       boba:
         modalBoba
+
     });
+
   }
 
 
   document
-    .getElementById("modalBg")
-    .classList.remove("open");
+    .getElementById(
+      "modalBg"
+    )
+    .classList
+    .remove(
+      "open"
+    );
 
 
   updateCart();
+
+
+  const telegram=
+    getTelegramWebApp();
+
+
+  try{
+
+    if(
+      telegram &&
+      telegram.HapticFeedback
+    ){
+
+      telegram
+        .HapticFeedback
+        .impactOccurred(
+          "light"
+        );
+
+    }
+
+  }catch(e){}
+
 }
 
+
+/* =========================================================
+   CLOSE PRODUCT MODAL
+========================================================= */
 
 function closeModal(event){
 
@@ -3274,25 +5427,36 @@ function closeModal(event){
   ){
 
     document
-      .getElementById("modalBg")
-      .classList.remove("open");
+      .getElementById(
+        "modalBg"
+      )
+      .classList
+      .remove(
+        "open"
+      );
+
   }
+
 }
 
 
 /* =========================================================
-   CART
+   CART PRICING
 ========================================================= */
 
 function itemPrice(item){
 
   const product=
     menu.find(
-      x=>x.id===item.id
+      x=>
+        x.id===
+        item.id
     );
 
 
-  if(!product){
+  if(
+    !product
+  ){
     return 0;
   }
 
@@ -3303,45 +5467,64 @@ function itemPrice(item){
     );
 
 
-  if(item.extra_shot){
+  if(
+    item.extra_shot
+  ){
     price+=150;
   }
 
 
-  if(item.boba){
+  if(
+    item.boba
+  ){
     price+=100;
   }
 
 
   return price*
     item.qty;
+
 }
 
+
+/* =========================================================
+   UPDATE CART
+========================================================= */
 
 function updateCart(){
 
   const count=
     totalCartQuantity();
 
+
   const total=
     cartTotal();
 
 
   document
-    .getElementById("itemCount")
+    .getElementById(
+      "itemCount"
+    )
     .innerText=
+
       count+
       " "+
+
       (
         count===1
+
           ? TEXT[language].item
+
           : TEXT[language].items
       );
 
 
   document
-    .getElementById("total")
+    .getElementById(
+      "total"
+    )
     .innerText=
+
       total+
       " RSD";
 
@@ -3351,133 +5534,170 @@ function updateCart(){
       "cartSection"
     );
 
+
   const box=
     document.getElementById(
       "cartItems"
     );
 
 
-  if(!cart.length){
+  if(
+    !cart.length
+  ){
 
     section
       .classList
-      .remove("show");
+      .remove(
+        "show"
+      );
+
 
     box.innerHTML="";
 
+
     return;
+
   }
 
 
   section
     .classList
-    .add("show");
+    .add(
+      "show"
+    );
 
 
   box.innerHTML=
-    cart.map(
-      (item,index)=>{
 
-        const copy=
-          productText(
-            item.id
-          );
+    cart
+      .map(
+        (item,index)=>{
 
-        let extras=[];
-
-
-        if(item.extra_shot){
-
-          extras.push(
-            TEXT[language].extra
-          );
-        }
+          const copy=
+            productText(
+              item.id
+            );
 
 
-        if(item.boba){
-
-          extras.push(
-            TEXT[language].boba
-          );
-        }
+          let extras=[];
 
 
-        return`
+          if(
+            item.extra_shot
+          ){
 
-          <div class="cart-item">
+            extras.push(
+              TEXT[language].extra
+            );
 
-            <div class="cart-item-info">
-
-              <strong>
-                ${escapeHtml(copy[0])}
-              </strong>
-
-              ${
-                extras.length
-                  ? `
-                    <div class="cart-extra">
-                      ${escapeHtml(extras.join(" · "))}
-                    </div>
-                  `
-                  : ""
-              }
-
-            </div>
+          }
 
 
-            <div class="cart-right">
+          if(
+            item.boba
+          ){
 
-              <div class="cart-quantity">
+            extras.push(
+              TEXT[language].boba
+            );
 
-                <button
-                  class="cart-qty-btn"
-                  onclick="changeCartQuantity(${index},-1)"
-                >
-                  −
-                </button>
+          }
 
-                <span class="cart-qty-number">
-                  ${item.qty}
-                </span>
 
-                <button
-                  class="cart-qty-btn"
-                  onclick="changeCartQuantity(${index},1)"
-                >
-                  +
-                </button>
+          return`
+
+            <div class="cart-item">
+
+              <div class="cart-item-info">
+
+                <strong>
+                  ${escapeHtml(copy[0])}
+                </strong>
+
+
+                ${
+                  extras.length
+
+                    ? `
+
+                      <div class="cart-extra">
+                        ${escapeHtml(
+                          extras.join(" · ")
+                        )}
+                      </div>
+
+                    `
+
+                    : ""
+                }
 
               </div>
 
 
-              <div class="cart-price">
-                ${itemPrice(item)} RSD
+              <div class="cart-right">
+
+                <div class="cart-quantity">
+
+                  <button
+                    class="cart-qty-btn"
+                    onclick="changeCartQuantity(${index},-1)"
+                  >
+                    −
+                  </button>
+
+
+                  <span class="cart-qty-number">
+                    ${item.qty}
+                  </span>
+
+
+                  <button
+                    class="cart-qty-btn"
+                    onclick="changeCartQuantity(${index},1)"
+                  >
+                    +
+                  </button>
+
+                </div>
+
+
+                <div class="cart-price">
+                  ${itemPrice(item)} RSD
+                </div>
+
+
+                <button
+                  class="remove"
+                  onclick="deleteCartItem(${index})"
+                >
+                  ×
+                </button>
+
               </div>
-
-
-              <button
-                class="remove"
-                onclick="deleteCartItem(${index})"
-              >
-                ×
-              </button>
 
             </div>
 
-          </div>
-        `;
+          `;
 
-      }
-    ).join("");
+        }
+      )
+      .join("");
+
 }
 
+
+/* =========================================================
+   CHANGE CART QUANTITY
+========================================================= */
 
 function changeCartQuantity(
   index,
   change
 ){
 
-  if(!cart[index]){
+  if(
+    !cart[index]
+  ){
     return;
   }
 
@@ -3493,6 +5713,7 @@ function changeCartQuantity(
     );
 
     return;
+
   }
 
 
@@ -3501,23 +5722,33 @@ function changeCartQuantity(
     change;
 
 
-  if(next<=0){
+  if(
+    next<=0
+  ){
 
     cart.splice(
       index,
       1
     );
 
-  }else if(next<=10){
+  }else if(
+    next<=10
+  ){
 
     cart[index].qty=
       next;
+
   }
 
 
   updateCart();
+
 }
 
+
+/* =========================================================
+   DELETE CART ITEM
+========================================================= */
 
 function deleteCartItem(index){
 
@@ -3526,12 +5757,14 @@ function deleteCartItem(index){
     1
   );
 
+
   updateCart();
+
 }
 
 
 /* =========================================================
-   PICKUP
+   PICKUP MODE
 ========================================================= */
 
 function setPickupMode(mode){
@@ -3545,15 +5778,18 @@ function setPickupMode(mode){
       "asapMode"
     );
 
+
   const exact=
     document.getElementById(
       "exactMode"
     );
 
+
   const times=
     document.getElementById(
       "asapTimes"
     );
+
 
   const box=
     document.getElementById(
@@ -3561,22 +5797,34 @@ function setPickupMode(mode){
     );
 
 
-  if(mode==="asap"){
+  if(
+    mode==="asap"
+  ){
 
     asap
       .classList
-      .add("active");
+      .add(
+        "active"
+      );
+
 
     exact
       .classList
-      .remove("active");
+      .remove(
+        "active"
+      );
+
 
     times.style.display=
       "grid";
 
+
     box
       .classList
-      .remove("show");
+      .remove(
+        "show"
+      );
+
 
     exactPickupDate=
       null;
@@ -3585,26 +5833,42 @@ function setPickupMode(mode){
 
     exact
       .classList
-      .add("active");
+      .add(
+        "active"
+      );
+
 
     asap
       .classList
-      .remove("active");
+      .remove(
+        "active"
+      );
+
 
     times.style.display=
       "none";
 
+
     box
       .classList
-      .add("show");
+      .add(
+        "show"
+      );
+
 
     generateExactTimes();
+
   }
 
 
   updatePickupInfo();
+
 }
 
+
+/* =========================================================
+   QUICK PICKUP
+========================================================= */
 
 function chooseTime(
   button,
@@ -3614,12 +5878,15 @@ function chooseTime(
   pickupMode=
     "asap";
 
+
   pickupMinutes=
     minutes;
 
 
   document
-    .querySelectorAll(".time")
+    .querySelectorAll(
+      ".time"
+    )
     .forEach(
       x=>
         x.classList.remove(
@@ -3630,12 +5897,19 @@ function chooseTime(
 
   button
     .classList
-    .add("selected");
+    .add(
+      "selected"
+    );
 
 
   updatePickupInfo();
+
 }
 
+
+/* =========================================================
+   EXACT PICKUP TIMES
+========================================================= */
 
 function generateExactTimes(){
 
@@ -3655,7 +5929,9 @@ function generateExactTimes(){
   let first=
     new Date(
       now.getTime()+
-      11*60*1000
+      11*
+      60*
+      1000
     );
 
 
@@ -3670,12 +5946,18 @@ function generateExactTimes(){
     15;
 
 
-  if(remainder!==0){
+  if(
+    remainder!==0
+  ){
 
     first.setMinutes(
       first.getMinutes()+
-      (15-remainder)
+      (
+        15-
+        remainder
+      )
     );
+
   }
 
 
@@ -3703,15 +5985,23 @@ function generateExactTimes(){
   );
 
 
-  if(first<opening){
+  if(
+    first<
+    opening
+  ){
 
     first=
-      new Date(opening);
+      new Date(
+        opening
+      );
+
   }
 
 
   let current=
-    new Date(first);
+    new Date(
+      first
+    );
 
 
   while(
@@ -3728,7 +6018,8 @@ function generateExactTimes(){
     const h=
       String(
         current.getHours()
-      ).padStart(
+      )
+      .padStart(
         2,
         "0"
       );
@@ -3737,7 +6028,8 @@ function generateExactTimes(){
     const m=
       String(
         current.getMinutes()
-      ).padStart(
+      )
+      .padStart(
         2,
         "0"
       );
@@ -3761,8 +6053,11 @@ function generateExactTimes(){
     current=
       new Date(
         current.getTime()+
-        15*60*1000
+        15*
+        60*
+        1000
       );
+
   }
 
 
@@ -3778,8 +6073,10 @@ function generateExactTimes(){
 
     option.value="";
 
+
     option.textContent=
-      TEXT[language].noTimes;
+      TEXT[language]
+        .noTimes;
 
 
     select.appendChild(
@@ -3796,12 +6093,18 @@ function generateExactTimes(){
       new Date(
         select.value
       );
+
   }
 
 
   updatePickupInfo();
+
 }
 
+
+/* =========================================================
+   CHOOSE EXACT TIME
+========================================================= */
 
 function chooseExactTime(){
 
@@ -3815,13 +6118,22 @@ function chooseExactTime(){
 
   exactPickupDate=
     value
-      ? new Date(value)
+
+      ? new Date(
+          value
+        )
+
       : null;
 
 
   updatePickupInfo();
+
 }
 
+
+/* =========================================================
+   PICKUP INFO
+========================================================= */
 
 function updatePickupInfo(){
 
@@ -3837,13 +6149,20 @@ function updatePickupInfo(){
   ){
 
     info.innerText=
+
       TEXT[language].ready+
+
       " "+
+
       pickupMinutes+
+
       " "+
+
       TEXT[language].minutes;
 
+
     return;
+
   }
 
 
@@ -3852,16 +6171,21 @@ function updatePickupInfo(){
   ){
 
     info.innerText=
-      TEXT[language].noTimes;
+      TEXT[language]
+        .noTimes;
+
 
     return;
+
   }
 
 
   const h=
     String(
-      exactPickupDate.getHours()
-    ).padStart(
+      exactPickupDate
+        .getHours()
+    )
+    .padStart(
       2,
       "0"
     );
@@ -3869,21 +6193,34 @@ function updatePickupInfo(){
 
   const m=
     String(
-      exactPickupDate.getMinutes()
-    ).padStart(
+      exactPickupDate
+        .getMinutes()
+    )
+    .padStart(
       2,
       "0"
     );
 
 
   info.innerText=
-    TEXT[language].pickupAt+
+
+    TEXT[language]
+      .pickupAt+
+
     " "+
+
     h+
+
     ":"+
+
     m;
+
 }
 
+
+/* =========================================================
+   PICKUP ISO
+========================================================= */
 
 function pickupISO(){
 
@@ -3901,16 +6238,22 @@ function pickupISO(){
 
     return exactPickupDate
       .toISOString();
+
   }
 
 
   return new Date(
+
     Date.now()+
+
     pickupMinutes*
     60*
     1000+
+
     45000
+
   ).toISOString();
+
 }
 
 
@@ -3951,7 +6294,9 @@ function showMessage(
       behavior:"smooth",
       block:"center"
     });
+
   }
+
 }
 
 
@@ -3966,6 +6311,7 @@ function openPaymentModal(){
       "paymentModalTotal"
     )
     .innerText=
+
       cartTotal()+
       " RSD";
 
@@ -3975,7 +6321,8 @@ function openPaymentModal(){
       "paymentModalTitle"
     )
     .innerText=
-      TEXT[language].paymentTitle;
+      TEXT[language]
+        .paymentTitle;
 
 
   document
@@ -3983,7 +6330,8 @@ function openPaymentModal(){
       "paymentModalCopy"
     )
     .innerText=
-      TEXT[language].paymentCopy;
+      TEXT[language]
+        .paymentCopy;
 
 
   document
@@ -3991,15 +6339,30 @@ function openPaymentModal(){
       "paymentTotalLabel"
     )
     .innerText=
-      TEXT[language].paymentTotal;
+      TEXT[language]
+        .paymentTotal;
 
 
-  document
-    .getElementById(
+  const paymentBank=
+    document.getElementById(
       "paymentBank"
-    )
-    .innerText=
-      TEXT[language].paymentBank;
+    );
+
+
+  paymentBank.innerHTML=`
+
+    <span class="payment-security-icon">
+      ✓
+    </span>
+
+    <span>
+      ${escapeHtml(
+        TEXT[language]
+          .paymentBank
+      )}
+    </span>
+
+  `;
 
 
   document
@@ -4007,7 +6370,8 @@ function openPaymentModal(){
       "paymentPendingText"
     )
     .innerText=
-      TEXT[language].paymentPending;
+      TEXT[language]
+        .paymentPending;
 
 
   document
@@ -4015,7 +6379,8 @@ function openPaymentModal(){
       "paymentCloseButton"
     )
     .innerText=
-      TEXT[language].paymentClose;
+      TEXT[language]
+        .paymentClose;
 
 
   document
@@ -4023,9 +6388,16 @@ function openPaymentModal(){
       "paymentModalBg"
     )
     .classList
-    .add("open");
+    .add(
+      "open"
+    );
+
 }
 
+
+/* =========================================================
+   CLOSE PAYMENT
+========================================================= */
 
 function closePaymentModal(event){
 
@@ -4035,7 +6407,9 @@ function closePaymentModal(event){
     event.target.id!==
     "paymentModalBg"
   ){
+
     return;
+
   }
 
 
@@ -4044,7 +6418,10 @@ function closePaymentModal(event){
       "paymentModalBg"
     )
     .classList
-    .remove("open");
+    .remove(
+      "open"
+    );
+
 }
 
 
@@ -4064,6 +6441,7 @@ async function placeOrder(){
     );
 
     return;
+
   }
 
 
@@ -4076,11 +6454,13 @@ async function placeOrder(){
   ){
 
     showMessage(
-      TEXT[language].choosePickup,
+      TEXT[language]
+        .choosePickup,
       "error"
     );
 
     return;
+
   }
 
 
@@ -4093,47 +6473,65 @@ async function placeOrder(){
   ){
 
     showMessage(
+
       "❌ "+
-      TEXT[language].telegramRequired,
+      TEXT[language]
+        .telegramRequired,
+
       "error"
+
     );
 
     return;
+
   }
 
 
   /*
+    ========================================================
     DEMO PAYMENT MODE
+    ========================================================
 
-    We intentionally DO NOT call /api/order.
+    IMPORTANT:
 
-    Current flow:
+    This version does NOT call /api/order.
 
-    Cart
-      ↓
-    Pickup time
-      ↓
-    PAY ONLINE
-      ↓
-    Payment demonstration screen
+    It does NOT charge money.
 
-    No order is created.
-    Nothing is sent to the barista.
-    No money is charged.
+    It does NOT create a new order.
 
-    After RaiAccept activation:
+    It does NOT send anything to the barista.
 
-    PAY ONLINE
-      ↓
-    Backend creates secure payment
-      ↓
-    Raiffeisen payment page
-      ↓
-    Bank verifies successful payment
-      ↓
-    Backend creates order
-      ↓
-    Barista receives Telegram order
+    Current demo:
+
+      CART
+        ↓
+      PICKUP
+        ↓
+      PAY ONLINE
+        ↓
+      PREMIUM PAYMENT PREVIEW
+
+
+    FUTURE REAL RAIACCEPT FLOW:
+
+      PAY ONLINE
+        ↓
+      backend payment session
+        ↓
+      Raiffeisen / RaiAccept
+        ↓
+      payment authorization
+        ↓
+      server verifies payment
+        ↓
+      create paid order
+        ↓
+      send order to barista
+        ↓
+      customer confirmation
+
+    ========================================================
   */
 
 
@@ -4156,14 +6554,16 @@ async function placeOrder(){
         .impactOccurred(
           "light"
         );
+
     }
 
   }catch(e){}
+
 }
 
 
 /* =========================================================
-   ORDERS
+   LOAD ORDERS
 ========================================================= */
 
 async function loadOrders(){
@@ -4181,6 +6581,7 @@ async function loadOrders(){
     renderOrders();
 
     return;
+
   }
 
 
@@ -4205,6 +6606,7 @@ async function loadOrders(){
             JSON.stringify({
               initData:initData
             })
+
         }
       );
 
@@ -4218,9 +6620,13 @@ async function loadOrders(){
     ){
 
       throw new Error(
+
         result.error ||
+
         "Could not load orders."
+
       );
+
     }
 
 
@@ -4240,53 +6646,72 @@ async function loadOrders(){
       .innerHTML=`
 
         <div class="empty-state">
-          ${escapeHtml(error.message)}
+          ${escapeHtml(
+            error.message
+          )}
         </div>
+
       `;
+
   }
+
 }
 
+
+/* =========================================================
+   ORDER STATUS
+========================================================= */
 
 function statusText(status){
 
   if(
     status==="new"
   ){
-    return TEXT[language].newStatus;
+    return TEXT[language]
+      .newStatus;
   }
 
 
   if(
     status==="preparing"
   ){
-    return TEXT[language].preparingStatus;
+    return TEXT[language]
+      .preparingStatus;
   }
 
 
   if(
     status==="ready"
   ){
-    return TEXT[language].readyStatus;
+    return TEXT[language]
+      .readyStatus;
   }
 
 
   if(
     status==="completed"
   ){
-    return TEXT[language].completedStatus;
+    return TEXT[language]
+      .completedStatus;
   }
 
 
   if(
     status==="cancelled"
   ){
-    return TEXT[language].cancelledStatus;
+    return TEXT[language]
+      .cancelledStatus;
   }
 
 
   return status;
+
 }
 
+
+/* =========================================================
+   RENDER ORDERS
+========================================================= */
 
 function renderOrders(){
 
@@ -4317,15 +6742,19 @@ function renderOrders(){
         </div>
 
       </div>
+
     `;
 
 
     return;
+
   }
 
 
   box.innerHTML=
+
     customerOrders
+
       .map(
         order=>{
 
@@ -4333,7 +6762,9 @@ function renderOrders(){
             Array.isArray(
               order.items
             )
+
               ? order.items
+
               : [];
 
 
@@ -4350,9 +6781,17 @@ function renderOrders(){
                   </div>
 
                   <div class="order-date">
-                    ${escapeHtml(order.created)}
+
+                    ${escapeHtml(
+                      order.created
+                    )}
+
                     ·
-                    ${escapeHtml(order.pickup)}
+
+                    ${escapeHtml(
+                      order.pickup
+                    )}
+
                   </div>
 
                 </div>
@@ -4361,7 +6800,13 @@ function renderOrders(){
                 <div
                   class="status ${escapeHtml(order.status)}"
                 >
-                  ${escapeHtml(statusText(order.status))}
+
+                  ${escapeHtml(
+                    statusText(
+                      order.status
+                    )
+                  )}
+
                 </div>
 
               </div>
@@ -4371,6 +6816,7 @@ function renderOrders(){
 
                 ${
                   items
+
                     .map(
                       item=>{
 
@@ -4390,6 +6836,7 @@ function renderOrders(){
                           extras.push(
                             TEXT[language].extra
                           );
+
                         }
 
 
@@ -4400,6 +6847,7 @@ function renderOrders(){
                           extras.push(
                             TEXT[language].boba
                           );
+
                         }
 
 
@@ -4411,29 +6859,41 @@ function renderOrders(){
 
                               ${item.qty}×
 
-                              ${escapeHtml(copy[0])}
+                              ${escapeHtml(
+                                copy[0]
+                              )}
 
                               ${
                                 extras.length
+
                                   ? `
+
                                     <small>
-                                      · ${escapeHtml(extras.join(", "))}
+                                      ·
+                                      ${escapeHtml(
+                                        extras.join(", ")
+                                      )}
                                     </small>
+
                                   `
+
                                   : ""
                               }
 
                             </span>
+
 
                             <strong>
                               ${item.line_total} RSD
                             </strong>
 
                           </div>
+
                         `;
 
                       }
                     )
+
                     .join("")
                 }
 
@@ -4448,26 +6908,34 @@ function renderOrders(){
 
 
                 ${
-                  order.status!=="cancelled"
+                  order.status!==
+                  "cancelled"
+
                     ? `
+
                       <button
                         class="reorder"
                         onclick="reorder(${order.id})"
                       >
                         ${TEXT[language].reorder}
                       </button>
+
                     `
+
                     : ""
                 }
 
               </div>
 
             </div>
+
           `;
 
         }
       )
+
       .join("");
+
 }
 
 
@@ -4541,7 +7009,9 @@ function reorder(orderId){
         Boolean(
           item.boba
         )
+
     });
+
   }
 
 
@@ -4575,14 +7045,20 @@ function reorder(orderId){
     ){
 
       cart.push({
+
         ...item,
-        qty:allowed
+
+        qty:
+          allowed
+
       });
 
 
       running+=
         allowed;
+
     }
+
   }
 
 
@@ -4603,15 +7079,20 @@ function reorder(orderId){
         "cartSection"
       )
       .scrollIntoView({
+
         behavior:"smooth",
+
         block:"center"
+
       });
+
   }
+
 }
 
 
 /* =========================================================
-   PROFILE
+   LOAD PROFILE
 ========================================================= */
 
 async function loadProfile(){
@@ -4630,6 +7111,7 @@ async function loadProfile(){
     renderProfile();
 
     return;
+
   }
 
 
@@ -4640,21 +7122,20 @@ async function loadProfile(){
         "/api/profile",
         {
 
-          method:
-            "POST",
+          method:"POST",
 
           headers:{
             "Content-Type":
               "application/json"
           },
 
-          cache:
-            "no-store",
+          cache:"no-store",
 
           body:
             JSON.stringify({
               initData:initData
             })
+
         }
       );
 
@@ -4668,9 +7149,13 @@ async function loadProfile(){
     ){
 
       throw new Error(
+
         result.error ||
+
         "Could not load profile."
+
       );
+
     }
 
 
@@ -4689,12 +7174,23 @@ async function loadProfile(){
       .innerHTML=`
 
         <div class="empty-state">
-          ${escapeHtml(error.message)}
+
+          ${escapeHtml(
+            error.message
+          )}
+
         </div>
+
       `;
+
   }
+
 }
 
+
+/* =========================================================
+   RENDER PROFILE
+========================================================= */
 
 function renderProfile(){
 
@@ -4712,40 +7208,54 @@ function renderProfile(){
 
       <div class="empty-state">
 
-        ${TEXT[language].telegramRequired}
+        ${TEXT[language]
+          .telegramRequired}
 
       </div>
+
     `;
 
 
     return;
+
   }
 
 
   const name=
+
     customerProfile.name ||
+
     "TAKE AWAY Member";
 
 
   const username=
+
     customerProfile.username
+
       ? "@"+
         customerProfile.username
+
       : "";
 
 
   const initial=
+
     (
       customerProfile.first_name ||
+
       name ||
+
       "T"
     )
+
     .charAt(0)
+
     .toUpperCase();
 
 
   let favorite=
-    TEXT[language].noFavorite;
+    TEXT[language]
+      .noFavorite;
 
 
   if(
@@ -4759,6 +7269,7 @@ function renderProfile(){
           .favorite
           .id
       )[0];
+
   }
 
 
@@ -4770,6 +7281,7 @@ function renderProfile(){
         ${escapeHtml(initial)}
       </div>
 
+
       <div class="profile-name">
         ${escapeHtml(name)}
       </div>
@@ -4777,11 +7289,15 @@ function renderProfile(){
 
       ${
         username
+
           ? `
+
             <div class="profile-user">
               ${escapeHtml(username)}
             </div>
+
           `
+
           : ""
       }
 
@@ -4845,18 +7361,25 @@ function renderProfile(){
         </span>
 
         <strong>
+
           ${
             escapeHtml(
+
               customerProfile.first_order ||
+
               "—"
+
             )
           }
+
         </strong>
 
       </div>
 
     </div>
+
   `;
+
 }
 
 
@@ -4872,7 +7395,8 @@ document.addEventListener(
 
 
     /*
-      English is default
+      Default language:
+      English
     */
 
     changeLanguage(
@@ -4881,7 +7405,7 @@ document.addEventListener(
 
 
     /*
-      Load menu from Flask
+      Menu comes from Flask / app.py
     */
 
     await loadMenu();
@@ -4889,16 +7413,19 @@ document.addEventListener(
 
     updateCart();
 
+
     updatePickupInfo();
 
 
     /*
-      Preload orders/profile
+      Preload customer data
     */
 
     loadOrders();
 
+
     loadProfile();
+
   }
 );
 
