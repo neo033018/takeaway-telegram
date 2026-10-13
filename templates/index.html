@@ -39,12 +39,33 @@
 .payment-method.googlepay{font:700 12px Arial,sans-serif;letter-spacing:-.6px}
 .g-blue{color:#4285F4}.g-red{color:#EA4335}.g-yellow{color:#FBBC05}.g-green{color:#34A853}.pay-text{color:#333;letter-spacing:0}
 @media(max-width:390px){.hero{height:138px}.logo{font-size:23px}.payment-method.visa span{font-size:19px}.payment-method.googlepay{font-size:10px}}
+
+/* Seamless Belgrade artwork: same original image, no badge or card frame. */
+.hero{
+  height:clamp(185px,47vw,275px);
+  margin:0 0 10px;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  overflow:hidden;
+  background:transparent;
+}
+.hero img{
+  width:100%;height:100%;object-fit:cover;object-position:center 58%;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 17%,#000 70%,transparent 100%),linear-gradient(to right,transparent 0%,#000 10%,#000 90%,transparent 100%);
+  -webkit-mask-composite:source-in;
+  mask-image:linear-gradient(to bottom,transparent 0%,#000 17%,#000 70%,transparent 100%),linear-gradient(to right,transparent 0%,#000 10%,#000 90%,transparent 100%);
+  mask-composite:intersect;
+}
+.hero::after{background:linear-gradient(to bottom,rgba(3,44,27,.14),transparent 42%,rgba(3,44,27,.22) 75%,#032c1b 100%)}
+.hero-label{bottom:28px;text-shadow:0 2px 12px #001d13;}
+@media(max-width:390px){.hero{height:190px}}
 </style>
 </head>
 <body>
 <div class="shell">
 <header class="header"><div class="topline"><div class="greeting"><span id="greetingText">Good afternoon</span><strong id="greetingName">Welcome to TAKE AWAY</strong></div><div class="languages"><button class="lang active" id="lang-en" onclick="changeLanguage('en')">🇬🇧 EN</button><button class="lang" id="lang-sr" onclick="changeLanguage('sr')">🇷🇸 RS</button><button class="lang" id="lang-ru" onclick="changeLanguage('ru')">🇷🇺 RU</button></div></div><div class="brand"><div class="walking-logo"><img src="/static/logo.png" alt="TAKE AWAY"></div><div class="logo">TAKE AWAY</div><div class="subtitle">THAI TEA &amp; COFFEE</div><div class="brand-line"></div><div class="tagline">SAME GOOD ENERGY DAILY</div></div></header>
-<div class="hero"><img src="/static/belgrade.png" alt="Illustrated Belgrade skyline" onerror="this.style.opacity='0'"><div class="hero-location">BELGRADE</div><div class="hero-label">MADE IN BELGRADE</div></div>
+<div class="hero"><img src="/static/belgrade.png" alt="Illustrated Belgrade skyline" onerror="this.style.opacity='0'"><div class="hero-label">MADE IN BELGRADE</div></div>
 <main>
 <div id="menuPage" class="page active"><div class="tabs-wrap"><div class="tabs"><div id="tabIndicator" class="tab-indicator"></div><button id="tab-tea" class="tab active" onclick="showCategory('tea')">Thai Tea</button><button id="tab-coffee" class="tab" onclick="showCategory('coffee')">Coffee</button><button id="tab-special" class="tab" onclick="showCategory('special')">Specials</button></div></div><div id="menu"></div><div id="cartSection" class="cart-section"><div id="cartTitle" class="cart-title">Your order</div><div id="cartItems"></div></div><section class="pickup"><h2 id="pickupTitle">Pickup time</h2><div id="pickupSubtitle" class="pickup-subtitle">When should we prepare your order?</div><div class="pickup-modes"><button id="asapMode" class="pickup-mode active" onclick="setPickupMode('asap')">ASAP</button><button id="exactMode" class="pickup-mode" onclick="setPickupMode('exact')">Choose time</button></div><div id="asapTimes" class="times"><button class="time selected" onclick="chooseTime(this,10)">10 min</button><button class="time" onclick="chooseTime(this,15)">15 min</button><button class="time" onclick="chooseTime(this,20)">20 min</button><button class="time" onclick="chooseTime(this,30)">30 min</button></div><div id="exactBox" class="exact-box"><select id="exactTime" class="exact-select" onchange="chooseExactTime()"></select></div><div id="pickupInfo" class="pickup-info"></div></section><div class="payment-note"><div class="payment-note-title" id="paymentNoteTitle">🔒 Payment preview</div><div class="payment-note-text" id="paymentNoteText">Online and pickup payments are not yet activated. No orders are sent during this preview.</div></div><div id="message" class="message"></div></div>
 <div id="ordersPage" class="page"><div class="app-page"><div class="page-heading"><h1 id="ordersHeading">My Orders</h1><p id="ordersSub">Your TAKE AWAY order history</p></div><div id="ordersContent"></div></div></div>
@@ -108,4 +129,3 @@ function renderRewards(){/* No fabricated points: rewards API does not yet exist
 document.addEventListener('DOMContentLoaded',async()=>{restoreCart();let saved='en';try{saved=localStorage.getItem('takeaway_language')||'en'}catch(e){}changeLanguage(TEXT[saved]?saved:'en');updatePickupInfo();await loadMenu();loadOrders();loadProfile();});
 </script>
 </body>
-</html>
