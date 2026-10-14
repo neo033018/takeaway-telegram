@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#043923">
 <script src="https://telegram.org/js/telegram-web-app.js">
-/* Pickup checkout — real orders, no online charge */
+# Pickup checkout — real orders, no online charge */
 const PICKUP_COPY={
  en:{title:'Choose payment',copy:'Order now and pay when you collect your drinks.',note:'Pay at the café by card or cash. Your order will be sent to our barista.',online:'Online payments are coming soon. Please choose Pay at pickup.',submit:'PLACE ORDER · PAY AT CAFÉ',busy:'SENDING ORDER…',success:'Order received! Pay at the café when you collect your drinks.',error:'Could not send the order. Please try again.',telegram:'Please open TAKE AWAY inside Telegram to order.'},
  sr:{title:'Način plaćanja',copy:'Poručite sada i platite pri preuzimanju.',note:'Platite karticom ili gotovinom u lokalu. Porudžbina stiže baristi.',online:'Online plaćanje uskoro. Izaberite plaćanje pri preuzimanju.',submit:'PORUČI · PLATI U LOKALU',busy:'ŠALJEMO…',success:'Porudžbina je primljena! Platite pri preuzimanju.',error:'Slanje nije uspelo. Pokušajte ponovo.',telegram:'Otvorite TAKE AWAY u Telegramu da poručite.'},
