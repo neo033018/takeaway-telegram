@@ -1,2090 +1,260 @@
-import os
-import json
-import time
-import hmac
-import hashlib
-import sqlite3
-import logging
-
-from urllib.parse import parse_qsl
-from datetime import datetime, timedelta
-from zoneinfo import ZoneInfo
-
-import requests
-from flask import Flask, request, jsonify, render_template
-
-
-# =========================================================
-# SETTINGS
-# =========================================================
-
-app = Flask(__name__)
-logging.basicConfig(level=logging.INFO)
-
-TOKEN = os.environ.get("BOT_TOKEN", "")
-
-URL = os.environ.get(
-    "APP_URL",
-    "https://takeaway-telegram.onrender.com"
-).rstrip("/")
-
-# Telegram group where you + barista receive orders
-ADMIN = os.environ.get("ORDER_CHAT_ID", "")
-
-DB = os.environ.get("DATABASE_PATH", "orders.db")
-WEBHOOK_SECRET = os.environ.get("WEBHOOK_SECRET", "")
-
-TZ = ZoneInfo("Europe/Belgrade")
-
-MIN_PREP_MINUTES = 10
-OPEN_HOUR = 7
-CLOSE_HOUR = 17
-
-MAX_ITEM_QUANTITY = 10
-MAX_ORDER_QUANTITY = 30
-
-
-# =========================================================
-# MENU
-# =========================================================
-
-MENU = [
-    {
-        "id": "thai",
-        "name": "Classic Thai Milk Tea",
-        "price": 450,
-        "category": "tea",
-        "boba": True
-    },
-    {
-        "id": "green",
-        "name": "Thai Green Milk Tea",
-        "price": 450,
-        "category": "tea",
-        "boba": True
-    },
-    {
-        "id": "lime",
-        "name": "Thai Iced Lime Tea",
-        "price": 420,
-        "category": "tea",
-        "boba": False
-    },
-    {
-        "id": "espresso",
-        "name": "Espresso",
-        "price": 200,
-        "category": "coffee",
-        "boba": False
-    },
-    {
-        "id": "americano",
-        "name": "Americano",
-        "price": 250,
-        "category": "coffee",
-        "boba": False
-    },
-    {
-        "id": "cappuccino",
-        "name": "Cappuccino",
-        "price": 320,
-        "category": "coffee",
-        "boba": False
-    },
-    {
-        "id": "latte",
-        "name": "Latte",
-        "price": 350,
-        "category": "coffee",
-        "boba": False
-    },
-    {
-        "id": "flatwhite",
-        "name": "Flat White",
-        "price": 450,
-        "category": "coffee",
-        "boba": False
-    },
-    {
-        "id": "icedlatte",
-        "name": "Iced Latte",
-        "price": 380,
-        "category": "coffee",
-        "boba": False
-    },
-    {
-        "id": "americanocream",
-        "name": "Iced Americano with Cream",
-        "price": 450,
-        "category": "coffee",
-        "boba": False
-    },
-    {
-        "id": "tonic",
-        "name": "Tonic Coffee",
-        "price": 420,
-        "category": "special",
-        "boba": False
-    },
-    {
-        "id": "bumble",
-        "name": "Bumble Coffee",
-        "price": 450,
-        "category": "special",
-        "boba": False
-    },
-    {
-        "id": "strawberrymatcha",
-        "name": "Strawberry Matcha Latte",
-        "price": 480,
-        "category": "special",
-        "boba": False
-    },
-    {
-        "id": "peanutlatte",
-        "name": "Peanut Latte",
-        "price": 550,
-        "category": "special",
-        "boba": False
-    }
-]
-
-COFFEE_IDS = {
-    "espresso",
-    "americano",
-    "cappuccino",
-    "latte",
-    "flatwhite",
-    "icedlatte",
-    "americanocream",
-    "tonic",
-    "bumble",
-    "peanutlatte"
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#043923">
+<script src="https://telegram.org/js/telegram-web-app.js">
+/* Pickup checkout — real orders, no online charge */
+const PICKUP_COPY={
+ en:{title:'Choose payment',copy:'Order now and pay when you collect your drinks.',note:'Pay at the café by card or cash. Your order will be sent to our barista.',online:'Online payments are coming soon. Please choose Pay at pickup.',submit:'PLACE ORDER · PAY AT CAFÉ',busy:'SENDING ORDER…',success:'Order received! Pay at the café when you collect your drinks.',error:'Could not send the order. Please try again.',telegram:'Please open TAKE AWAY inside Telegram to order.'},
+ sr:{title:'Način plaćanja',copy:'Poručite sada i platite pri preuzimanju.',note:'Platite karticom ili gotovinom u lokalu. Porudžbina stiže baristi.',online:'Online plaćanje uskoro. Izaberite plaćanje pri preuzimanju.',submit:'PORUČI · PLATI U LOKALU',busy:'ŠALJEMO…',success:'Porudžbina je primljena! Platite pri preuzimanju.',error:'Slanje nije uspelo. Pokušajte ponovo.',telegram:'Otvorite TAKE AWAY u Telegramu da poručite.'},
+ ru:{title:'Способ оплаты',copy:'Закажите сейчас и оплатите при получении.',note:'Оплатите картой или наличными в кофейне. Заказ поступит бариста.',online:'Онлайн-оплата скоро появится. Выберите оплату при получении.',submit:'ЗАКАЗАТЬ · ОПЛАТА В КАФЕ',busy:'ОТПРАВЛЯЕМ…',success:'Заказ принят! Оплатите в кофейне при получении.',error:'Не удалось отправить заказ. Попробуйте снова.',telegram:'Откройте TAKE AWAY внутри Telegram для оформления заказа.'}
+};
+let sendingPickupOrder=false;
+function updatePickupCheckoutUI(){
+ const t=PICKUP_COPY[language];
+ $('paymentModalTitle').textContent=t.title;
+ $('paymentModalCopy').textContent=t.copy;
+ $('paymentMethods').classList.toggle('is-hidden',paymentMethod!=='online');
+ $('paymentPendingText').textContent=paymentMethod==='pickup'?t.note:t.online;
+ $('paymentSubmitButton').textContent=sendingPickupOrder?t.busy:t.submit;
+ $('paymentSubmitButton').disabled=sendingPickupOrder||paymentMethod!=='pickup';
+ $('paymentDemoPill').textContent=paymentMethod==='pickup'?'PAY AT PICKUP · NO ONLINE CHARGE':'ONLINE PAYMENTS COMING SOON';
 }
-
-MENU_BY_ID = {
-    product["id"]: product
-    for product in MENU
+const oldChangeLanguage=changeLanguage;
+changeLanguage=function(lang){oldChangeLanguage(lang);updatePickupCheckoutUI()};
+selectPayment=function(method){
+ paymentMethod=method;
+ $('pay-online').classList.toggle('active',method==='online');
+ $('pay-pickup').classList.toggle('active',method==='pickup');
+ updatePickupCheckoutUI();haptic();
+};
+openPaymentModal=function(){
+ if(!cart.length)return;
+ $('paymentModalTotal').textContent=cartTotal()+' RSD';
+ selectPayment('pickup');
+ $('paymentModalBg').classList.add('open');haptic();
+};
+async function submitPickupOrder(){
+ if(sendingPickupOrder||paymentMethod!=='pickup'||!cart.length)return;
+ const initData=tg?.initData||'';
+ if(!initData){$('paymentPendingText').textContent=PICKUP_COPY[language].telegram;return}
+ const pickup=pickupISO();
+ if(!pickup){$('paymentPendingText').textContent=TEXT[language].choosePickup;return}
+ sendingPickupOrder=true;updatePickupCheckoutUI();
+ try{
+  const response=await fetch('/api/order',{
+   method:'POST',headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({initData,items:cart.map(({id,qty,extra_shot,boba})=>({id,qty,extra_shot,boba})),pickup,payment_method:'pickup'})
+  });
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok||!data.success)throw Error(data.error||PICKUP_COPY[language].error);
+  cart=[];updateCart();closePaymentModal();
+  showMessage('#'+data.order_id+' · '+PICKUP_COPY[language].success,'success');
+  await loadOrders();
+  showPage('orders');
+  haptic();
+ }catch(error){$('paymentPendingText').textContent=error.message||PICKUP_COPY[language].error}
+ finally{sendingPickupOrder=false;updatePickupCheckoutUI()}
 }
-
-
-# =========================================================
-# DATABASE
-# =========================================================
-
-def get_db():
-    connection = sqlite3.connect(
-        DB,
-        timeout=15
-    )
-
-    connection.row_factory = sqlite3.Row
-    return connection
-
-
-def init_db():
-
-    connection = get_db()
-
-    try:
-
-        connection.execute("""
-            CREATE TABLE IF NOT EXISTS orders (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                telegram_id TEXT,
-                customer TEXT,
-                pickup TEXT,
-                details TEXT,
-                total INTEGER,
-                status TEXT DEFAULT 'new',
-                created TEXT
-            )
-        """)
-
-        # Safe migrations for existing Render databases.
-        columns = {
-            row[1]
-            for row in connection.execute("PRAGMA table_info(orders)").fetchall()
-        }
-
-        if "payment_status" not in columns:
-            connection.execute(
-                "ALTER TABLE orders ADD COLUMN payment_status TEXT DEFAULT 'paid'"
-            )
-
-        if "payment_provider" not in columns:
-            connection.execute(
-                "ALTER TABLE orders ADD COLUMN payment_provider TEXT DEFAULT 'legacy'"
-            )
-
-        connection.commit()
-
-    finally:
-        connection.close()
-
-
-init_db()
-
-
-# =========================================================
-# DATABASE HELPERS
-# =========================================================
-
-def get_order(order_id):
-
-    connection = get_db()
-
-    try:
-
-        row = connection.execute(
-            """
-            SELECT *
-            FROM orders
-            WHERE id = ?
-            """,
-            (order_id,)
-        ).fetchone()
-
-        if row:
-            return dict(row)
-
-        return None
-
-    finally:
-        connection.close()
-
-
-def transition_order_status(
-    order_id,
-    expected_status,
-    new_status
-):
-
-    connection = get_db()
-
-    try:
-
-        cursor = connection.execute(
-            """
-            UPDATE orders
-            SET status = ?
-            WHERE id = ?
-            AND status = ?
-            """,
-            (
-                new_status,
-                order_id,
-                expected_status
-            )
-        )
-
-        connection.commit()
-
-        return cursor.rowcount == 1
-
-    finally:
-        connection.close()
-
-
-def cancel_order_status(order_id):
-
-    connection = get_db()
-
-    try:
-
-        cursor = connection.execute(
-            """
-            UPDATE orders
-            SET status = 'cancelled'
-            WHERE id = ?
-            AND status IN ('new', 'preparing')
-            """,
-            (order_id,)
-        )
-
-        connection.commit()
-
-        return cursor.rowcount == 1
-
-    finally:
-        connection.close()
-
-
-def get_customer_orders(
-    telegram_id,
-    limit=50
-):
-
-    connection = get_db()
-
-    try:
-
-        rows = connection.execute(
-            """
-            SELECT *
-            FROM orders
-            WHERE telegram_id = ?
-            ORDER BY id DESC
-            LIMIT ?
-            """,
-            (
-                str(telegram_id),
-                int(limit)
-            )
-        ).fetchall()
-
-        return [
-            dict(row)
-            for row in rows
-        ]
-
-    finally:
-        connection.close()
-
-
-# =========================================================
-# TELEGRAM API
-# =========================================================
-
-def tg(method, payload):
-
-    if not TOKEN:
-
-        logging.warning(
-            "BOT_TOKEN missing"
-        )
-
-        return None
-
-    try:
-
-        response = requests.post(
-            f"https://api.telegram.org/bot{TOKEN}/{method}",
-            json=payload,
-            timeout=15
-        )
-
-        result = response.json()
-
-        if not result.get("ok"):
-
-            logging.warning(
-                "Telegram %s failed: %s",
-                method,
-                result.get("description")
-            )
-
-        return result
-
-    except Exception:
-
-        logging.exception(
-            "Telegram API error"
-        )
-
-        return None
-
-
-# =========================================================
-# CUSTOMER ORDER BUTTON
-# =========================================================
-
-def order_keyboard():
-
-    return {
-        "inline_keyboard": [
-            [
-                {
-                    "text": "☕ ORDER / PORUČI",
-                    "web_app": {
-                        "url": URL
-                    }
-                }
-            ]
-        ]
-    }
-
-
-# =========================================================
-# BARISTA BUTTONS
-# =========================================================
-
-def new_order_keyboard(order_id):
-
-    return {
-        "inline_keyboard": [
-            [
-                {
-                    "text": "✅ ACCEPT ORDER",
-                    "callback_data": f"accept:{order_id}"
-                }
-            ],
-            [
-                {
-                    "text": "❌ CANCEL",
-                    "callback_data": f"cancel:{order_id}"
-                }
-            ]
-        ]
-    }
-
-
-def preparing_keyboard(order_id):
-
-    return {
-        "inline_keyboard": [
-            [
-                {
-                    "text": "☕ ORDER READY",
-                    "callback_data": f"ready:{order_id}"
-                }
-            ],
-            [
-                {
-                    "text": "❌ CANCEL",
-                    "callback_data": f"cancel:{order_id}"
-                }
-            ]
-        ]
-    }
-
-
-def ready_keyboard(order_id):
-
-    return {
-        "inline_keyboard": [
-            [
-                {
-                    "text": "✅ PICKED UP",
-                    "callback_data": f"picked:{order_id}"
-                }
-            ]
-        ]
-    }
-
-
-# =========================================================
-# ORDER HELPERS
-# =========================================================
-
-def parse_order_details(order):
-
-    try:
-
-        details = json.loads(
-            order.get(
-                "details",
-                "[]"
-            )
-        )
-
-        if isinstance(details, list):
-            return details
-
-    except Exception:
-        pass
-
-    return []
-
-
-def order_details_text(order):
-
-    details = parse_order_details(order)
-
-    lines = []
-
-    for item in details:
-
-        qty = item.get("qty", 1)
-        name = item.get("name", "Drink")
-        line_total = item.get("line_total", 0)
-
-        extras = []
-
-        if item.get("extra_shot"):
-            extras.append("extra espresso shot")
-
-        if item.get("boba"):
-            extras.append("boba")
-
-        extra_text = ""
-
-        if extras:
-            extra_text = " + " + ", ".join(extras)
-
-        lines.append(
-            f"{qty}x "
-            f"{name}"
-            f"{extra_text} — "
-            f"{line_total} RSD"
-        )
-
-    return "\n".join(lines)
-
-
-def pickup_time_text(order):
-
-    try:
-
-        pickup = datetime.fromisoformat(
-            order["pickup"]
-        )
-
-        if pickup.tzinfo is not None:
-
-            pickup = pickup.astimezone(TZ)
-
-        return pickup.strftime("%H:%M")
-
-    except Exception:
-
-        return str(
-            order.get(
-                "pickup",
-                ""
-            )
-        )
-
-
-def created_date_text(order):
-
-    try:
-
-        created = datetime.fromisoformat(
-            order["created"]
-        )
-
-        if created.tzinfo is not None:
-
-            created = created.astimezone(TZ)
-
-        return created.strftime(
-            "%d.%m.%Y"
-        )
-
-    except Exception:
-
-        return ""
-
-
-def serialize_order(order):
-
-    return {
-        "id": order["id"],
-        "pickup": pickup_time_text(order),
-        "pickup_iso": order.get("pickup"),
-        "created": created_date_text(order),
-        "created_iso": order.get("created"),
-        "total": order.get("total", 0),
-        "status": order.get(
-            "status",
-            "new"
-        ),
-        "items": parse_order_details(order)
-    }
-
-
-# =========================================================
-# BARISTA MESSAGE
-# =========================================================
-
-def barista_order_text(
-    order,
-    status
-):
-
-    pickup_text = pickup_time_text(order)
-    details_text = order_details_text(order)
-
-    if status == "new":
-        title = "🔔 TAKE AWAY — NEW ORDER"
-
-    elif status == "preparing":
-        title = "🟡 TAKE AWAY — PREPARING"
-
-    elif status == "ready":
-        title = "🟢 TAKE AWAY — READY"
-
-    elif status == "completed":
-        title = "✅ TAKE AWAY — COMPLETED"
-
-    elif status == "cancelled":
-        title = "❌ TAKE AWAY — CANCELLED"
-
-    else:
-        title = "☕ TAKE AWAY"
-
-    text = (
-        f"{title}\n\n"
-        f"🧾 Order #{order['id']}\n"
-        f"👤 Customer: {order['customer']}\n"
-        f"🕐 Pickup: {pickup_text}\n\n"
-        f"{details_text}\n\n"
-        f"💰 TOTAL: {order['total']} RSD\n"
-        f"💳 Payment: ONLINE • PAID"
-    )
-
-    if status == "ready":
-        text += "\n\n📲 Customer notified"
-
-    if status == "completed":
-        text += "\n\n✅ Order completed"
-
-    if status == "cancelled":
-        text += "\n\n📲 Customer notified"
-
-    return text
-
-
-# =========================================================
-# VERIFY TELEGRAM MINI APP
-# =========================================================
-
-def verify(init_data):
-
-    if (
-        not TOKEN
-        or not isinstance(init_data, str)
-        or not init_data
-        or len(init_data) > 8192
-    ):
-
-        logging.warning(
-            "Missing or invalid initData"
-        )
-
-        return None
-
-    try:
-
-        data = dict(
-            parse_qsl(
-                init_data,
-                keep_blank_values=True
-            )
-        )
-
-        received_hash = data.pop(
-            "hash",
-            None
-        )
-
-        if not received_hash:
-
-            logging.warning(
-                "Missing Telegram hash"
-            )
-
-            return None
-
-        data_check_string = "\n".join(
-            f"{key}={value}"
-            for key, value
-            in sorted(data.items())
-        )
-
-        secret_key = hmac.new(
-            b"WebAppData",
-            TOKEN.encode("utf-8"),
-            hashlib.sha256
-        ).digest()
-
-        calculated_hash = hmac.new(
-            secret_key,
-            data_check_string.encode("utf-8"),
-            hashlib.sha256
-        ).hexdigest()
-
-        if not hmac.compare_digest(
-            calculated_hash,
-            received_hash
-        ):
-
-            logging.warning(
-                "Telegram hash mismatch"
-            )
-
-            return None
-
-        auth_date = int(
-            data.get(
-                "auth_date",
-                "0"
-            )
-        )
-
-        age = int(time.time()) - auth_date
-
-        if (
-            age > 86400
-            or age < -300
-        ):
-
-            logging.warning(
-                "Telegram session expired"
-            )
-
-            return None
-
-        user = json.loads(
-            data.get(
-                "user",
-                "{}"
-            )
-        )
-
-        if not isinstance(user, dict):
-            return None
-
-        if not user.get("id"):
-            return None
-
-        return user
-
-    except Exception:
-
-        logging.exception(
-            "Telegram verification error"
-        )
-
-        return None
-
-
-# =========================================================
-# GET USER FROM REQUEST
-# =========================================================
-
-def verified_user_from_request():
-
-    data = request.get_json(
-        silent=True
-    )
-
-    if not isinstance(data, dict):
-        return None, {}
-
-    user = verify(
-        data.get(
-            "initData",
-            ""
-        )
-    )
-
-    return user, data
-
-
-# =========================================================
-# HOME
-# =========================================================
-
-@app.route("/")
-def home():
-
-    return render_template(
-        "index.html"
-    )
-
-
-# =========================================================
-# HEALTH
-# =========================================================
-
-@app.route("/health")
-def health():
-
-    return jsonify({
-        "ok": True,
-        "bot_token": bool(TOKEN),
-        "order_chat": bool(ADMIN),
-        "app_url": URL,
-        "menu_items": len(MENU),
-        "payment_mode": "raiaccept_pending"
-    })
-
-
-# =========================================================
-# MENU
-# =========================================================
-
-@app.route("/api/menu")
-def menu():
-
-    return jsonify(MENU)
-
-
-# =========================================================
-# PROFILE
-# =========================================================
-
-@app.route(
-    "/api/profile",
-    methods=["POST"]
-)
-def profile():
-
-    user, data = verified_user_from_request()
-
-    if not user:
-
-        return jsonify({
-            "error":
-                "Telegram session "
-                "could not be verified."
-        }), 401
-
-    telegram_id = str(
-        user["id"]
-    )
-
-    orders = get_customer_orders(
-        telegram_id,
-        500
-    )
-
-    completed_orders = [
-        order
-        for order in orders
-        if order.get("status") == "completed"
-    ]
-
-    drinks = 0
-    drink_counts = {}
-
-    for order in completed_orders:
-
-        for item in parse_order_details(order):
-
-            qty = int(
-                item.get(
-                    "qty",
-                    1
-                )
-            )
-
-            drinks += qty
-
-            item_id = item.get(
-                "id",
-                ""
-            )
-
-            if item_id:
-
-                drink_counts[item_id] = (
-                    drink_counts.get(
-                        item_id,
-                        0
-                    )
-                    + qty
-                )
-
-    favorite = None
-
-    if drink_counts:
-
-        favorite_id = max(
-            drink_counts,
-            key=drink_counts.get
-        )
-
-        product = MENU_BY_ID.get(
-            favorite_id
-        )
-
-        if product:
-
-            favorite = {
-                "id": favorite_id,
-                "name": product["name"]
-            }
-
-    first_name = str(
-        user.get(
-            "first_name",
-            ""
-        )
-    ).strip()
-
-    last_name = str(
-        user.get(
-            "last_name",
-            ""
-        )
-    ).strip()
-
-    name = (
-        f"{first_name} "
-        f"{last_name}"
-    ).strip()
-
-    username = str(
-        user.get(
-            "username",
-            ""
-        )
-    ).strip()
-
-    first_order = ""
-
-    if orders:
-
-        oldest = orders[-1]
-
-        first_order = created_date_text(
-            oldest
-        )
-
-    return jsonify({
-        "telegram_id": telegram_id,
-        "name": name or "TAKE AWAY Member",
-        "first_name": first_name,
-        "username": username,
-        "orders": len(orders),
-        "completed_orders": len(completed_orders),
-        "drinks": drinks,
-        "favorite": favorite,
-        "first_order": first_order
-    })
-
-
-# =========================================================
-# CUSTOMER ORDERS
-# =========================================================
-
-@app.route(
-    "/api/orders",
-    methods=["POST"]
-)
-def customer_orders():
-
-    user, data = verified_user_from_request()
-
-    if not user:
-
-        return jsonify({
-            "error":
-                "Telegram session "
-                "could not be verified."
-        }), 401
-
-    orders = get_customer_orders(
-        str(user["id"]),
-        50
-    )
-
-    return jsonify({
-        "orders": [
-            serialize_order(order)
-            for order in orders
-        ]
-    })
-
-
-# =========================================================
-# CREATE ORDER
-# =========================================================
-
-@app.route(
-    "/api/order",
-    methods=["POST"]
-)
-def create_order():
-
-    # IMPORTANT: orders must only be created after a verified RaiAccept
-    # payment callback. Until the bank activates e-commerce, this endpoint
-    # intentionally refuses direct order creation so unpaid orders can never
-    # reach the barista.
-    if os.environ.get("RAIACCEPT_LIVE", "0") != "1":
-        return jsonify({
-            "error": "Online payment is being activated with Raiffeisen Bank.",
-            "payment_pending": True
-        }), 503
-
-    data = request.get_json(
-        silent=True
-    )
-
-    if not isinstance(data, dict):
-
-        return jsonify({
-            "error": "Invalid request."
-        }), 400
-
-    user = verify(
-        data.get(
-            "initData",
-            ""
-        )
-    )
-
-    if not user:
-
-        return jsonify({
-            "error":
-                "Telegram session could "
-                "not be verified. "
-                "Please close the app "
-                "and reopen it using "
-                "the ORDER button "
-                "in the bot."
-        }), 401
-
-    items = data.get(
-        "items",
-        []
-    )
-
-    pickup_raw = data.get(
-        "pickup"
-    )
-
-    if (
-        not isinstance(items, list)
-        or not items
-        or len(items) > 20
-    ):
-
-        return jsonify({
-            "error":
-                "Please add at least "
-                "one drink."
-        }), 400
-
-    if not isinstance(
-        pickup_raw,
-        str
-    ):
-
-        return jsonify({
-            "error":
-                "Please choose a "
-                "pickup time."
-        }), 400
-
-    try:
-
-        pickup = datetime.fromisoformat(
-            pickup_raw.replace(
-                "Z",
-                "+00:00"
-            )
-        )
-
-        if pickup.tzinfo is None:
-
-            pickup = pickup.replace(
-                tzinfo=TZ
-            )
-
-        else:
-
-            pickup = pickup.astimezone(
-                TZ
-            )
-
-    except (
-        ValueError,
-        TypeError
-    ):
-
-        return jsonify({
-            "error":
-                "Invalid pickup time."
-        }), 400
-
-    now = datetime.now(TZ)
-
-    minimum_pickup = (
-        now
-        + timedelta(
-            minutes=MIN_PREP_MINUTES
-        )
-    )
-
-    if pickup < (
-        minimum_pickup
-        - timedelta(seconds=30)
-    ):
-
-        return jsonify({
-            "error":
-                f"Minimum preparation "
-                f"time is "
-                f"{MIN_PREP_MINUTES} "
-                f"minutes."
-        }), 400
-
-    if pickup.date() != now.date():
-
-        return jsonify({
-            "error":
-                "Pickup is available "
-                "today only."
-        }), 400
-
-    opening = now.replace(
-        hour=OPEN_HOUR,
-        minute=0,
-        second=0,
-        microsecond=0
-    )
-
-    closing = now.replace(
-        hour=CLOSE_HOUR,
-        minute=0,
-        second=0,
-        microsecond=0
-    )
-
-    if pickup < opening:
-
-        return jsonify({
-            "error":
-                f"Pickup starts at "
-                f"{OPEN_HOUR:02d}:00."
-        }), 400
-
-    if pickup >= closing:
-
-        return jsonify({
-            "error":
-                f"Last pickup must be "
-                f"before "
-                f"{CLOSE_HOUR:02d}:00."
-        }), 400
-
-    total = 0
-    total_quantity = 0
-    clean_items = []
-
-    for item in items:
-
-        if not isinstance(
-            item,
-            dict
-        ):
-
-            return jsonify({
-                "error":
-                    "Invalid order item."
-            }), 400
-
-        item_id = item.get("id")
-
-        if not isinstance(
-            item_id,
-            str
-        ):
-
-            return jsonify({
-                "error":
-                    "Invalid drink ID."
-            }), 400
-
-        product = MENU_BY_ID.get(
-            item_id
-        )
-
-        if not product:
-
-            return jsonify({
-                "error":
-                    f"Unknown drink: "
-                    f"{item_id}"
-            }), 400
-
-        qty = item.get(
-            "qty",
-            1
-        )
-
-        if (
-            isinstance(qty, bool)
-            or not isinstance(qty, int)
-        ):
-
-            return jsonify({
-                "error":
-                    "Invalid quantity."
-            }), 400
-
-        if (
-            qty < 1
-            or qty > MAX_ITEM_QUANTITY
-        ):
-
-            return jsonify({
-                "error":
-                    "Quantity must be "
-                    "between 1 and 10."
-            }), 400
-
-        total_quantity += qty
-
-        if total_quantity > MAX_ORDER_QUANTITY:
-
-            return jsonify({
-                "error":
-                    "Maximum 30 drinks "
-                    "per order."
-            }), 400
-
-        extra_shot = (
-            item.get("extra_shot") is True
-            and item_id in COFFEE_IDS
-        )
-
-        boba = (
-            item.get("boba") is True
-            and product.get(
-                "boba",
-                False
-            )
-        )
-
-        unit_price = int(
-            product["price"]
-        )
-
-        if extra_shot:
-            unit_price += 150
-
-        if boba:
-            unit_price += 100
-
-        line_total = unit_price * qty
-
-        total += line_total
-
-        clean_items.append({
-            "id": item_id,
-            "name": product["name"],
-            "qty": qty,
-            "extra_shot": extra_shot,
-            "boba": boba,
-            "unit_price": unit_price,
-            "line_total": line_total
-        })
-
-
-    # =====================================================
-    # CUSTOMER
-    # =====================================================
-
-    telegram_id = str(
-        user["id"]
-    )
-
-    first_name = str(
-        user.get(
-            "first_name",
-            ""
-        )
-    ).strip()
-
-    last_name = str(
-        user.get(
-            "last_name",
-            ""
-        )
-    ).strip()
-
-    username = str(
-        user.get(
-            "username",
-            ""
-        )
-    ).strip()
-
-    customer = (
-        f"{first_name} "
-        f"{last_name}"
-    ).strip()
-
-    if not customer:
-
-        customer = (
-            f"@{username}"
-            if username
-            else telegram_id
-        )
-
-    pickup_text = pickup.strftime(
-        "%H:%M"
-    )
-
-
-    # =====================================================
-    # SAVE ORDER
-    # =====================================================
-
-    connection = get_db()
-
-    try:
-
-        cursor = connection.execute(
-            """
-            INSERT INTO orders
-            (
-                telegram_id,
-                customer,
-                pickup,
-                details,
-                total,
-                status,
-                created
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                telegram_id,
-                customer,
-                pickup.isoformat(),
-                json.dumps(
-                    clean_items,
-                    ensure_ascii=False
-                ),
-                total,
-                "new",
-                now.isoformat()
-            )
-        )
-
-        order_id = cursor.lastrowid
-
-        connection.commit()
-
-    finally:
-        connection.close()
-
-
-    # =====================================================
-    # SEND ORDER TO TAKE AWAY GROUP
-    # =====================================================
-
-    order = get_order(
-        order_id
-    )
-
-    if ADMIN and order:
-
-        result = tg(
-            "sendMessage",
-            {
-                "chat_id": ADMIN,
-
-                "text":
-                    barista_order_text(
-                        order,
-                        "new"
-                    ),
-
-                "reply_markup":
-                    new_order_keyboard(
-                        order_id
-                    )
-            }
-        )
-
-        if not result or not result.get("ok"):
-
-            logging.error(
-                "Could not send order #%s "
-                "to ORDER_CHAT_ID %s",
-                order_id,
-                ADMIN
-            )
-
-    else:
-
-        logging.warning(
-            "Order #%s saved but ORDER_CHAT_ID "
-            "is missing.",
-            order_id
-        )
-
-
-    # =====================================================
-    # CUSTOMER CONFIRMATION
-    # =====================================================
-
-    customer_message = (
-        "✅ TAKE AWAY — ORDER RECEIVED\n\n"
-        f"🧾 Order #{order_id}\n"
-        f"🕐 Pickup: {pickup_text}\n"
-        f"💰 Total: {total} RSD\n\n"
-        "We received your order.\n"
-        "Please wait for confirmation. ☕\n\n"
-        "🇷🇸 Porudžbina je primljena.\n"
-        "Sačekajte potvrdu.\n\n"
-        "💳 Paid online / "
-        "Plaćeno online."
-    )
-
-    tg(
-        "sendMessage",
-        {
-            "chat_id": telegram_id,
-            "text": customer_message
-        }
-    )
-
-    return jsonify({
-        "success": True,
-        "order_id": order_id,
-        "total": total,
-        "pickup": pickup_text
-    })
-
-
-# =========================================================
-# HANDLE BARISTA CALLBACK
-# =========================================================
-
-def handle_callback(callback):
-
-    callback_id = callback.get("id")
-
-    callback_data = str(
-        callback.get(
-            "data",
-            ""
-        )
-    )
-
-    message = (
-        callback.get("message")
-        or {}
-    )
-
-    chat = (
-        message.get("chat")
-        or {}
-    )
-
-    callback_chat_id = str(
-        chat.get(
-            "id",
-            ""
-        )
-    )
-
-    message_id = message.get(
-        "message_id"
-    )
-
-
-    # =====================================================
-    # ONLY BUTTONS INSIDE TAKE AWAY ORDER GROUP
-    # =====================================================
-
-    if (
-        not ADMIN
-        or callback_chat_id != str(ADMIN)
-    ):
-
-        if callback_id:
-
-            tg(
-                "answerCallbackQuery",
-                {
-                    "callback_query_id":
-                        callback_id,
-                    "text":
-                        "Not allowed.",
-                    "show_alert":
-                        True
-                }
-            )
-
-        return
-
-
-    try:
-
-        action, order_id_raw = (
-            callback_data.split(
-                ":",
-                1
-            )
-        )
-
-        order_id = int(
-            order_id_raw
-        )
-
-    except Exception:
-
-        if callback_id:
-
-            tg(
-                "answerCallbackQuery",
-                {
-                    "callback_query_id":
-                        callback_id,
-                    "text":
-                        "Invalid action."
-                }
-            )
-
-        return
-
-
-    order = get_order(
-        order_id
-    )
-
-    if not order:
-
-        tg(
-            "answerCallbackQuery",
-            {
-                "callback_query_id":
-                    callback_id,
-                "text":
-                    "Order not found.",
-                "show_alert":
-                    True
-            }
-        )
-
-        return
-
-
-    # =====================================================
-    # ACCEPT
-    # =====================================================
-
-    if action == "accept":
-
-        changed = transition_order_status(
-            order_id,
-            "new",
-            "preparing"
-        )
-
-        if not changed:
-
-            tg(
-                "answerCallbackQuery",
-                {
-                    "callback_query_id":
-                        callback_id,
-                    "text":
-                        "Order already updated."
-                }
-            )
-
-            return
-
-        order = get_order(
-            order_id
-        )
-
-        tg(
-            "editMessageText",
-            {
-                "chat_id":
-                    callback_chat_id,
-
-                "message_id":
-                    message_id,
-
-                "text":
-                    barista_order_text(
-                        order,
-                        "preparing"
-                    ),
-
-                "reply_markup":
-                    preparing_keyboard(
-                        order_id
-                    )
-            }
-        )
-
-        tg(
-            "sendMessage",
-            {
-                "chat_id":
-                    order["telegram_id"],
-
-                "text":
-                    "✅ TAKE AWAY — "
-                    "ORDER ACCEPTED\n\n"
-                    f"🧾 Order #{order_id}\n"
-                    f"🕐 Pickup: "
-                    f"{pickup_time_text(order)}"
-                    "\n\n"
-                    "We're preparing "
-                    "your drinks. ☕\n\n"
-                    "🇷🇸 Porudžbina je "
-                    "prihvaćena i "
-                    "pripremamo vaša pića."
-            }
-        )
-
-        tg(
-            "answerCallbackQuery",
-            {
-                "callback_query_id":
-                    callback_id,
-                "text":
-                    "Order accepted ✅"
-            }
-        )
-
-        return
-
-
-    # =====================================================
-    # READY
-    # =====================================================
-
-    if action == "ready":
-
-        changed = transition_order_status(
-            order_id,
-            "preparing",
-            "ready"
-        )
-
-        if not changed:
-
-            tg(
-                "answerCallbackQuery",
-                {
-                    "callback_query_id":
-                        callback_id,
-                    "text":
-                        "Order is not "
-                        "being prepared."
-                }
-            )
-
-            return
-
-        order = get_order(
-            order_id
-        )
-
-        tg(
-            "editMessageText",
-            {
-                "chat_id":
-                    callback_chat_id,
-
-                "message_id":
-                    message_id,
-
-                "text":
-                    barista_order_text(
-                        order,
-                        "ready"
-                    ),
-
-                "reply_markup":
-                    ready_keyboard(
-                        order_id
-                    )
-            }
-        )
-
-        tg(
-            "sendMessage",
-            {
-                "chat_id":
-                    order["telegram_id"],
-
-                "text":
-                    "☕ TAKE AWAY — "
-                    "YOUR ORDER IS READY!\n\n"
-                    f"🧾 Order #{order_id}\n"
-                    f"💰 {order['total']} RSD"
-                    "\n\n"
-                    "Your drinks are ready "
-                    "for pickup. 🤍\n\n"
-                    "🇷🇸 Vaša porudžbina "
-                    "je spremna za "
-                    "preuzimanje.\n\n"
-                    "💳 Paid online / "
-                    "Plaćeno online."
-            }
-        )
-
-        tg(
-            "answerCallbackQuery",
-            {
-                "callback_query_id":
-                    callback_id,
-                "text":
-                    "Customer notified ☕"
-            }
-        )
-
-        return
-
-
-    # =====================================================
-    # PICKED UP
-    # =====================================================
-
-    if action == "picked":
-
-        changed = transition_order_status(
-            order_id,
-            "ready",
-            "completed"
-        )
-
-        if not changed:
-
-            tg(
-                "answerCallbackQuery",
-                {
-                    "callback_query_id":
-                        callback_id,
-                    "text":
-                        "Order is not "
-                        "ready or was "
-                        "already completed."
-                }
-            )
-
-            return
-
-        order = get_order(
-            order_id
-        )
-
-        tg(
-            "editMessageText",
-            {
-                "chat_id":
-                    callback_chat_id,
-
-                "message_id":
-                    message_id,
-
-                "text":
-                    barista_order_text(
-                        order,
-                        "completed"
-                    )
-            }
-        )
-
-        tg(
-            "answerCallbackQuery",
-            {
-                "callback_query_id":
-                    callback_id,
-                "text":
-                    "Order completed ✅"
-            }
-        )
-
-        return
-
-
-    # =====================================================
-    # CANCEL
-    # =====================================================
-
-    if action == "cancel":
-
-        changed = cancel_order_status(
-            order_id
-        )
-
-        if not changed:
-
-            tg(
-                "answerCallbackQuery",
-                {
-                    "callback_query_id":
-                        callback_id,
-                    "text":
-                        "This order cannot "
-                        "be cancelled now."
-                }
-            )
-
-            return
-
-        order = get_order(
-            order_id
-        )
-
-        tg(
-            "editMessageText",
-            {
-                "chat_id":
-                    callback_chat_id,
-
-                "message_id":
-                    message_id,
-
-                "text":
-                    barista_order_text(
-                        order,
-                        "cancelled"
-                    )
-            }
-        )
-
-        tg(
-            "sendMessage",
-            {
-                "chat_id":
-                    order["telegram_id"],
-
-                "text":
-                    "❌ TAKE AWAY — "
-                    "ORDER CANCELLED\n\n"
-                    f"🧾 Order #{order_id}\n\n"
-                    "Unfortunately, "
-                    "we cannot prepare "
-                    "this order.\n\n"
-                    "🇷🇸 Nažalost, "
-                    "ne možemo pripremiti "
-                    "ovu porudžbinu.\n\n"
-                    "Sorry for the "
-                    "inconvenience."
-            }
-        )
-
-        tg(
-            "answerCallbackQuery",
-            {
-                "callback_query_id":
-                    callback_id,
-                "text":
-                    "Order cancelled"
-            }
-        )
-
-        return
-
-
-    tg(
-        "answerCallbackQuery",
-        {
-            "callback_query_id":
-                callback_id,
-            "text":
-                "Unknown action."
-        }
-    )
-
-
-# =========================================================
-# TELEGRAM WEBHOOK
-# =========================================================
-
-@app.route(
-    "/api/bot-webhook",
-    methods=["POST"]
-)
-def bot_webhook():
-
-    if WEBHOOK_SECRET:
-
-        received_secret = (
-            request.headers.get(
-                "X-Telegram-Bot-Api-Secret-Token",
-                ""
-            )
-        )
-
-        if not hmac.compare_digest(
-            received_secret,
-            WEBHOOK_SECRET
-        ):
-
-            return "", 403
-
-
-    update = (
-        request.get_json(
-            silent=True
-        )
-        or {}
-    )
-
-    if not isinstance(
-        update,
-        dict
-    ):
-
-        return "", 200
-
-
-    # CALLBACKS
-
-    callback = update.get(
-        "callback_query"
-    )
-
-    if callback:
-
-        try:
-
-            handle_callback(
-                callback
-            )
-
-        except Exception:
-
-            logging.exception(
-                "Callback error"
-            )
-
-        return "", 200
-
-
-    # NORMAL MESSAGE
-
-    message = (
-        update.get("message")
-        or {}
-    )
-
-    chat = (
-        message.get("chat")
-        or {}
-    )
-
-    chat_id = chat.get("id")
-    chat_type = chat.get("type")
-
-    message_text = str(
-        message.get(
-            "text",
-            ""
-        )
-    ).strip()
-
-    if (
-        not chat_id
-        or chat_type != "private"
-    ):
-
-        return "", 200
-
-
-    command = (
-        message_text
-        .split()[0]
-        .split("@")[0]
-        if message_text
-        else ""
-    )
-
-
-    # =====================================================
-    # START
-    # =====================================================
-
-    if command == "/start":
-
-        tg(
-            "sendMessage",
-            {
-                "chat_id":
-                    chat_id,
-
-                "text":
-                    "☕ TAKE AWAY",
-
-                "reply_markup": {
-                    "remove_keyboard":
-                        True
-                }
-            }
-        )
-
-        welcome_message = (
-            "☕ WELCOME TO TAKE AWAY\n\n"
-            "THAI TEA & COFFEE\n\n"
-            "Choose your drinks, "
-            "select a pickup time "
-            "and we'll prepare "
-            "everything for you.\n\n"
-            "💳 Online payment only.\n\n"
-            "🇷🇸 DOBRODOŠLI U "
-            "TAKE AWAY\n\n"
-            "Izaberite piće i vreme "
-            "preuzimanja, a mi ćemo "
-            "pripremiti porudžbinu.\n\n"
-            "💳 Samo online plaćanje.\n\n"
-            "👇 ORDER / PORUČI"
-        )
-
-        tg(
-            "sendMessage",
-            {
-                "chat_id":
-                    chat_id,
-
-                "text":
-                    welcome_message,
-
-                "reply_markup":
-                    order_keyboard()
-            }
-        )
-
-        return "", 200
-
-
-    # =====================================================
-    # HELP
-    # =====================================================
-
-    if command == "/help":
-
-        tg(
-            "sendMessage",
-            {
-                "chat_id":
-                    chat_id,
-
-                "text":
-                    "☕ TAKE AWAY\n\n"
-                    "Choose your drinks "
-                    "and pickup time.\n"
-                    "Pickup: 07:00–17:00\n"
-                    "Payment: online only.\n\n"
-                    "🇷🇸 Izaberite piće "
-                    "i vreme preuzimanja.\n"
-                    "Preuzimanje: "
-                    "07:00–17:00\n"
-                    "Samo online plaćanje.",
-
-                "reply_markup":
-                    order_keyboard()
-            }
-        )
-
-        return "", 200
-
-
-    return "", 200
-
-
-# =========================================================
-# LOCAL RUN
-# =========================================================
-
-if __name__ == "__main__":
-
-    app.run(
-        host="0.0.0.0",
-        port=int(
-            os.environ.get(
-                "PORT",
-                10000
-            )
-        )
-    )
+</script>
+<title>TAKE AWAY</title>
+<style>
+:root{--green:#043923;--dark:#032c1b;--light:#0b5136;--gold:#d6b36a;--cream:#f6f0e5;--white:#fff;--muted:rgba(255,255,255,.64);--ease:cubic-bezier(.2,.8,.2,1)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html{background:var(--dark)}body{margin:0;min-height:100vh;padding-bottom:calc(154px + env(safe-area-inset-bottom));font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:white;background:radial-gradient(circle at 100% 0%,#116342 0%,transparent 32%),radial-gradient(circle at 0% 45%,#0c5237 0%,transparent 40%),linear-gradient(180deg,#063d27,#032c1b);overflow-x:hidden}button,input,select{font:inherit}button{cursor:pointer;border:0}button:active{transform:scale(.97)}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--gold);outline-offset:3px}.shell{max-width:600px;margin:auto}.header{padding:14px 17px 12px}.topline{display:flex;align-items:center;justify-content:space-between;gap:12px}.greeting{font-size:12px;color:var(--muted);font-weight:600}.greeting strong{display:block;margin-top:4px;color:white;font-family:Georgia,serif;font-size:20px;font-weight:500}.languages{display:flex;gap:3px;padding:4px;border:1px solid #ffffff20;border-radius:15px;background:#00000020}.lang{padding:7px 9px;border-radius:11px;color:white;background:transparent;font-size:11px;font-weight:800;transition:background .22s,color .22s,transform .22s}.lang.active{background:white;color:var(--green)}.brand{text-align:center;padding:0 0 8px}.walking-logo{width:100px;height:100px;margin:-4px auto -2px}.walking-logo img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 8px #0003)}.logo{font:600 30px Georgia,serif;letter-spacing:8px;padding-left:8px}.subtitle{margin-top:8px;font:11px Georgia,serif;letter-spacing:4px}.brand-line{width:32px;height:1px;background:#fffc;margin:12px auto}.tagline{color:var(--gold);font:9px Georgia,serif;letter-spacing:2.8px}.hero{position:relative;height:177px;margin:8px 13px 16px;border-radius:24px;overflow:hidden;background:linear-gradient(135deg,#10583a,#032c1b);border:1px solid #ffffff22;box-shadow:0 15px 30px #0003;animation:rise .45s var(--ease) both}.hero img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}.hero:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 45%,#032c1b80)}.hero-location,.hero-label{position:absolute;z-index:1}.hero-location{top:12px;left:13px;border-radius:30px;background:#032c1bbd;backdrop-filter:blur(8px);border:1px solid #ffffff30;padding:8px 11px;font-size:9px;letter-spacing:1.5px;font-weight:800}.hero-location:before{content:"";display:inline-block;width:6px;height:6px;margin-right:7px;border-radius:50%;background:var(--gold)}.hero-label{bottom:15px;left:0;right:0;text-align:center;font:11px Georgia,serif;letter-spacing:4px;text-shadow:0 2px 8px #0009}.page{display:none}.page.active{display:block;animation:pageIn .28s var(--ease) both}.search-wrap{margin:0 13px 13px;position:relative}.search-wrap input{width:100%;border-radius:17px;border:1px solid #ffffff25;background:#ffffff12;color:white;padding:14px 15px 14px 41px;outline:none}.search-wrap input::placeholder{color:#ffffff80}.search-icon{position:absolute;left:16px;top:13px;color:var(--gold)}.tabs-wrap{position:sticky;top:0;z-index:20;padding:8px 12px 9px;background:#032c1bf0;backdrop-filter:blur(15px)}.tabs{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;border-radius:16px;background:#0003}.tab-indicator{position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 16px)/3);border-radius:12px;background:white;transition:transform .28s var(--ease);pointer-events:none}.tab{position:relative;z-index:1;min-height:42px;background:transparent;color:#fffa;font-size:12px;font-weight:750;transition:color .22s}.tab.active{color:var(--green)}.section{padding:18px 13px 8px}.section-header{display:flex;align-items:center;gap:10px;margin:0 4px 16px}.section-icon{color:var(--gold);font-size:21px}.section-title{font:23px Georgia,serif;letter-spacing:3px}.section-line{height:1px;flex:1;background:#ffffff44}.products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.product{min-width:0;min-height:261px;padding:13px 11px 13px;border:1px solid #ffffff20;border-radius:22px;background:linear-gradient(145deg,#ffffff19,#ffffff09);box-shadow:0 10px 26px #0002;animation:rise .35s var(--ease) both;transition:transform .2s,background .2s}.product:active{transform:scale(.985)}.product-name{min-height:38px;text-align:center;font:15px/1.2 Georgia,serif}.product-desc{min-height:38px;margin-top:4px;text-align:center;color:var(--muted);font-size:10px;line-height:1.3}.product-price{margin-top:6px;text-align:center;font:19px Georgia,serif}.add{width:100%;margin-top:11px;padding:11px 6px;border-radius:12px;background:white;color:var(--green);font-size:12px;font-weight:800;transition:transform .2s}.drink{height:108px;display:flex;align-items:flex-end;justify-content:center;margin-bottom:7px}.cup{position:relative;width:72px;height:88px;border:2px solid #ffffffb8;border-radius:8px 8px 20px 20px;box-shadow:0 10px 20px #0003;transition:transform .25s var(--ease)}.product:active .cup{transform:translateY(-5px) rotate(-3deg)}.cup:before{content:"";position:absolute;z-index:6;top:-1px;left:-4px;right:-4px;height:8px;border-radius:5px;background:#ffffffb8}.liquid{position:absolute;left:3px;right:3px;bottom:3px;height:72px;overflow:hidden;border-radius:4px 4px 15px 15px;background:linear-gradient(#fff1dc 0 25%,#ef731c 25%)}.cup.espresso{width:54px;height:58px;margin-bottom:4px;border-radius:7px 7px 16px 16px}.cup.espresso .liquid{height:36px;background:linear-gradient(#c17a3f 0 10%,#8d4a25 10% 20%,#542714 20% 35%,#25120b 35%)}.cup.americano{width:67px;height:83px}.cup.americano .liquid{height:67px;background:linear-gradient(#9a6139 0 7%,#70401f 7% 17%,#3a2113 17% 42%,#1c100a 42%)}.cup.cappuccino{width:68px;height:75px}.cup.cappuccino .liquid{height:60px;background:linear-gradient(#fff8ea 0 25%,#f4e8d3 25% 34%,#d7b58f 34% 48%,#a8673f 48% 66%,#5a2c19 66%)}.cup.latte .liquid{background:linear-gradient(#fff6e8 0 12%,#f1e0c5 12% 43%,#d5ae84 43% 62%,#aa6940 62% 79%,#64331d 79%)}.cup.flatwhite{width:68px;height:70px}.cup.flatwhite .liquid{height:55px;background:linear-gradient(#f1dfc5 0 8%,#c89a70 8% 22%,#8a4b2c 22% 42%,#552817 42% 68%,#26120b 68%)}.cup.icedlatte .liquid{background:linear-gradient(#eee0c5 0 22%,#d4ae80 22% 47%,#a3633c 47% 68%,#71371f 68%)}.cup.greentea .liquid{background:linear-gradient(#fff1dc 0 25%,#789537 25%)}.cup.limetea .liquid{background:linear-gradient(#74421f,#482612 45%,#21120b)}.cup.bumble .liquid{background:linear-gradient(#4d2416 0 46%,#f08b1d 46%)}.cup.tonic .liquid{background:linear-gradient(#542a17 0 36%,#d9b55b 36% 52%,#e7e1cc 52%)}.cup.americanocream .liquid{background:linear-gradient(#fff4e6 0 22%,#e7d0ad 22% 28%,#3b1d10 28%)}.cup.matcha .liquid{background:linear-gradient(#6e954a 0 31%,#f1e9da 31% 57%,#df6074 57%)}.cup.peanut .liquid{background:linear-gradient(#f3e3c9 0 23%,#bd824c 23% 66%,#67351e 66%)}.ice{position:absolute;z-index:5;top:27px;left:14px;color:#ffffffb8;font-size:21px;letter-spacing:-5px}.lime{position:absolute;z-index:10;width:32px;height:32px;right:-12px;top:14px;border:3px solid #b9d83f;border-radius:50%;background:#a4cb38}.cart-section{margin:14px 13px;display:none}.cart-section.show{display:block;animation:rise .25s var(--ease)}.cart-title{font:21px Georgia,serif;margin-bottom:10px}.cart-item{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:7px;padding:12px;border-radius:14px;background:#ffffff13;font-size:12px}.cart-item-info{flex:1;min-width:0}.cart-extra{margin-top:4px;color:var(--muted);font-size:10px}.cart-right{display:flex;align-items:center;gap:7px}.cart-quantity{display:flex;align-items:center;gap:4px}.cart-qty-btn,.remove{width:29px;height:29px;border-radius:9px;background:#ffffff25;color:white;font-size:18px}.cart-qty-number{min-width:20px;text-align:center;font-weight:800}.cart-price{min-width:67px;text-align:right;font-weight:800}.pickup,.payment-note{margin:16px 13px 12px;padding:17px;border:1px solid #ffffff20;border-radius:22px;background:#ffffff11}.pickup h2{font:20px Georgia,serif;margin:0 0 5px}.pickup-subtitle{color:var(--muted);font-size:11px;margin-bottom:14px}.pickup-modes{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px}.pickup-mode,.time{border:1px solid #ffffff25;border-radius:12px;background:#0002;color:white;font-size:12px;font-weight:700;transition:background .22s,color .22s,transform .22s}.pickup-mode{min-height:44px}.pickup-mode.active,.time.selected{background:white;color:var(--green)}.times{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.time{height:40px}.exact-box{display:none}.exact-box.show{display:block;animation:rise .2s var(--ease)}.exact-select{width:100%;height:47px;border:0;border-radius:12px;padding:0 13px;background:white;color:var(--green);font-weight:700}.pickup-info{margin-top:11px;color:#fffc;font-size:11px}.payment-note{border-color:#d6b36a55;background:#d6b36a12}.payment-note-title{color:var(--gold);font-size:12px;font-weight:800}.payment-note-text{margin-top:7px;color:var(--muted);font-size:11px;line-height:1.5}.message{display:none;margin:12px 13px;padding:13px;border-radius:14px;font-size:12px;line-height:1.5}.message.error{display:block;background:#f4ded9;color:#702d27}.message.success{display:block;background:#dcecdc;color:#244c2b}.app-page{padding:15px 13px 20px}.page-heading{margin:5px 3px 18px}.page-heading h1{font:29px Georgia,serif;letter-spacing:2px;margin:0}.page-heading p{margin:7px 0 0;color:var(--muted);font-size:12px}.order-card,.profile-card,.rewards-card{margin-bottom:11px;padding:17px;border:1px solid #ffffff20;border-radius:21px;background:#ffffff12}.order-card-top,.order-card-bottom{display:flex;justify-content:space-between;align-items:center;gap:10px}.order-number{font:19px Georgia,serif}.order-date{margin-top:5px;color:var(--muted);font-size:10px}.status{padding:7px 9px;border-radius:10px;background:#ffffff20;font-size:10px;font-weight:800;text-transform:uppercase}.status.ready{background:#e6f0df;color:#234c2b}.status.preparing{background:#f1e4bd;color:#6d5315}.status.cancelled{background:#ead1ce;color:#712e28}.order-products{margin-top:15px;padding-top:12px;border-top:1px solid #ffffff20}.order-product-line{display:flex;justify-content:space-between;gap:10px;margin-bottom:8px;font-size:12px}.order-card-bottom{margin-top:13px}.order-total{font:19px Georgia,serif}.reorder{border-radius:12px;padding:11px 14px;background:white;color:var(--green);font-size:11px;font-weight:800}.profile-card{text-align:center;padding:24px 18px}.avatar{width:72px;height:72px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;border:1px solid #ffffff40;border-radius:50%;background:#ffffff20;font:28px Georgia,serif}.profile-name{font:24px Georgia,serif}.profile-user{margin-top:5px;color:var(--muted);font-size:12px}.member{display:inline-block;margin-top:13px;padding:8px 12px;border:1px solid #d6b36a80;border-radius:20px;color:var(--gold);font-size:9px;font-weight:800;letter-spacing:2px}.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:13px 0}.stat{padding:18px 10px;border-radius:18px;background:#ffffff12;text-align:center}.stat-number{font:26px Georgia,serif}.stat-label{margin-top:5px;color:var(--muted);font-size:10px}.profile-info{padding:5px 16px;border-radius:19px;background:#ffffff12}.profile-row{display:flex;justify-content:space-between;gap:10px;padding:15px 0;border-bottom:1px solid #ffffff15;font-size:12px}.profile-row:last-child{border:0}.profile-row span:first-child{color:var(--muted)}.profile-row strong{text-align:right}.empty-state{padding:40px 20px;text-align:center;color:var(--muted)}.empty-icon{font-size:35px;margin-bottom:12px}.empty-title{color:white;font:20px Georgia,serif}.empty-copy{margin-top:7px;font-size:11px;line-height:1.5}.rewards-card{text-align:center;padding:24px 18px;background:linear-gradient(145deg,#ffffff19,#d6b36a10)}.rewards-symbol{font-size:35px}.rewards-card h2{font:26px Georgia,serif;margin:9px 0}.rewards-card p{color:var(--muted);font-size:12px;line-height:1.55}.stamps{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:20px 0}.stamp{aspect-ratio:1;border-radius:50%;border:1px dashed #d6b36a77;display:flex;align-items:center;justify-content:center;background:#0002;color:#d6b36a88;font-size:21px}.stamp.filled{background:var(--gold);color:var(--green);border-style:solid}.rewards-note{padding:15px;border-radius:15px;background:#0002;color:#ffffffb0;font-size:11px;line-height:1.6}.order-bar{position:fixed;z-index:35;left:9px;right:9px;bottom:calc(79px + env(safe-area-inset-bottom));max-width:580px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 10px 10px 15px;border:1px solid #ffffff25;border-radius:19px;background:#031c13fa;box-shadow:0 12px 30px #0006;transition:transform .25s var(--ease),opacity .25s}.order-bar.hidden{opacity:0;pointer-events:none;transform:translateY(20px)}.order-bar small{color:var(--muted);font-size:10px}.total{margin-top:3px;font-size:18px;font-weight:800}.order-button{min-width:147px;padding:13px 10px;border-radius:12px;background:white;color:var(--green);font-size:11px;font-weight:850}.bottom-nav{position:fixed;z-index:40;left:9px;right:9px;bottom:calc(9px + env(safe-area-inset-bottom));max-width:580px;margin:auto;height:61px;display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #ffffff25;border-radius:21px;background:#031c13fc;backdrop-filter:blur(15px);box-shadow:0 15px 35px #0006;overflow:hidden}.nav-indicator{position:absolute;top:0;left:0;width:25%;height:3px;background:var(--gold);border-radius:0 0 6px 6px;transition:transform .3s var(--ease)}.nav-button{position:relative;background:transparent;color:#ffffff80;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:10px;font-weight:700;transition:color .23s}.nav-icon{font-size:19px;line-height:1;transition:transform .25s var(--ease)}.nav-button.active{color:white}.nav-button.active .nav-icon{color:var(--gold);transform:translateY(-2px) scale(1.13)}.modal-bg{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;visibility:hidden;opacity:0;pointer-events:none;background:#0009;backdrop-filter:blur(4px);transition:opacity .25s,visibility .25s}.modal-bg.open{visibility:visible;opacity:1;pointer-events:auto}.modal{width:100%;max-width:600px;margin:0 auto;padding:22px 17px calc(28px + env(safe-area-inset-bottom));border-radius:26px 26px 0 0;background:var(--cream);color:#13291f;max-height:90dvh;overflow-y:auto;transform:translateY(100%);transition:transform .32s var(--ease)}.modal-bg.open .modal{transform:translateY(0)}.modal-handle{width:38px;height:4px;margin:-8px auto 19px;border-radius:4px;background:#c9c9c0}.modal h2{font:24px Georgia,serif;margin:0}.modal-price{margin:5px 0 17px;color:#777}.addon{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:15px;margin-bottom:8px;border:1px solid #ddd4c5;border-radius:13px;background:white;color:#183326;text-align:left;font-size:13px;transition:background .2s,border .2s,transform .2s}.addon.selected{border-color:var(--green);background:#e5eee8}.addon.selected:before{content:"✓";color:var(--green);font-weight:900}.quantity-label{margin-top:19px;text-align:center;color:#6c746f;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px}.quantity-wrap{display:flex;align-items:center;justify-content:center;gap:22px;margin:10px 0 15px}.qty-btn{width:45px;height:45px;border-radius:50%;background:var(--green);color:white;font-size:25px}.qty-number{min-width:34px;text-align:center;color:var(--green);font-size:24px;font-weight:800}.modal-add,.payment-close{width:100%;margin-top:5px;padding:16px 10px;border-radius:13px;background:var(--green);color:white;font-weight:800}.payment-modal{text-align:center;padding-bottom:calc(35px + env(safe-area-inset-bottom))}.payment-lock{width:58px;height:58px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;border-radius:50%;background:#e4ece7;font-size:25px}.payment-modal-copy{max-width:350px;margin:10px auto;color:#66736c;font-size:12px;line-height:1.55}.payment-total-label{margin-top:20px;color:#7c837f;font-size:10px;text-transform:uppercase;letter-spacing:1.5px}.payment-total{margin-top:4px;color:var(--green);font:700 31px Georgia,serif}.payment-methods{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin-top:18px}.payment-method{min-width:62px;padding:11px 9px;border:1px solid #ded8cd;border-radius:10px;background:white;color:#18251f;font-size:12px;font-weight:800}.payment-pending{margin-top:18px;padding:14px;border-radius:13px;background:#eee7d7;color:#675629;font-size:11px;line-height:1.6}.payment-choice{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:15px 0}.payment-choice button{padding:12px 6px;border:1px solid #cdd8d0;border-radius:12px;background:white;color:var(--green);font-size:12px;font-weight:800}.payment-choice button.active{background:var(--green);color:white}.demo-pill{display:inline-block;margin-top:13px;padding:6px 12px;border-radius:20px;background:#eee7d7;color:#675629;font-size:10px;font-weight:800;letter-spacing:1px}@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}@keyframes pageIn{from{opacity:.45;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}@media(max-width:390px){.cart-item{align-items:flex-start;flex-direction:column}.cart-right{width:100%;justify-content:space-between}.hero{height:158px}.logo{font-size:27px}.section-title{font-size:21px}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* TAKE AWAY · Liquid Glass refresh */
+.header{padding:9px 17px 6px}
+.brand{padding:0 0 3px}
+.walking-logo{width:66px;height:66px;margin:-2px auto -3px}
+.logo{font-size:25px;letter-spacing:6px;padding-left:6px}
+.subtitle{font-size:9px;letter-spacing:3px;margin-top:5px}
+.brand-line{margin:8px auto}
+.tagline{font-size:8px;letter-spacing:2px}
+.hero{height:148px;margin:8px 13px 10px}
+.tabs-wrap{background:rgba(3,44,27,.67);-webkit-backdrop-filter:blur(24px) saturate(165%);backdrop-filter:blur(24px) saturate(165%);border-bottom:1px solid rgba(255,255,255,.09)}
+.tabs,.bottom-nav,.order-bar{background:linear-gradient(145deg,rgba(32,86,66,.75),rgba(2,34,23,.78));border:1px solid rgba(255,255,255,.24);box-shadow:inset 0 1px 0 rgba(255,255,255,.23),0 16px 36px rgba(0,0,0,.24);-webkit-backdrop-filter:blur(25px) saturate(165%);backdrop-filter:blur(25px) saturate(165%)}
+.tab-indicator{background:linear-gradient(145deg,rgba(255,255,255,.98),rgba(232,244,235,.87));box-shadow:0 4px 16px rgba(0,0,0,.18),inset 0 1px 0 #fff}
+.product,.pickup,.profile-card,.rewards-card,.order-card{background:linear-gradient(145deg,rgba(255,255,255,.16),rgba(255,255,255,.045) 65%);border:1px solid rgba(255,255,255,.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 12px 30px rgba(0,0,0,.14);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.product{position:relative;overflow:hidden}
+.product:before{content:"";position:absolute;inset:0 0 auto;height:35%;background:linear-gradient(180deg,rgba(255,255,255,.075),transparent);pointer-events:none}
+.cup{background:linear-gradient(110deg,rgba(255,255,255,.22),rgba(255,255,255,.03) 40%,rgba(255,255,255,.19) 85%);border-color:rgba(255,255,255,.85);box-shadow:inset 5px 0 8px rgba(255,255,255,.13),inset -5px 0 8px rgba(0,0,0,.1),0 12px 18px rgba(0,0,0,.24)}
+.cup:after{content:"";position:absolute;z-index:8;top:12px;left:7px;width:8px;height:55%;border-radius:100%;background:linear-gradient(180deg,rgba(255,255,255,.6),rgba(255,255,255,0));filter:blur(2px);pointer-events:none}
+.order-bar.hidden{opacity:0;transform:translateY(140px);pointer-events:none}
+.order-bar{transition:transform .3s var(--ease),opacity .3s var(--ease)}
+.bottom-nav{border-radius:22px}
+.modal{background:linear-gradient(145deg,rgba(251,248,240,.97),rgba(229,237,231,.97));-webkit-backdrop-filter:blur(32px) saturate(155%);backdrop-filter:blur(32px) saturate(155%);box-shadow:inset 0 1px 0 #fff,0 -15px 55px rgba(0,0,0,.2)}
+.payment-methods{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:19px}
+.payment-method{min-width:0;min-height:54px;display:flex;align-items:center;justify-content:center;gap:2px;padding:8px 4px;border-radius:14px;border:1px solid rgba(7,55,37,.12);background:linear-gradient(145deg,#fff,#f5f7f5);box-shadow:0 4px 12px rgba(0,0,0,.08);font-size:12px;white-space:nowrap}
+.payment-method.visa span{font:bold italic 22px Arial,sans-serif;letter-spacing:-1px;color:#1434CB}
+.payment-method.applepay{font:bold 18px -apple-system,BlinkMacSystemFont,Arial,sans-serif;color:#111}
+.payment-method .apple-symbol{font-size:17px;letter-spacing:-3px;margin-right:5px}
+.payment-method.googlepay{font:700 12px Arial,sans-serif;letter-spacing:-.6px}
+.g-blue{color:#4285F4}.g-red{color:#EA4335}.g-yellow{color:#FBBC05}.g-green{color:#34A853}.pay-text{color:#333;letter-spacing:0}
+@media(max-width:390px){.hero{height:138px}.logo{font-size:23px}.payment-method.visa span{font-size:19px}.payment-method.googlepay{font-size:10px}}
+
+/* Seamless Belgrade artwork: same original image, no badge or card frame. */
+.hero{
+  height:clamp(185px,47vw,275px);
+  margin:0 0 10px;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  overflow:hidden;
+  background:transparent;
+}
+.hero img{
+  width:100%;height:100%;object-fit:cover;object-position:center 58%;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 17%,#000 70%,transparent 100%),linear-gradient(to right,transparent 0%,#000 10%,#000 90%,transparent 100%);
+  -webkit-mask-composite:source-in;
+  mask-image:linear-gradient(to bottom,transparent 0%,#000 17%,#000 70%,transparent 100%),linear-gradient(to right,transparent 0%,#000 10%,#000 90%,transparent 100%);
+  mask-composite:intersect;
+}
+.hero::after{background:linear-gradient(to bottom,rgba(3,44,27,.14),transparent 42%,rgba(3,44,27,.22) 75%,#032c1b 100%)}
+.hero-label{bottom:28px;text-shadow:0 2px 12px #001d13;}
+@media(max-width:390px){.hero{height:190px}}
+\n/* =========================================================\n   BELGRADE HERO · SEAMLESS GREEN BLEND\n   Keeps the city artwork visible while dissolving it into\n   the TAKE AWAY emerald background.\n========================================================= */\n.hero{\n  position:relative;\n  height:190px;\n  margin:-2px 0 8px;\n  border:0;\n  border-radius:0;\n  overflow:hidden;\n  background:#063d27;\n  box-shadow:none;\n  isolation:isolate;\n}\n.hero img{\n  position:absolute;\n  inset:0;\n  z-index:0;\n  width:100%;\n  height:100%;\n  object-fit:cover;\n  object-position:center center;\n  opacity:.96;\n  filter:saturate(.92) contrast(.96) brightness(.88);\n  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 15%,#000 78%,transparent 100%);\n  mask-image:linear-gradient(to bottom,transparent 0%,#000 15%,#000 78%,transparent 100%);\n}\n.hero::before{\n  content:\"\";\n  position:absolute;\n  inset:0;\n  z-index:1;\n  pointer-events:none;\n  background:\n    linear-gradient(90deg,#063d27 0%,rgba(6,61,39,.38) 7%,transparent 19%,transparent 81%,rgba(6,61,39,.34) 93%,#063d27 100%),\n    linear-gradient(180deg,#063d27 0%,rgba(6,61,39,.28) 14%,rgba(4,57,35,.04) 38%,rgba(3,44,27,.10) 66%,#032c1b 100%);\n  mix-blend-mode:normal;\n}\n.hero::after{\n  content:\"\";\n  position:absolute;\n  inset:0;\n  z-index:2;\n  pointer-events:none;\n  background:radial-gradient(ellipse at 50% 52%,transparent 34%,rgba(3,44,27,.08) 67%,rgba(3,44,27,.34) 100%);\n}\n.hero-label{\n  z-index:3;\n  bottom:25px;\n  color:rgba(255,255,255,.94);\n  text-shadow:0 2px 14px rgba(0,24,15,.9);\n}\n@media(max-width:390px){\n  .hero{height:174px;}\n  .hero img{object-position:center center;}\n}\n
+/* Payment refresh · small white tiles, large marks */
+.payment-modal{padding-top:20px}
+.payment-lock{width:44px;height:44px;font-size:22px;margin-bottom:10px}
+.payment-total{font-size:36px;letter-spacing:-1px}
+.payment-choice{gap:10px;margin:20px 0 13px}
+.payment-choice button{min-height:58px;border-radius:15px;font-size:13px}
+.payment-choice button.active{box-shadow:0 7px 19px rgba(3,44,27,.19)}
+.payment-methods{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:10px 0 12px}
+.payment-methods.is-hidden{display:none!important}
+.payment-method{height:46px;min-height:46px;padding:4px 2px;border-radius:10px;background:#fff;border:1px solid #e5e8e3;box-shadow:0 3px 8px rgba(0,0,0,.045)}
+.payment-method.visa span{font-size:23px}
+.payment-method.mastercard svg{width:48px;height:31px}
+.payment-method.applepay{font-size:18px;gap:1px}
+.payment-method .apple-symbol{font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:25px;letter-spacing:0;margin-right:1px}
+.payment-method.googlepay{font-size:13px}
+.payment-pending{font-size:12px;line-height:1.55}
+#paymentSubmitButton{font-size:14px;min-height:54px;background:linear-gradient(140deg,#063d27,#032c1b)}
+#paymentSubmitButton:disabled{background:#c6d0c9;color:#66746b;opacity:.85;cursor:not-allowed}
+@media(max-width:350px){.payment-method.googlepay{font-size:11px}.payment-method.applepay{font-size:15px}.payment-method .apple-symbol{font-size:21px}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header class="header"><div class="topline"><div class="greeting"><span id="greetingText">Good afternoon</span><strong id="greetingName">Welcome to TAKE AWAY</strong></div><div class="languages"><button class="lang active" id="lang-en" onclick="changeLanguage('en')">🇬🇧 EN</button><button class="lang" id="lang-sr" onclick="changeLanguage('sr')">🇷🇸 RS</button><button class="lang" id="lang-ru" onclick="changeLanguage('ru')">🇷🇺 RU</button></div></div><div class="brand"><div class="walking-logo"><img src="/static/logo.png" alt="TAKE AWAY"></div><div class="logo">TAKE AWAY</div><div class="subtitle">THAI TEA &amp; COFFEE</div><div class="brand-line"></div><div class="tagline">SAME GOOD ENERGY DAILY</div></div></header>
+<div class="hero"><img src="/static/belgrade.png" alt="Illustrated Belgrade skyline" onerror="this.style.opacity='0'"><div class="hero-label">MADE IN BELGRADE</div></div>
+<main>
+<div id="menuPage" class="page active"><div class="tabs-wrap"><div class="tabs"><div id="tabIndicator" class="tab-indicator"></div><button id="tab-tea" class="tab active" onclick="showCategory('tea')">Thai Tea</button><button id="tab-coffee" class="tab" onclick="showCategory('coffee')">Coffee</button><button id="tab-special" class="tab" onclick="showCategory('special')">Specials</button></div></div><div id="menu"></div><div id="cartSection" class="cart-section"><div id="cartTitle" class="cart-title">Your order</div><div id="cartItems"></div></div><section class="pickup"><h2 id="pickupTitle">Pickup time</h2><div id="pickupSubtitle" class="pickup-subtitle">When should we prepare your order?</div><div class="pickup-modes"><button id="asapMode" class="pickup-mode active" onclick="setPickupMode('asap')">ASAP</button><button id="exactMode" class="pickup-mode" onclick="setPickupMode('exact')">Choose time</button></div><div id="asapTimes" class="times"><button class="time selected" onclick="chooseTime(this,10)">10 min</button><button class="time" onclick="chooseTime(this,15)">15 min</button><button class="time" onclick="chooseTime(this,20)">20 min</button><button class="time" onclick="chooseTime(this,30)">30 min</button></div><div id="exactBox" class="exact-box"><select id="exactTime" class="exact-select" onchange="chooseExactTime()"></select></div><div id="pickupInfo" class="pickup-info"></div></section><div class="payment-note"><div class="payment-note-title" id="paymentNoteTitle">🔒 Payment preview</div><div class="payment-note-text" id="paymentNoteText">Online and pickup payments are not yet activated. No orders are sent during this preview.</div></div><div id="message" class="message"></div></div>
+<div id="ordersPage" class="page"><div class="app-page"><div class="page-heading"><h1 id="ordersHeading">My Orders</h1><p id="ordersSub">Your TAKE AWAY order history</p></div><div id="ordersContent"></div></div></div>
+<div id="rewardsPage" class="page"><div class="app-page"><div class="page-heading"><h1 id="rewardsHeading">Rewards</h1><p id="rewardsSub">A little thank you for every cup</p></div><div class="rewards-card"><div class="rewards-symbol">✦</div><h2 id="rewardsTitle">Your coffee journey</h2><p id="rewardsDescription">Buy 9 paid drinks and get your 10th free.</p><div id="stamps" class="stamps"></div><div id="rewardsCount" style="font:20px Georgia,serif;color:var(--gold)">0 / 9</div><div class="rewards-note" id="rewardsNote">Coming soon. Stamps will only be awarded after verified payment or paid pickup. Demo orders never earn stamps.</div></div></div></div>
+<div id="profilePage" class="page"><div class="app-page"><div class="page-heading"><h1 id="profileHeading">Profile</h1><p id="profileSub">Your TAKE AWAY account</p></div><div id="profileContent"></div></div></div>
+</main>
+</div>
+<div id="orderBar" class="order-bar hidden"><div><small id="itemCount">0 items</small><div id="total" class="total">0 RSD</div></div><button class="order-button" id="orderButton" onclick="placeOrder()">CONTINUE →</button></div>
+<nav class="bottom-nav" aria-label="Main navigation"><div class="nav-indicator" id="navIndicator"></div><button id="nav-menu" class="nav-button active" onclick="showPage('menu')"><span class="nav-icon">☕</span><span id="navMenuText">Menu</span></button><button id="nav-orders" class="nav-button" onclick="showPage('orders')"><span class="nav-icon">▤</span><span id="navOrdersText">Orders</span></button><button id="nav-rewards" class="nav-button" onclick="showPage('rewards')"><span class="nav-icon">✦</span><span id="navRewardsText">Rewards</span></button><button id="nav-profile" class="nav-button" onclick="showPage('profile')"><span class="nav-icon">♙</span><span id="navProfileText">Profile</span></button></nav>
+<div id="modalBg" class="modal-bg" onclick="closeModal(event)"><div class="modal" role="dialog" aria-modal="true"><div class="modal-handle"></div><h2 id="modalName"></h2><div id="modalPrice" class="modal-price"></div><button id="extraOption" class="addon" onclick="toggleAddon('extra')"><strong id="extraText">Extra espresso shot</strong><span>+150 RSD</span></button><button id="bobaOption" class="addon" onclick="toggleAddon('boba')"><strong id="bobaText">Add boba</strong><span>+100 RSD</span></button><div class="quantity-label" id="quantityLabel">Quantity</div><div class="quantity-wrap"><button class="qty-btn" onclick="changeModalQuantity(-1)">−</button><span class="qty-number" id="modalQuantity">1</span><button class="qty-btn" onclick="changeModalQuantity(1)">+</button></div><button id="modalAdd" class="modal-add" onclick="confirmAdd()">Add to order</button></div></div>
+<div id="paymentModalBg" class="modal-bg" onclick="closePaymentModal(event)"><div class="modal payment-modal" role="dialog" aria-modal="true"><div class="modal-handle"></div><div class="payment-lock">☕</div><h2 id="paymentModalTitle">Payment preview</h2><div id="paymentModalCopy" class="payment-modal-copy">Choose how you would like to pay once ordering is activated.</div><div id="paymentTotalLabel" class="payment-total-label">ORDER TOTAL</div><div id="paymentModalTotal" class="payment-total">0 RSD</div><div class="payment-choice"><button id="pay-online" class="active" onclick="selectPayment('online')">💳 Pay online</button><button id="pay-pickup" onclick="selectPayment('pickup')">☕ At pickup</button></div><div class="payment-methods" id="paymentMethods"><div class="payment-method visa" aria-label="Visa"><span>VISA</span></div><div class="payment-method mastercard" aria-label="Mastercard"><svg viewBox="0 0 54 34" width="48" height="30" aria-hidden="true"><circle cx="20" cy="17" r="14" fill="#EB001B"/><circle cx="34" cy="17" r="14" fill="#F79E1B" fill-opacity=".95"/></svg></div><div class="payment-method applepay" aria-label="Apple Pay"><span class="apple-symbol" style="font-family:-apple-system,BlinkMacSystemFont,sans-serif"></span><span>Pay</span></div><div class="payment-method googlepay" aria-label="Google Pay"><span class="g-blue">G</span><span class="g-red">o</span><span class="g-yellow">o</span><span class="g-blue">g</span><span class="g-green">l</span><span class="g-red">e</span><span class="pay-text"> Pay</span></div></div><div class="demo-pill" id="paymentDemoPill">ONLINE PAYMENTS COMING SOON</div><div id="paymentPendingText" class="payment-pending">Payments are not active. This preview does not create an order or send anything to the barista.</div><button id="paymentSubmitButton" class="payment-close" onclick="submitPickupOrder()">PLACE ORDER · PAY AT CAFÉ</button><button id="paymentCloseButton" class="payment-close" onclick="closePaymentModal()" style="background:transparent;color:#526258;margin-top:8px">CLOSE</button></div></div>
+<script>
+'use strict';
+const tg=window.Telegram?.WebApp||null;
+try{tg?.ready();tg?.expand();tg?.disableVerticalSwipes?.()}catch(e){}
+const TEXT={
+en:{tea:'Thai Tea',coffee:'Coffee',specials:'Specials',teaTitle:'TEA',coffeeTitle:'COFFEE',specialTitle:'SPECIALS',add:'ADD',cart:'Your order',pickup:'Pickup time',pickupSub:'When should we prepare your order?',asap:'ASAP',choose:'Choose time',ready:'Ready in approximately',minutes:'minutes',pickupAt:'Pickup today at',item:'item',items:'items',quantity:'Quantity',order:'CONTINUE →',extra:'Extra espresso shot',boba:'Add boba',addOrder:'Add to order',empty:'Please add a drink first.',choosePickup:'Please choose a pickup time.',noTimes:'No pickup times available today.',menuNav:'Menu',ordersNav:'Orders',rewardsNav:'Rewards',profileNav:'Profile',ordersTitle:'My Orders',ordersSub:'Your TAKE AWAY order history',profileTitle:'Profile',profileSub:'Your TAKE AWAY account',noOrders:'No orders yet',noOrdersCopy:'Your confirmed orders will appear here.',reorder:'Order again',member:'TAKE AWAY MEMBER',totalOrders:'Orders',drinks:'Drinks',favorite:'Favourite drink',memberSince:'First order',noFavorite:'Not yet',newStatus:'Received',preparingStatus:'Preparing',readyStatus:'Ready',completedStatus:'Completed',cancelledStatus:'Cancelled',maxOrder:'Maximum 30 drinks per order.',paymentNoteTitle:'🔒 Payment preview',paymentNoteText:'Online and pickup payments are not yet activated. No orders are sent during this preview.',paymentTitle:'Payment preview',paymentCopy:'Choose how you would like to pay once ordering is activated.',paymentTotal:'Order total',paymentPending:'Payments are not active. This preview does not create an order or send anything to the barista.',paymentClose:'CLOSE',payOnline:'💳 Pay online',payPickup:'☕ At pickup',rewardsTitle:'Your coffee journey',rewardsSub:'A little thank you for every cup',rewardsDescription:'Buy 9 paid drinks and get your 10th free.',rewardsNote:'Coming soon. Stamps will only be awarded after verified payment or paid pickup. Demo orders never earn stamps.',search:'Search drinks',greetings:['Good morning','Good afternoon','Good evening'],welcome:'Welcome to TAKE AWAY',noSearch:'No drinks found',demoRequired:'Ordering is not yet active. This is a preview.'},
+sr:{tea:'Tajlandski čaj',coffee:'Kafa',specials:'Specijaliteti',teaTitle:'ČAJ',coffeeTitle:'KAFA',specialTitle:'SPECIJALITETI',add:'DODAJ',cart:'Vaša porudžbina',pickup:'Vreme preuzimanja',pickupSub:'Kada želite da porudžbina bude spremna?',asap:'Što pre',choose:'Izaberi vreme',ready:'Spremno za približno',minutes:'minuta',pickupAt:'Preuzimanje danas u',item:'stavka',items:'stavki',quantity:'Količina',order:'NASTAVI →',extra:'Dodatni espresso',boba:'Dodaj boba kuglice',addOrder:'Dodaj u porudžbinu',empty:'Prvo dodajte piće.',choosePickup:'Izaberite vreme preuzimanja.',noTimes:'Danas nema dostupnih termina.',menuNav:'Meni',ordersNav:'Porudžbine',rewardsNav:'Nagrade',profileNav:'Profil',ordersTitle:'Moje porudžbine',ordersSub:'Istorija TAKE AWAY porudžbina',profileTitle:'Profil',profileSub:'Vaš TAKE AWAY nalog',noOrders:'Još nema porudžbina',noOrdersCopy:'Potvrđene porudžbine će se pojaviti ovde.',reorder:'Poruči ponovo',member:'TAKE AWAY ČLAN',totalOrders:'Porudžbine',drinks:'Pića',favorite:'Omiljeno piće',memberSince:'Prva porudžbina',noFavorite:'Još nema',newStatus:'Primljeno',preparingStatus:'Priprema',readyStatus:'Spremno',completedStatus:'Završeno',cancelledStatus:'Otkazano',maxOrder:'Maksimalno 30 pića po porudžbini.',paymentNoteTitle:'🔒 Pregled plaćanja',paymentNoteText:'Online plaćanje i plaćanje pri preuzimanju još nisu aktivirani. Porudžbine se ne šalju.',paymentTitle:'Pregled plaćanja',paymentCopy:'Izaberite način plaćanja kada poručivanje bude aktivirano.',paymentTotal:'Ukupno',paymentPending:'Plaćanje nije aktivno. Ovo je samo prikaz: porudžbina se ne kreira niti šalje baristi.',paymentClose:'ZATVORI',payOnline:'💳 Online',payPickup:'☕ Pri preuzimanju',rewardsTitle:'Vaša kafa, vaše nagrade',rewardsSub:'Mala zahvalnost za svaku šolju',rewardsDescription:'Kupite 9 plaćenih pića i 10. dobijate gratis.',rewardsNote:'Uskoro. Pečati se dobijaju tek nakon potvrđenog plaćanja. Demo porudžbine ne donose pečate.',search:'Pretraži pića',greetings:['Dobro jutro','Dobar dan','Dobro veče'],welcome:'Dobro došli u TAKE AWAY',noSearch:'Nema pronađenih pića',demoRequired:'Poručivanje još nije aktivno.'},
+ru:{tea:'Тайский чай',coffee:'Кофе',specials:'Спешл',teaTitle:'ЧАЙ',coffeeTitle:'КОФЕ',specialTitle:'СПЕШЛ',add:'ДОБАВИТЬ',cart:'Ваш заказ',pickup:'Время получения',pickupSub:'Когда приготовить ваш заказ?',asap:'Как можно скорее',choose:'Выбрать время',ready:'Будет готово примерно через',minutes:'мин.',pickupAt:'Получение сегодня в',item:'напиток',items:'напитков',quantity:'Количество',order:'ПРОДОЛЖИТЬ →',extra:'Дополнительный эспрессо',boba:'Добавить боба',addOrder:'Добавить в заказ',empty:'Сначала добавьте напиток.',choosePickup:'Выберите время получения.',noTimes:'На сегодня свободного времени нет.',menuNav:'Меню',ordersNav:'Заказы',rewardsNav:'Бонусы',profileNav:'Профиль',ordersTitle:'Мои заказы',ordersSub:'История заказов TAKE AWAY',profileTitle:'Профиль',profileSub:'Ваш аккаунт TAKE AWAY',noOrders:'Заказов пока нет',noOrdersCopy:'Здесь появятся подтверждённые заказы.',reorder:'Повторить',member:'УЧАСТНИК TAKE AWAY',totalOrders:'Заказы',drinks:'Напитки',favorite:'Любимый напиток',memberSince:'Первый заказ',noFavorite:'Пока нет',newStatus:'Получен',preparingStatus:'Готовится',readyStatus:'Готов',completedStatus:'Завершён',cancelledStatus:'Отменён',maxOrder:'Максимум 30 напитков в одном заказе.',paymentNoteTitle:'🔒 Демонстрация оплаты',paymentNoteText:'Онлайн-оплата и оплата при получении пока не подключены. Заказы не отправляются.',paymentTitle:'Демонстрация оплаты',paymentCopy:'Выберите способ оплаты, который будет доступен после подключения.',paymentTotal:'Сумма заказа',paymentPending:'Оплата пока не работает. Это демонстрация: заказ не создаётся и не отправляется бариста.',paymentClose:'ЗАКРЫТЬ',payOnline:'💳 Онлайн',payPickup:'☕ При получении',rewardsTitle:'Ваши бонусы',rewardsSub:'Благодарность за каждый напиток',rewardsDescription:'Купите 9 оплаченных напитков — 10-й бесплатно.',rewardsNote:'Скоро. Бонусы будут начисляться только после подтверждённой оплаты или оплаченного получения. За демозаказы бонусы не начисляются.',search:'Поиск напитков',greetings:['Доброе утро','Добрый день','Добрый вечер'],welcome:'Добро пожаловать в TAKE AWAY',noSearch:'Напитки не найдены',demoRequired:'Приём заказов пока не подключён.'}
+};
+const PRODUCT_TEXT={
+espresso:{en:['Espresso','Classic espresso'],sr:['Espresso','Klasični espresso'],ru:['Эспрессо','Классический эспрессо']},americano:{en:['Americano','Espresso + hot water'],sr:['Amerikano','Espresso + topla voda'],ru:['Американо','Эспрессо + горячая вода']},cappuccino:{en:['Cappuccino','Espresso + milk foam'],sr:['Kapućino','Espresso + mlečna pena'],ru:['Капучино','Эспрессо + молочная пена']},latte:{en:['Latte','Espresso + milk'],sr:['Latte','Espresso + mleko'],ru:['Латте','Эспрессо + молоко']},flatwhite:{en:['Flat White','Double espresso + milk'],sr:['Flat White','Dupli espresso + mleko'],ru:['Флэт уайт','Двойной эспрессо + молоко']},icedlatte:{en:['Iced Latte','Espresso + milk + ice'],sr:['Ledeni Latte','Espresso + mleko + led'],ru:['Айс латте','Эспрессо + молоко + лёд']},americanocream:{en:['Iced Americano with Cream','Double espresso + water + ice + cream'],sr:['Ledeni Amerikano sa kremom','Dupli espresso + voda + led + krem'],ru:['Айс американо с кремом','Двойной эспрессо + вода + лёд + крем']},strawberrymatcha:{en:['Strawberry Matcha Latte','Strawberry + matcha + milk'],sr:['Strawberry Matcha Latte','Jagoda + matcha + mleko'],ru:['Клубничный матча латте','Клубника + матча + молоко']},peanutlatte:{en:['Peanut Latte','Double espresso + peanut + milk'],sr:['Peanut Latte','Dupli espresso + kikiriki + mleko'],ru:['Арахисовый латте','Двойной эспрессо + арахис + молоко']},thai:{en:['Classic Thai Milk Tea','Thai tea + milk + cream'],sr:['Klasični tajski mlečni čaj','Tajski čaj + mleko + krem'],ru:['Классический тайский чай','Тайский чай + молоко + крем']},green:{en:['Thai Green Milk Tea','Thai green tea + milk + cream'],sr:['Tajski zeleni mlečni čaj','Zeleni čaj + mleko + krem'],ru:['Тайский зелёный чай','Зелёный чай + молоко + крем']},lime:{en:['Thai Iced Lime Tea','Black tea + fresh lime + ice'],sr:['Tajski ledeni čaj sa limetom','Crni čaj + sveža limeta + led'],ru:['Тайский чай с лаймом','Чёрный чай + лайм + лёд']},tonic:{en:['Tonic Coffee','Espresso + tonic + ice'],sr:['Tonic Coffee','Espresso + tonik + led'],ru:['Тоник кофе','Эспрессо + тоник + лёд']},bumble:{en:['Bumble Coffee','Espresso + orange juice + ice'],sr:['Bumble Coffee','Espresso + sok od pomorandže + led'],ru:['Бамбл кофе','Эспрессо + апельсиновый сок + лёд']}};
+const $=id=>document.getElementById(id);const escapeHtml=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const haptic=()=>{try{tg?.HapticFeedback?.impactOccurred('light')}catch(e){}};
+let language='en',menu=[],cart=[],category='tea',currentPage='menu',selectedProduct=null,modalExtra=false,modalBoba=false,modalQuantity=1,pickupMode='asap',pickupMinutes=10,exactPickupDate=null,customerOrders=[],customerProfile=null,paymentMethod='online';
+function saveCart(){try{localStorage.setItem('takeaway_cart_v2',JSON.stringify(cart))}catch(e){}}function restoreCart(){try{const saved=JSON.parse(localStorage.getItem('takeaway_cart_v2')||'[]');if(Array.isArray(saved))cart=saved.filter(x=>x&&typeof x.id==='string'&&Number.isInteger(x.qty)&&x.qty>0&&x.qty<=10).slice(0,30)}catch(e){cart=[]}}
+function totalCartQuantity(){return cart.reduce((s,x)=>s+x.qty,0)}function itemPrice(item){const p=menu.find(x=>x.id===item.id);return p?(Number(p.price)+(item.extra_shot?150:0)+(item.boba?100:0))*item.qty:0}function cartTotal(){return cart.reduce((s,x)=>s+itemPrice(x),0)}function productText(id){return PRODUCT_TEXT[id]?.[language]||[menu.find(p=>p.id===id)?.name||id,'']}
+function changeLanguage(lang){if(!TEXT[lang])return;language=lang;document.documentElement.lang=lang;try{localStorage.setItem('takeaway_language',lang)}catch(e){}document.querySelectorAll('.lang').forEach(x=>x.classList.toggle('active',x.id==='lang-'+lang));const t=TEXT[lang];const labels={'tab-tea':t.tea,'tab-coffee':t.coffee,'tab-special':t.specials,cartTitle:t.cart,pickupTitle:t.pickup,pickupSubtitle:t.pickupSub,asapMode:t.asap,exactMode:t.choose,orderButton:t.order,extraText:t.extra,bobaText:t.boba,quantityLabel:t.quantity,navMenuText:t.menuNav,navOrdersText:t.ordersNav,navRewardsText:t.rewardsNav,navProfileText:t.profileNav,ordersHeading:t.ordersTitle,ordersSub:t.ordersSub,profileHeading:t.profileTitle,profileSub:t.profileSub,rewardsHeading:t.rewardsNav,rewardsSub:t.rewardsSub,rewardsTitle:t.rewardsTitle,rewardsDescription:t.rewardsDescription,rewardsNote:t.rewardsNote,paymentNoteTitle:t.paymentNoteTitle,paymentNoteText:t.paymentNoteText,paymentModalTitle:t.paymentTitle,paymentModalCopy:t.paymentCopy,paymentTotalLabel:t.paymentTotal,paymentPendingText:t.paymentPending,paymentCloseButton:t.paymentClose,'pay-online':t.payOnline,'pay-pickup':t.payPickup};Object.entries(labels).forEach(([id,v])=>{if($(id))$(id).textContent=v});updateGreeting();renderMenu();updateCart();renderOrders();renderProfile();renderRewards();if(selectedProduct)updateModalAddButton();if(pickupMode==='exact')generateExactTimes();else updatePickupInfo()}
+function updateGreeting(){const t=TEXT[language],hour=new Date().getHours(),part=hour<12?0:hour<18?1:2;const first=tg?.initDataUnsafe?.user?.first_name;$('greetingText').textContent=t.greetings[part];$('greetingName').textContent=first?first+' ✦':t.welcome}
+function showPage(page){if(!['menu','orders','rewards','profile'].includes(page))return;currentPage=page;document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id===page+'Page'));document.querySelectorAll('.nav-button').forEach(x=>x.classList.toggle('active',x.id==='nav-'+page));$('navIndicator').style.transform=`translateX(${['menu','orders','rewards','profile'].indexOf(page)*100}%)`;$('orderBar').classList.toggle('hidden',page!=='menu'||cart.length===0);if(page==='orders')loadOrders();if(page==='profile')loadProfile();if(page==='rewards')renderRewards();window.scrollTo({top:0,behavior:'smooth'});haptic()}
+async function loadMenu(){try{const r=await fetch('/api/menu?ts='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('Could not load menu');const data=await r.json();if(!Array.isArray(data))throw Error('Invalid menu response');menu=data.filter(p=>p&&typeof p.id==='string'&&Number.isFinite(Number(p.price)));cart=cart.filter(x=>menu.some(p=>p.id===x.id));let count=0;cart=cart.map(x=>({...x,qty:Math.min(x.qty,10,Math.max(0,30-count))})).filter(x=>{count+=x.qty;return x.qty>0});saveCart();renderMenu();updateCart()}catch(e){$('menu').innerHTML=`<div class="empty-state">${escapeHtml(e.message)}</div>`}}
+function showCategory(cat){category=cat;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.id==='tab-'+cat));$('tabIndicator').style.transform=`translateX(${['tea','coffee','special'].indexOf(cat)*100}%)`;renderMenu();haptic()}
+function drinkClass(id){return({green:'greentea',lime:'limetea',strawberrymatcha:'matcha',peanutlatte:'peanut',americanocream:'americanocream'}[id]||id)}function drinkVisual(id){const ice=['icedlatte','americanocream','thai','green','lime','bumble','tonic','strawberrymatcha'].includes(id)?'<span class="ice">◇ ◇</span>':'';return `<div class="drink"><div class="cup ${drinkClass(id)}"><div class="liquid"></div>${ice}${id==='lime'?'<span class="lime"></span>':''}</div></div>`}
+function renderMenu(){const q='';const filtered=menu.filter(p=>(q?productText(p.id).join(' ').toLocaleLowerCase().includes(q):p.category===category));const title=q?'✦':category==='tea'?'🍃':category==='coffee'?'☕':'✦';const heading=q?TEXT[language].search:TEXT[language][category==='tea'?'teaTitle':category==='coffee'?'coffeeTitle':'specialTitle'];$('menu').innerHTML=`<section class="section"><div class="section-header"><span class="section-icon">${title}</span><span class="section-title">${escapeHtml(heading)}</span><span class="section-line"></span></div>${filtered.length?`<div class="products">${filtered.map((p,i)=>{const copy=productText(p.id);return `<article class="product" style="animation-delay:${Math.min(i,7)*30}ms">${drinkVisual(p.id)}<div class="product-name">${escapeHtml(copy[0])}</div><div class="product-desc">${escapeHtml(copy[1])}</div><div class="product-price">${Number(p.price)} RSD</div><button class="add" onclick="openProduct(${JSON.stringify(p.id).replaceAll('"','&quot;')})">+ ${TEXT[language].add}</button></article>`}).join('')}</div>`:`<div class="empty-state">${TEXT[language].noSearch}</div>`}</section>`}
+function canExtra(id){return ['espresso','americano','cappuccino','latte','flatwhite','icedlatte','americanocream','peanutlatte','tonic','bumble'].includes(id)}
+function openProduct(id){selectedProduct=menu.find(x=>x.id===id);if(!selectedProduct)return;modalExtra=false;modalBoba=false;modalQuantity=1;$('modalName').textContent=productText(id)[0];$('modalPrice').textContent=selectedProduct.price+' RSD';$('modalQuantity').textContent='1';$('extraOption').style.display=canExtra(id)?'flex':'none';$('bobaOption').style.display=selectedProduct.boba?'flex':'none';$('extraOption').classList.remove('selected');$('bobaOption').classList.remove('selected');updateModalAddButton();$('modalBg').classList.add('open');haptic()}
+function toggleAddon(type){if(type==='extra'&&selectedProduct&&canExtra(selectedProduct.id)){modalExtra=!modalExtra;$('extraOption').classList.toggle('selected',modalExtra)}if(type==='boba'&&selectedProduct?.boba){modalBoba=!modalBoba;$('bobaOption').classList.toggle('selected',modalBoba)}updateModalAddButton();haptic()}
+function changeModalQuantity(n){const next=Math.max(1,Math.min(10,modalQuantity+n));if(totalCartQuantity()+next>30){showMessage(TEXT[language].maxOrder,'error');return}modalQuantity=next;$('modalQuantity').textContent=next;updateModalAddButton();haptic()}
+function updateModalAddButton(){if(!selectedProduct)return;$('modalAdd').textContent=`${TEXT[language].addOrder} — ${(Number(selectedProduct.price)+(modalExtra?150:0)+(modalBoba?100:0))*modalQuantity} RSD`}
+function confirmAdd(){if(!selectedProduct)return;const existing=cart.find(x=>x.id===selectedProduct.id&&x.extra_shot===modalExtra&&x.boba===modalBoba);const allowed=Math.min(30-totalCartQuantity(),existing?10-existing.qty:10);if(modalQuantity>allowed){showMessage(TEXT[language].maxOrder,'error');return}if(existing)existing.qty+=modalQuantity;else cart.push({id:selectedProduct.id,qty:modalQuantity,extra_shot:modalExtra,boba:modalBoba});$('modalBg').classList.remove('open');updateCart();haptic()}
+function closeModal(event){if(!event||event.target.id==='modalBg')$('modalBg').classList.remove('open')}
+function updateCart(){saveCart();const count=totalCartQuantity();$('itemCount').textContent=`${count} ${count===1?TEXT[language].item:TEXT[language].items}`;$('total').textContent=cartTotal()+' RSD';$('cartSection').classList.toggle('show',cart.length>0);$('orderBar').classList.toggle('hidden',cart.length===0||currentPage!=='menu');$('cartItems').innerHTML=cart.map((item,i)=>{const extras=[item.extra_shot?TEXT[language].extra:null,item.boba?TEXT[language].boba:null].filter(Boolean);return `<div class="cart-item"><div class="cart-item-info"><strong>${escapeHtml(productText(item.id)[0])}</strong>${extras.length?`<div class="cart-extra">${escapeHtml(extras.join(' · '))}</div>`:''}</div><div class="cart-right"><div class="cart-quantity"><button class="cart-qty-btn" onclick="changeCartQuantity(${i},-1)">−</button><span class="cart-qty-number">${item.qty}</span><button class="cart-qty-btn" onclick="changeCartQuantity(${i},1)">+</button></div><div class="cart-price">${itemPrice(item)} RSD</div><button class="remove" onclick="deleteCartItem(${i})" aria-label="Remove">×</button></div></div>`}).join('')}
+function changeCartQuantity(i,delta){if(!cart[i])return;if(delta>0&&(totalCartQuantity()>=30||cart[i].qty>=10)){showMessage(TEXT[language].maxOrder,'error');return}cart[i].qty+=delta;if(cart[i].qty<=0)cart.splice(i,1);updateCart();haptic()}function deleteCartItem(i){cart.splice(i,1);updateCart();haptic()}
+function setPickupMode(mode){pickupMode=mode;$('asapMode').classList.toggle('active',mode==='asap');$('exactMode').classList.toggle('active',mode==='exact');$('asapTimes').style.display=mode==='asap'?'grid':'none';$('exactBox').classList.toggle('show',mode==='exact');if(mode==='exact')generateExactTimes();else{exactPickupDate=null;updatePickupInfo()}haptic()}
+function chooseTime(btn,minutes){pickupMinutes=minutes;document.querySelectorAll('.time').forEach(x=>x.classList.remove('selected'));btn.classList.add('selected');updatePickupInfo();haptic()}
+function generateExactTimes(){const select=$('exactTime'),now=new Date(),first=new Date(now.getTime()+11*60000);first.setSeconds(0,0);const rem=first.getMinutes()%15;if(rem)first.setMinutes(first.getMinutes()+15-rem);const opening=new Date(now);opening.setHours(7,0,0,0);const closing=new Date(now);closing.setHours(17,0,0,0);let current=new Date(Math.max(first.getTime(),opening.getTime()));const previous=exactPickupDate?.toISOString();select.innerHTML='';while(current<closing){const opt=document.createElement('option');opt.value=current.toISOString();opt.textContent=String(current.getHours()).padStart(2,'0')+':'+String(current.getMinutes()).padStart(2,'0');select.appendChild(opt);current=new Date(current.getTime()+15*60000)}if(!select.options.length){select.add(new Option(TEXT[language].noTimes,''));exactPickupDate=null}else{if(previous&&Array.from(select.options).some(o=>o.value===previous))select.value=previous;exactPickupDate=new Date(select.value)}updatePickupInfo()}
+function chooseExactTime(){exactPickupDate=$('exactTime').value?new Date($('exactTime').value):null;updatePickupInfo();haptic()}
+function updatePickupInfo(){const t=TEXT[language];if(pickupMode==='asap')$('pickupInfo').textContent=`${t.ready} ${pickupMinutes} ${t.minutes}`;else $('pickupInfo').textContent=exactPickupDate?`${t.pickupAt} ${String(exactPickupDate.getHours()).padStart(2,'0')}:${String(exactPickupDate.getMinutes()).padStart(2,'0')}`:t.noTimes}
+function pickupISO(){if(pickupMode==='exact')return exactPickupDate&&exactPickupDate.getTime()>Date.now()?exactPickupDate.toISOString():null;return new Date(Date.now()+pickupMinutes*60000+45000).toISOString()}
+function showMessage(message,type){$('message').className='message '+type;$('message').textContent=message;if(currentPage==='menu')$('message').scrollIntoView({behavior:'smooth',block:'center'})}
+function selectPayment(method){paymentMethod=method;$('pay-online').classList.toggle('active',method==='online');$('pay-pickup').classList.toggle('active',method==='pickup');$('paymentMethods').style.display=method==='online'?'flex':'none';haptic()}
+function openPaymentModal(){if(!cart.length)return;$('paymentModalTotal').textContent=cartTotal()+' RSD';selectPayment('online');$('paymentModalBg').classList.add('open');haptic()}
+function closePaymentModal(event){if(!event||event.target.id==='paymentModalBg')$('paymentModalBg').classList.remove('open')}
+function placeOrder(){if(!cart.length){showMessage(TEXT[language].empty,'error');return}if(!pickupISO()){showMessage(TEXT[language].choosePickup,'error');return}/* DEMO ONLY: no API order creation, no charge, no barista notification */openPaymentModal()}
+async function loadOrders(){const initData=tg?.initData||'';if(!initData){customerOrders=[];renderOrders();return}try{const r=await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',body:JSON.stringify({initData})});const data=await r.json();if(!r.ok)throw Error(data.error||'Could not load orders');customerOrders=Array.isArray(data.orders)?data.orders:[];renderOrders()}catch(e){$('ordersContent').innerHTML=`<div class="empty-state">${escapeHtml(e.message)}</div>`}}
+function statusText(s){return TEXT[language][({new:'newStatus',preparing:'preparingStatus',ready:'readyStatus',completed:'completedStatus',cancelled:'cancelledStatus'}[s])]||s}
+function renderOrders(){const box=$('ordersContent');if(!customerOrders.length){box.innerHTML=`<div class="empty-state"><div class="empty-icon">▤</div><div class="empty-title">${TEXT[language].noOrders}</div><div class="empty-copy">${TEXT[language].noOrdersCopy}</div></div>`;return}box.innerHTML=customerOrders.map(o=>{const items=Array.isArray(o.items)?o.items:[];return `<div class="order-card"><div class="order-card-top"><div><div class="order-number">Order #${escapeHtml(o.id)}</div><div class="order-date">${escapeHtml(o.created)} · ${escapeHtml(o.pickup)}</div></div><div class="status ${['new','preparing','ready','completed','cancelled'].includes(o.status)?o.status:''}">${escapeHtml(statusText(o.status))}</div></div><div class="order-products">${items.map(x=>{const extras=[x.extra_shot?TEXT[language].extra:null,x.boba?TEXT[language].boba:null].filter(Boolean);return `<div class="order-product-line"><span>${escapeHtml(x.qty)}× ${escapeHtml(productText(x.id)[0])}${extras.length?` <small>· ${escapeHtml(extras.join(', '))}</small>`:''}</span><strong>${escapeHtml(x.line_total)} RSD</strong></div>`}).join('')}</div><div class="order-card-bottom"><div class="order-total">${escapeHtml(o.total)} RSD</div>${o.status!=='cancelled'?`<button class="reorder" onclick="reorder(${JSON.stringify(String(o.id)).replaceAll('"','&quot;')})">${TEXT[language].reorder}</button>`:''}</div></div>`}).join('')}
+function reorder(id){const o=customerOrders.find(x=>String(x.id)===String(id));if(!o)return;cart=[];let remaining=30;for(const item of o.items||[]){const p=menu.find(x=>x.id===item.id);if(!p||remaining<=0)continue;const qty=Math.min(10,remaining,Math.max(1,Number(item.qty)||1));cart.push({id:item.id,qty,extra_shot:!!item.extra_shot&&canExtra(item.id),boba:!!item.boba&&!!p.boba});remaining-=qty}updateCart();showPage('menu');setTimeout(()=>$('cartSection').scrollIntoView({behavior:'smooth',block:'center'}),120)}
+async function loadProfile(){const initData=tg?.initData||'';if(!initData){customerProfile=null;renderProfile();return}try{const r=await fetch('/api/profile',{method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',body:JSON.stringify({initData})});const data=await r.json();if(!r.ok)throw Error(data.error||'Could not load profile');customerProfile=data;renderProfile()}catch(e){$('profileContent').innerHTML=`<div class="empty-state">${escapeHtml(e.message)}</div>`}}
+function renderProfile(){const box=$('profileContent');if(!customerProfile){const name=tg?.initDataUnsafe?.user?.first_name;box.innerHTML=`<div class="profile-card"><div class="avatar">${escapeHtml((name||'T')[0].toUpperCase())}</div><div class="profile-name">${escapeHtml(name||'TAKE AWAY')}</div><div class="member">${TEXT[language].member}</div><div class="empty-copy" style="margin-top:14px">${TEXT[language].demoRequired}</div></div>`;return}const p=customerProfile,name=p.name||'TAKE AWAY Member',initial=(p.first_name||name||'T').charAt(0).toUpperCase(),favorite=p.favorite?.id?productText(p.favorite.id)[0]:TEXT[language].noFavorite;box.innerHTML=`<div class="profile-card"><div class="avatar">${escapeHtml(initial)}</div><div class="profile-name">${escapeHtml(name)}</div>${p.username?`<div class="profile-user">@${escapeHtml(p.username)}</div>`:''}<div class="member">${TEXT[language].member}</div></div><div class="stats"><div class="stat"><div class="stat-number">${escapeHtml(p.orders||0)}</div><div class="stat-label">${TEXT[language].totalOrders}</div></div><div class="stat"><div class="stat-number">${escapeHtml(p.drinks||0)}</div><div class="stat-label">${TEXT[language].drinks}</div></div></div><div class="profile-info"><div class="profile-row"><span>${TEXT[language].favorite}</span><strong>${escapeHtml(favorite)}</strong></div><div class="profile-row"><span>${TEXT[language].memberSince}</span><strong>${escapeHtml(p.first_order||'—')}</strong></div></div>`}
+function renderRewards(){/* No fabricated points: rewards API does not yet exist. */$('stamps').innerHTML=Array.from({length:10},()=>'<div class="stamp">✦</div>').join('');$('rewardsCount').textContent='0 / 9'}
+document.addEventListener('DOMContentLoaded',async()=>{restoreCart();let saved='en';try{saved=localStorage.getItem('takeaway_language')||'en'}catch(e){}changeLanguage(TEXT[saved]?saved:'en');updatePickupInfo();await loadMenu();loadOrders();loadProfile();});
+
+/* Pickup checkout — real orders, no online charge */
+const PICKUP_COPY={
+ en:{title:'Choose payment',copy:'Order now and pay when you collect your drinks.',note:'Pay at the café by card or cash. Your order will be sent to our barista.',online:'Online payments are coming soon. Please choose Pay at pickup.',submit:'PLACE ORDER · PAY AT CAFÉ',busy:'SENDING ORDER…',success:'Order received! Pay at the café when you collect your drinks.',error:'Could not send the order. Please try again.',telegram:'Please open TAKE AWAY inside Telegram to order.'},
+ sr:{title:'Način plaćanja',copy:'Poručite sada i platite pri preuzimanju.',note:'Platite karticom ili gotovinom u lokalu. Porudžbina stiže baristi.',online:'Online plaćanje uskoro. Izaberite plaćanje pri preuzimanju.',submit:'PORUČI · PLATI U LOKALU',busy:'ŠALJEMO…',success:'Porudžbina je primljena! Platite pri preuzimanju.',error:'Slanje nije uspelo. Pokušajte ponovo.',telegram:'Otvorite TAKE AWAY u Telegramu da poručite.'},
+ ru:{title:'Способ оплаты',copy:'Закажите сейчас и оплатите при получении.',note:'Оплатите картой или наличными в кофейне. Заказ поступит бариста.',online:'Онлайн-оплата скоро появится. Выберите оплату при получении.',submit:'ЗАКАЗАТЬ · ОПЛАТА В КАФЕ',busy:'ОТПРАВЛЯЕМ…',success:'Заказ принят! Оплатите в кофейне при получении.',error:'Не удалось отправить заказ. Попробуйте снова.',telegram:'Откройте TAKE AWAY внутри Telegram для оформления заказа.'}
+};
+let sendingPickupOrder=false;
+function updatePickupCheckoutUI(){
+ const t=PICKUP_COPY[language];
+ $('paymentModalTitle').textContent=t.title;
+ $('paymentModalCopy').textContent=t.copy;
+ $('paymentMethods').classList.toggle('is-hidden',paymentMethod!=='online');
+ $('paymentPendingText').textContent=paymentMethod==='pickup'?t.note:t.online;
+ $('paymentSubmitButton').textContent=sendingPickupOrder?t.busy:t.submit;
+ $('paymentSubmitButton').disabled=sendingPickupOrder||paymentMethod!=='pickup';
+ $('paymentDemoPill').textContent=paymentMethod==='pickup'?'PAY AT PICKUP · NO ONLINE CHARGE':'ONLINE PAYMENTS COMING SOON';
+}
+const oldChangeLanguage=changeLanguage;
+changeLanguage=function(lang){oldChangeLanguage(lang);updatePickupCheckoutUI()};
+selectPayment=function(method){
+ paymentMethod=method;
+ $('pay-online').classList.toggle('active',method==='online');
+ $('pay-pickup').classList.toggle('active',method==='pickup');
+ updatePickupCheckoutUI();haptic();
+};
+openPaymentModal=function(){
+ if(!cart.length)return;
+ $('paymentModalTotal').textContent=cartTotal()+' RSD';
+ selectPayment('pickup');
+ $('paymentModalBg').classList.add('open');haptic();
+};
+async function submitPickupOrder(){
+ if(sendingPickupOrder||paymentMethod!=='pickup'||!cart.length)return;
+ const initData=tg?.initData||'';
+ if(!initData){$('paymentPendingText').textContent=PICKUP_COPY[language].telegram;return}
+ const pickup=pickupISO();
+ if(!pickup){$('paymentPendingText').textContent=TEXT[language].choosePickup;return}
+ sendingPickupOrder=true;updatePickupCheckoutUI();
+ try{
+  const response=await fetch('/api/order',{
+   method:'POST',headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({initData,items:cart.map(({id,qty,extra_shot,boba})=>({id,qty,extra_shot,boba})),pickup,payment_method:'pickup'})
+  });
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok||!data.success)throw Error(data.error||PICKUP_COPY[language].error);
+  cart=[];updateCart();closePaymentModal();
+  showMessage('#'+data.order_id+' · '+PICKUP_COPY[language].success,'success');
+  await loadOrders();
+  showPage('orders');
+  haptic();
+ }catch(error){$('paymentPendingText').textContent=error.message||PICKUP_COPY[language].error}
+ finally{sendingPickupOrder=false;updatePickupCheckoutUI()}
+}
+</script>
+</body>
+</html>
