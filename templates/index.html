@@ -68,9 +68,7 @@ select:focus-visible{
   margin:auto;
 }
 
-/* =========================
-   HEADER
-========================= */
+/* HEADER */
 
 .header{
   padding:9px 17px 6px;
@@ -114,7 +112,6 @@ select:focus-visible{
   background:transparent;
   font-size:11px;
   font-weight:800;
-  transition:background .22s,color .22s,transform .22s;
 }
 
 .lang.active{
@@ -165,19 +162,14 @@ select:focus-visible{
   letter-spacing:2px;
 }
 
-/* =========================
-   BELGRADE HERO
-========================= */
+/* HERO */
 
 .hero{
   position:relative;
   height:190px;
   margin:-2px 0 8px;
-  border:0;
-  border-radius:0;
   overflow:hidden;
   background:#063d27;
-  box-shadow:none;
   isolation:isolate;
 }
 
@@ -191,24 +183,8 @@ select:focus-visible{
   object-position:left center;
   opacity:.96;
   filter:saturate(.92) contrast(.96) brightness(.88);
-
-  -webkit-mask-image:
-    linear-gradient(
-      to bottom,
-      transparent 0%,
-      #000 15%,
-      #000 78%,
-      transparent 100%
-    );
-
-  mask-image:
-    linear-gradient(
-      to bottom,
-      transparent 0%,
-      #000 15%,
-      #000 78%,
-      transparent 100%
-    );
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 15%,#000 78%,transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 0%,#000 15%,#000 78%,transparent 100%);
 }
 
 .hero::before{
@@ -217,25 +193,9 @@ select:focus-visible{
   inset:0;
   z-index:1;
   pointer-events:none;
-
   background:
-    linear-gradient(
-      90deg,
-      #063d27 0%,
-      rgba(6,61,39,.38) 7%,
-      transparent 19%,
-      transparent 81%,
-      rgba(6,61,39,.34) 93%,
-      #063d27 100%
-    ),
-    linear-gradient(
-      180deg,
-      #063d27 0%,
-      rgba(6,61,39,.28) 14%,
-      rgba(4,57,35,.04) 38%,
-      rgba(3,44,27,.10) 66%,
-      #032c1b 100%
-    );
+    linear-gradient(90deg,#063d27 0%,rgba(6,61,39,.38) 7%,transparent 19%,transparent 81%,rgba(6,61,39,.34) 93%,#063d27 100%),
+    linear-gradient(180deg,#063d27 0%,rgba(6,61,39,.28) 14%,rgba(4,57,35,.04) 38%,rgba(3,44,27,.10) 66%,#032c1b 100%);
 }
 
 .hero::after{
@@ -244,18 +204,7 @@ select:focus-visible{
   inset:0;
   z-index:2;
   pointer-events:none;
-
-  background:
-    radial-gradient(
-      ellipse at 50% 52%,
-      transparent 34%,
-      rgba(3,44,27,.08) 67%,
-      rgba(3,44,27,.34) 100%
-    );
-}
-
-.hero-location{
-  display:none!important;
+  background:radial-gradient(ellipse at 50% 52%,transparent 34%,rgba(3,44,27,.08) 67%,rgba(3,44,27,.34) 100%);
 }
 
 .hero-label{
@@ -271,9 +220,7 @@ select:focus-visible{
   text-shadow:0 2px 14px rgba(0,24,15,.9);
 }
 
-/* =========================
-   PAGES / TABS
-========================= */
+/* PAGES */
 
 .page{
   display:none;
@@ -302,22 +249,8 @@ select:focus-visible{
   gap:4px;
   padding:4px;
   border-radius:16px;
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(32,86,66,.75),
-      rgba(2,34,23,.78)
-    );
-
+  background:linear-gradient(145deg,rgba(32,86,66,.75),rgba(2,34,23,.78));
   border:1px solid rgba(255,255,255,.24);
-
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.23),
-    0 16px 36px rgba(0,0,0,.24);
-
-  -webkit-backdrop-filter:blur(25px) saturate(165%);
-  backdrop-filter:blur(25px) saturate(165%);
 }
 
 .tab-indicator{
@@ -327,18 +260,7 @@ select:focus-visible{
   left:4px;
   width:calc((100% - 16px)/3);
   border-radius:12px;
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255,255,255,.98),
-      rgba(232,244,235,.87)
-    );
-
-  box-shadow:
-    0 4px 16px rgba(0,0,0,.18),
-    inset 0 1px 0 #fff;
-
+  background:linear-gradient(145deg,rgba(255,255,255,.98),rgba(232,244,235,.87));
   transition:transform .28s var(--ease);
   pointer-events:none;
 }
@@ -351,16 +273,13 @@ select:focus-visible{
   color:#fffa;
   font-size:12px;
   font-weight:750;
-  transition:color .22s;
 }
 
 .tab.active{
   color:var(--green);
 }
 
-/* =========================
-   MENU
-========================= */
+/* MENU */
 
 .section{
   padding:18px 13px 8px;
@@ -397,48 +316,14 @@ select:focus-visible{
 
 .product{
   position:relative;
-  overflow:hidden;
   min-width:0;
   min-height:261px;
   padding:13px 11px;
-
   border:1px solid rgba(255,255,255,.2);
   border-radius:22px;
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255,255,255,.16),
-      rgba(255,255,255,.045) 65%
-    );
-
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.18),
-    0 12px 30px rgba(0,0,0,.14);
-
-  -webkit-backdrop-filter:blur(12px);
-  backdrop-filter:blur(12px);
-
-  animation:rise .35s var(--ease) both;
-  transition:transform .2s,background .2s;
-}
-
-.product::before{
-  content:"";
-  position:absolute;
-  inset:0 0 auto;
-  height:35%;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255,255,255,.075),
-      transparent
-    );
-  pointer-events:none;
-}
-
-.product:active{
-  transform:scale(.985);
+  background:linear-gradient(145deg,rgba(255,255,255,.16),rgba(255,255,255,.045) 65%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 12px 30px rgba(0,0,0,.14);
+  overflow:hidden;
 }
 
 .product-name{
@@ -473,9 +358,7 @@ select:focus-visible{
   font-weight:800;
 }
 
-/* =========================
-   DRINK VISUALS
-========================= */
+/* DRINK */
 
 .drink{
   height:108px;
@@ -489,28 +372,10 @@ select:focus-visible{
   position:relative;
   width:72px;
   height:88px;
-
   border:2px solid rgba(255,255,255,.85);
   border-radius:8px 8px 20px 20px;
-
-  background:
-    linear-gradient(
-      110deg,
-      rgba(255,255,255,.22),
-      rgba(255,255,255,.03) 40%,
-      rgba(255,255,255,.19) 85%
-    );
-
-  box-shadow:
-    inset 5px 0 8px rgba(255,255,255,.13),
-    inset -5px 0 8px rgba(0,0,0,.1),
-    0 12px 18px rgba(0,0,0,.24);
-
-  transition:transform .25s var(--ease);
-}
-
-.product:active .cup{
-  transform:translateY(-5px) rotate(-3deg);
+  background:linear-gradient(110deg,rgba(255,255,255,.22),rgba(255,255,255,.03) 40%,rgba(255,255,255,.19) 85%);
+  box-shadow:inset 5px 0 8px rgba(255,255,255,.13),inset -5px 0 8px rgba(0,0,0,.1),0 12px 18px rgba(0,0,0,.24);
 }
 
 .cup::before{
@@ -523,25 +388,6 @@ select:focus-visible{
   height:8px;
   border-radius:5px;
   background:#ffffffb8;
-}
-
-.cup::after{
-  content:"";
-  position:absolute;
-  z-index:8;
-  top:12px;
-  left:7px;
-  width:8px;
-  height:55%;
-  border-radius:100%;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255,255,255,.6),
-      rgba(255,255,255,0)
-    );
-  filter:blur(2px);
-  pointer-events:none;
 }
 
 .liquid{
@@ -559,89 +405,31 @@ select:focus-visible{
   width:54px;
   height:58px;
   margin-bottom:4px;
-  border-radius:7px 7px 16px 16px;
 }
 
 .cup.espresso .liquid{
   height:36px;
-  background:
-    linear-gradient(
-      #c17a3f 0 10%,
-      #8d4a25 10% 20%,
-      #542714 20% 35%,
-      #25120b 35%
-    );
-}
-
-.cup.americano{
-  width:67px;
-  height:83px;
+  background:linear-gradient(#c17a3f 0 10%,#8d4a25 10% 20%,#542714 20% 35%,#25120b 35%);
 }
 
 .cup.americano .liquid{
-  height:67px;
-  background:
-    linear-gradient(
-      #9a6139 0 7%,
-      #70401f 7% 17%,
-      #3a2113 17% 42%,
-      #1c100a 42%
-    );
-}
-
-.cup.cappuccino{
-  width:68px;
-  height:75px;
+  background:linear-gradient(#9a6139 0 7%,#70401f 7% 17%,#3a2113 17% 42%,#1c100a 42%);
 }
 
 .cup.cappuccino .liquid{
-  height:60px;
-  background:
-    linear-gradient(
-      #fff8ea 0 25%,
-      #f4e8d3 25% 34%,
-      #d7b58f 34% 48%,
-      #a8673f 48% 66%,
-      #5a2c19 66%
-    );
+  background:linear-gradient(#fff8ea 0 25%,#f4e8d3 25% 34%,#d7b58f 34% 48%,#a8673f 48% 66%,#5a2c19 66%);
 }
 
 .cup.latte .liquid{
-  background:
-    linear-gradient(
-      #fff6e8 0 12%,
-      #f1e0c5 12% 43%,
-      #d5ae84 43% 62%,
-      #aa6940 62% 79%,
-      #64331d 79%
-    );
-}
-
-.cup.flatwhite{
-  width:68px;
-  height:70px;
+  background:linear-gradient(#fff6e8 0 12%,#f1e0c5 12% 43%,#d5ae84 43% 62%,#aa6940 62% 79%,#64331d 79%);
 }
 
 .cup.flatwhite .liquid{
-  height:55px;
-  background:
-    linear-gradient(
-      #f1dfc5 0 8%,
-      #c89a70 8% 22%,
-      #8a4b2c 22% 42%,
-      #552817 42% 68%,
-      #26120b 68%
-    );
+  background:linear-gradient(#f1dfc5 0 8%,#c89a70 8% 22%,#8a4b2c 22% 42%,#552817 42%);
 }
 
 .cup.icedlatte .liquid{
-  background:
-    linear-gradient(
-      #eee0c5 0 22%,
-      #d4ae80 22% 47%,
-      #a3633c 47% 68%,
-      #71371f 68%
-    );
+  background:linear-gradient(#eee0c5 0 22%,#d4ae80 22% 47%,#a3633c 47% 68%,#71371f 68%);
 }
 
 .cup.greentea .liquid{
@@ -679,7 +467,6 @@ select:focus-visible{
   left:14px;
   color:#ffffffb8;
   font-size:21px;
-  letter-spacing:-5px;
 }
 
 .lime{
@@ -694,9 +481,7 @@ select:focus-visible{
   background:#a4cb38;
 }
 
-/* =========================
-   CART
-========================= */
+/* CART */
 
 .cart-section{
   margin:14px 13px;
@@ -705,7 +490,6 @@ select:focus-visible{
 
 .cart-section.show{
   display:block;
-  animation:rise .25s var(--ease);
 }
 
 .cart-title{
@@ -727,7 +511,6 @@ select:focus-visible{
 
 .cart-item-info{
   flex:1;
-  min-width:0;
 }
 
 .cart-extra{
@@ -770,9 +553,7 @@ select:focus-visible{
   font-weight:800;
 }
 
-/* =========================
-   PICKUP
-========================= */
+/* PICKUP */
 
 .pickup,
 .payment-note,
@@ -780,20 +561,8 @@ select:focus-visible{
 .rewards-card,
 .order-card{
   border:1px solid rgba(255,255,255,.2);
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255,255,255,.16),
-      rgba(255,255,255,.045) 65%
-    );
-
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.18),
-    0 12px 30px rgba(0,0,0,.14);
-
-  -webkit-backdrop-filter:blur(12px);
-  backdrop-filter:blur(12px);
+  background:linear-gradient(145deg,rgba(255,255,255,.16),rgba(255,255,255,.045) 65%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 12px 30px rgba(0,0,0,.14);
 }
 
 .pickup,
@@ -829,7 +598,6 @@ select:focus-visible{
   color:white;
   font-size:12px;
   font-weight:700;
-  transition:background .22s,color .22s,transform .22s;
 }
 
 .pickup-mode{
@@ -858,7 +626,6 @@ select:focus-visible{
 
 .exact-box.show{
   display:block;
-  animation:rise .2s var(--ease);
 }
 
 .exact-select{
@@ -896,9 +663,7 @@ select:focus-visible{
   line-height:1.5;
 }
 
-/* =========================
-   MESSAGES
-========================= */
+/* MESSAGES */
 
 .message{
   display:none;
@@ -906,7 +671,6 @@ select:focus-visible{
   padding:13px;
   border-radius:14px;
   font-size:12px;
-  line-height:1.5;
 }
 
 .message.error{
@@ -921,9 +685,7 @@ select:focus-visible{
   color:#244c2b;
 }
 
-/* =========================
-   ORDERS / PROFILE / REWARDS
-========================= */
+/* APP PAGES */
 
 .app-page{
   padding:15px 13px 20px;
@@ -1026,6 +788,8 @@ select:focus-visible{
   font-weight:800;
 }
 
+/* PROFILE */
+
 .profile-card{
   text-align:center;
   padding:24px 18px;
@@ -1109,14 +873,6 @@ select:focus-visible{
   border:0;
 }
 
-.profile-row span:first-child{
-  color:var(--muted);
-}
-
-.profile-row strong{
-  text-align:right;
-}
-
 .empty-state{
   padding:40px 20px;
   text-align:center;
@@ -1133,11 +889,7 @@ select:focus-visible{
   font:20px Georgia,serif;
 }
 
-.empty-copy{
-  margin-top:7px;
-  font-size:11px;
-  line-height:1.5;
-}
+/* REWARDS */
 
 .rewards-card{
   text-align:center;
@@ -1185,6 +937,7 @@ select:focus-visible{
 }
 
 .rewards-note{
+  margin-top:15px;
   padding:15px;
   border-radius:15px;
   background:#0002;
@@ -1193,9 +946,17 @@ select:focus-visible{
   line-height:1.6;
 }
 
-/* =========================
-   ORDER BAR
-========================= */
+.reward-ready{
+  margin:16px 0;
+  padding:16px;
+  border:1px solid #d6b36a88;
+  border-radius:16px;
+  background:#d6b36a18;
+  color:var(--gold);
+  font-weight:800;
+}
+
+/* ORDER BAR */
 
 .order-bar{
   position:fixed;
@@ -1205,32 +966,16 @@ select:focus-visible{
   bottom:calc(79px + env(safe-area-inset-bottom));
   max-width:580px;
   margin:auto;
-
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:10px;
-
   padding:10px 10px 10px 15px;
-
   border:1px solid rgba(255,255,255,.24);
   border-radius:19px;
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(32,86,66,.75),
-      rgba(2,34,23,.92)
-    );
-
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.23),
-    0 16px 36px rgba(0,0,0,.35);
-
-  -webkit-backdrop-filter:blur(25px) saturate(165%);
-  backdrop-filter:blur(25px) saturate(165%);
-
-  transition:transform .3s var(--ease),opacity .3s var(--ease);
+  background:linear-gradient(145deg,rgba(32,86,66,.75),rgba(2,34,23,.92));
+  -webkit-backdrop-filter:blur(25px);
+  backdrop-filter:blur(25px);
 }
 
 .order-bar.hidden{
@@ -1260,9 +1005,7 @@ select:focus-visible{
   font-weight:850;
 }
 
-/* =========================
-   BOTTOM NAV
-========================= */
+/* NAV */
 
 .bottom-nav{
   position:fixed;
@@ -1273,27 +1016,11 @@ select:focus-visible{
   max-width:580px;
   margin:auto;
   height:61px;
-
   display:grid;
   grid-template-columns:repeat(4,1fr);
-
   border:1px solid rgba(255,255,255,.24);
   border-radius:22px;
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(32,86,66,.75),
-      rgba(2,34,23,.92)
-    );
-
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.23),
-    0 16px 36px rgba(0,0,0,.35);
-
-  -webkit-backdrop-filter:blur(25px) saturate(165%);
-  backdrop-filter:blur(25px) saturate(165%);
-
+  background:linear-gradient(145deg,rgba(32,86,66,.75),rgba(2,34,23,.92));
   overflow:hidden;
 }
 
@@ -1304,12 +1031,10 @@ select:focus-visible{
   width:25%;
   height:3px;
   background:var(--gold);
-  border-radius:0 0 6px 6px;
   transition:transform .3s var(--ease);
 }
 
 .nav-button{
-  position:relative;
   background:transparent;
   color:#ffffff80;
   display:flex;
@@ -1319,13 +1044,10 @@ select:focus-visible{
   gap:4px;
   font-size:10px;
   font-weight:700;
-  transition:color .23s;
 }
 
 .nav-icon{
   font-size:19px;
-  line-height:1;
-  transition:transform .25s var(--ease);
 }
 
 .nav-button.active{
@@ -1334,31 +1056,21 @@ select:focus-visible{
 
 .nav-button.active .nav-icon{
   color:var(--gold);
-  transform:translateY(-2px) scale(1.13);
 }
 
-/* =========================
-   MODALS
-========================= */
+/* MODAL */
 
 .modal-bg{
   position:fixed;
   inset:0;
   z-index:60;
-
   display:flex;
   align-items:flex-end;
-
   visibility:hidden;
   opacity:0;
   pointer-events:none;
-
   background:#0009;
-
-  -webkit-backdrop-filter:blur(4px);
-  backdrop-filter:blur(4px);
-
-  transition:opacity .25s,visibility .25s;
+  transition:.25s;
 }
 
 .modal-bg.open{
@@ -1371,37 +1083,12 @@ select:focus-visible{
   width:100%;
   max-width:600px;
   margin:0 auto;
-
   padding:22px 17px calc(28px + env(safe-area-inset-bottom));
-
   border-radius:26px 26px 0 0;
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(251,248,240,.97),
-      rgba(229,237,231,.97)
-    );
-
+  background:linear-gradient(145deg,rgba(251,248,240,.97),rgba(229,237,231,.97));
   color:#13291f;
-
   max-height:90dvh;
   overflow-y:auto;
-
-  transform:translateY(100%);
-
-  -webkit-backdrop-filter:blur(32px) saturate(155%);
-  backdrop-filter:blur(32px) saturate(155%);
-
-  box-shadow:
-    inset 0 1px 0 #fff,
-    0 -15px 55px rgba(0,0,0,.2);
-
-  transition:transform .32s var(--ease);
-}
-
-.modal-bg.open .modal{
-  transform:translateY(0);
 }
 
 .modal-handle{
@@ -1426,20 +1113,12 @@ select:focus-visible{
   width:100%;
   display:flex;
   justify-content:space-between;
-  align-items:center;
-  gap:8px;
-
   padding:15px;
   margin-bottom:8px;
-
   border:1px solid #ddd4c5;
   border-radius:13px;
-
   background:white;
   color:#183326;
-
-  text-align:left;
-  font-size:13px;
 }
 
 .addon.selected{
@@ -1447,20 +1126,11 @@ select:focus-visible{
   background:#e5eee8;
 }
 
-.addon.selected::before{
-  content:"✓";
-  color:var(--green);
-  font-weight:900;
-}
-
 .quantity-label{
   margin-top:19px;
   text-align:center;
   color:#6c746f;
   font-size:11px;
-  font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:1px;
 }
 
 .quantity-wrap{
@@ -1499,28 +1169,20 @@ select:focus-visible{
   font-weight:800;
 }
 
-/* =========================
-   PAYMENT
-========================= */
+/* PAYMENT */
 
 .payment-modal{
   text-align:center;
-  padding-top:20px;
-  padding-bottom:calc(35px + env(safe-area-inset-bottom));
 }
 
 .payment-lock{
   width:44px;
   height:44px;
-
   display:flex;
   align-items:center;
   justify-content:center;
-
   margin:0 auto 10px;
-
   border-radius:50%;
-
   background:#e4ece7;
   font-size:22px;
 }
@@ -1528,228 +1190,67 @@ select:focus-visible{
 .payment-modal-copy{
   max-width:350px;
   margin:10px auto;
-
   color:#66736c;
-
   font-size:12px;
-  line-height:1.55;
-}
-
-.payment-total-label{
-  margin-top:20px;
-  color:#7c837f;
-
-  font-size:10px;
-  text-transform:uppercase;
-  letter-spacing:1.5px;
 }
 
 .payment-total{
-  margin-top:4px;
-
+  margin:8px 0 20px;
   color:var(--green);
-
   font:700 36px Georgia,serif;
-  letter-spacing:-1px;
 }
 
 .payment-choice{
   display:grid;
   grid-template-columns:1fr 1fr;
-
   gap:10px;
   margin:20px 0 13px;
 }
 
 .payment-choice button{
   min-height:58px;
-
-  padding:12px 6px;
-
   border:1px solid #cdd8d0;
   border-radius:15px;
-
   background:white;
   color:var(--green);
-
-  font-size:13px;
   font-weight:800;
 }
 
 .payment-choice button.active{
   background:var(--green);
   color:white;
-
-  box-shadow:
-    0 7px 19px rgba(3,44,27,.19);
-}
-
-/* SMALL WHITE PAYMENT CARDS + LARGE LOGOS */
-
-.payment-methods{
-  display:grid!important;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-
-  gap:6px;
-  margin:10px 0 12px;
-
-  transition:
-    opacity .22s var(--ease),
-    transform .22s var(--ease);
-}
-
-.payment-methods.is-hidden{
-  display:none!important;
-}
-
-.payment-method{
-  height:46px;
-  min-height:46px;
-  min-width:0;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  gap:2px;
-
-  padding:4px 2px;
-
-  border:1px solid #e5e8e3;
-  border-radius:10px;
-
-  background:#fff;
-
-  box-shadow:
-    0 3px 8px rgba(0,0,0,.045);
-
-  color:#18251f;
-  white-space:nowrap;
-}
-
-.payment-method.visa span{
-  font:bold italic 23px Arial,sans-serif;
-  letter-spacing:-1px;
-  color:#1434CB;
-}
-
-.payment-method.mastercard svg{
-  width:48px;
-  height:31px;
-}
-
-.payment-method.applepay{
-  font:bold 18px -apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
-  color:#111;
-  gap:1px;
-}
-
-.apple-symbol{
-  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
-  font-size:25px;
-  line-height:1;
-  letter-spacing:0;
-  margin-right:1px;
-}
-
-.payment-method.googlepay{
-  font:700 13px Arial,sans-serif;
-  letter-spacing:-.6px;
-}
-
-.g-blue{color:#4285F4}
-.g-red{color:#EA4335}
-.g-yellow{color:#FBBC05}
-.g-green{color:#34A853}
-
-.pay-text{
-  color:#333;
-  letter-spacing:0;
 }
 
 .payment-pending{
   margin-top:18px;
   padding:14px;
-
   border-radius:13px;
-
   background:#eee7d7;
   color:#675629;
-
   font-size:12px;
-  line-height:1.55;
 }
 
 .demo-pill{
   display:inline-block;
-
   margin-top:13px;
   padding:6px 12px;
-
   border-radius:20px;
-
   background:#eee7d7;
   color:#675629;
-
   font-size:10px;
   font-weight:800;
-  letter-spacing:1px;
 }
 
-#paymentSubmitButton{
-  min-height:54px;
-
-  font-size:14px;
-
-  background:
-    linear-gradient(
-      140deg,
-      #063d27,
-      #032c1b
-    );
-}
-
-#paymentSubmitButton:disabled{
-  background:#c6d0c9;
-  color:#66746b;
-  opacity:.85;
-  cursor:not-allowed;
-}
-
-/* =========================
-   ANIMATION
-========================= */
-
-@keyframes rise{
-  from{
-    opacity:0;
-    transform:translateY(12px);
-  }
-
-  to{
-    opacity:1;
-    transform:translateY(0);
-  }
+.payment-methods{
+  display:none!important;
 }
 
 @keyframes pageIn{
-  from{
-    opacity:.45;
-    transform:translateY(7px);
-  }
-
-  to{
-    opacity:1;
-    transform:translateY(0);
-  }
+  from{opacity:.4;transform:translateY(7px)}
+  to{opacity:1;transform:none}
 }
 
-/* =========================
-   MOBILE
-========================= */
-
 @media(max-width:390px){
-
   .cart-item{
     align-items:flex-start;
     flex-direction:column;
@@ -1763,52 +1264,6 @@ select:focus-visible{
   .hero{
     height:174px;
   }
-
-  .hero img{
-    object-position:left center;
-  }
-
-  .logo{
-    font-size:23px;
-  }
-
-  .section-title{
-    font-size:21px;
-  }
-
-  .payment-method.visa span{
-    font-size:19px;
-  }
-
-  .payment-method.googlepay{
-    font-size:10px;
-  }
-}
-
-@media(max-width:350px){
-
-  .payment-method.googlepay{
-    font-size:11px;
-  }
-
-  .payment-method.applepay{
-    font-size:15px;
-  }
-
-  .apple-symbol{
-    font-size:21px;
-  }
-}
-
-@media(prefers-reduced-motion:reduce){
-
-  *,
-  *::before,
-  *::after{
-    animation:none!important;
-    transition:none!important;
-    scroll-behavior:auto!important;
-  }
 }
 </style>
 </head>
@@ -1819,746 +1274,315 @@ select:focus-visible{
 
 <header class="header">
 
-  <div class="topline">
+<div class="topline">
 
-    <div class="greeting">
-      <span id="greetingText">Good afternoon</span>
-      <strong id="greetingName">Welcome to TAKE AWAY</strong>
-    </div>
+<div class="greeting">
+<span id="greetingText">Good afternoon</span>
+<strong id="greetingName">Welcome to TAKE AWAY</strong>
+</div>
 
-    <div class="languages">
+<div class="languages">
+<button class="lang active" id="lang-en" onclick="changeLanguage('en')">🇬🇧 EN</button>
+<button class="lang" id="lang-sr" onclick="changeLanguage('sr')">🇷🇸 RS</button>
+<button class="lang" id="lang-ru" onclick="changeLanguage('ru')">🇷🇺 RU</button>
+</div>
 
-      <button
-        class="lang active"
-        id="lang-en"
-        onclick="changeLanguage('en')"
-      >
-        🇬🇧 EN
-      </button>
+</div>
 
-      <button
-        class="lang"
-        id="lang-sr"
-        onclick="changeLanguage('sr')"
-      >
-        🇷🇸 RS
-      </button>
+<div class="brand">
 
-      <button
-        class="lang"
-        id="lang-ru"
-        onclick="changeLanguage('ru')"
-      >
-        🇷🇺 RU
-      </button>
+<div class="walking-logo">
+<img src="/static/logo.png" alt="TAKE AWAY">
+</div>
 
-    </div>
+<div class="logo">TAKE AWAY</div>
+<div class="subtitle">THAI TEA &amp; COFFEE</div>
+<div class="brand-line"></div>
+<div class="tagline">SAME GOOD ENERGY DAILY</div>
 
-  </div>
-
-  <div class="brand">
-
-    <div class="walking-logo">
-      <img src="/static/logo.png" alt="TAKE AWAY">
-    </div>
-
-    <div class="logo">
-      TAKE AWAY
-    </div>
-
-    <div class="subtitle">
-      THAI TEA &amp; COFFEE
-    </div>
-
-    <div class="brand-line"></div>
-
-    <div class="tagline">
-      SAME GOOD ENERGY DAILY
-    </div>
-
-  </div>
+</div>
 
 </header>
 
 <div class="hero">
-
-  <img
-    src="/static/belgrade.png"
-    alt="Illustrated Belgrade skyline"
-    onerror="this.style.opacity='0'"
-  >
-
-  <div class="hero-label">
-    MADE IN BELGRADE
-  </div>
-
+<img src="/static/belgrade.png" alt="Belgrade">
+<div class="hero-label">MADE IN BELGRADE</div>
 </div>
 
 <main>
 
-<!-- =========================
-     MENU
-========================= -->
-
 <div id="menuPage" class="page active">
 
-  <div class="tabs-wrap">
+<div class="tabs-wrap">
+<div class="tabs">
 
-    <div class="tabs">
+<div id="tabIndicator" class="tab-indicator"></div>
 
-      <div
-        id="tabIndicator"
-        class="tab-indicator"
-      ></div>
+<button id="tab-tea" class="tab active" onclick="showCategory('tea')">Thai Tea</button>
+<button id="tab-coffee" class="tab" onclick="showCategory('coffee')">Coffee</button>
+<button id="tab-special" class="tab" onclick="showCategory('special')">Specials</button>
 
-      <button
-        id="tab-tea"
-        class="tab active"
-        onclick="showCategory('tea')"
-      >
-        Thai Tea
-      </button>
+</div>
+</div>
 
-      <button
-        id="tab-coffee"
-        class="tab"
-        onclick="showCategory('coffee')"
-      >
-        Coffee
-      </button>
+<div id="menu"></div>
 
-      <button
-        id="tab-special"
-        class="tab"
-        onclick="showCategory('special')"
-      >
-        Specials
-      </button>
+<div id="cartSection" class="cart-section">
+<div id="cartTitle" class="cart-title">Your order</div>
+<div id="cartItems"></div>
+</div>
 
-    </div>
+<section class="pickup">
 
-  </div>
+<h2 id="pickupTitle">Pickup time</h2>
 
-  <div id="menu"></div>
+<div id="pickupSubtitle" class="pickup-subtitle">
+When should we prepare your order?
+</div>
 
-  <div
-    id="cartSection"
-    class="cart-section"
-  >
+<div class="pickup-modes">
 
-    <div
-      id="cartTitle"
-      class="cart-title"
-    >
-      Your order
-    </div>
+<button id="asapMode" class="pickup-mode active" onclick="setPickupMode('asap')">
+ASAP
+</button>
 
-    <div id="cartItems"></div>
-
-  </div>
-
-  <section class="pickup">
-
-    <h2 id="pickupTitle">
-      Pickup time
-    </h2>
-
-    <div
-      id="pickupSubtitle"
-      class="pickup-subtitle"
-    >
-      When should we prepare your order?
-    </div>
-
-    <div class="pickup-modes">
-
-      <button
-        id="asapMode"
-        class="pickup-mode active"
-        onclick="setPickupMode('asap')"
-      >
-        ASAP
-      </button>
-
-      <button
-        id="exactMode"
-        class="pickup-mode"
-        onclick="setPickupMode('exact')"
-      >
-        Choose time
-      </button>
-
-    </div>
-
-    <div
-      id="asapTimes"
-      class="times"
-    >
-
-      <button
-        class="time selected"
-        onclick="chooseTime(this,10)"
-      >
-        10 min
-      </button>
-
-      <button
-        class="time"
-        onclick="chooseTime(this,15)"
-      >
-        15 min
-      </button>
-
-      <button
-        class="time"
-        onclick="chooseTime(this,20)"
-      >
-        20 min
-      </button>
-
-      <button
-        class="time"
-        onclick="chooseTime(this,30)"
-      >
-        30 min
-      </button>
-
-    </div>
-
-    <div
-      id="exactBox"
-      class="exact-box"
-    >
-
-      <select
-        id="exactTime"
-        class="exact-select"
-        onchange="chooseExactTime()"
-      ></select>
-
-    </div>
-
-    <div
-      id="pickupInfo"
-      class="pickup-info"
-    ></div>
-
-  </section>
-
-  <div class="payment-note">
-
-    <div
-      class="payment-note-title"
-      id="paymentNoteTitle"
-    >
-      ☕ Pay at pickup
-    </div>
-
-    <div
-      class="payment-note-text"
-      id="paymentNoteText"
-    >
-      Order now and pay by card or cash when you collect your drinks.
-    </div>
-
-  </div>
-
-  <div
-    id="message"
-    class="message"
-  ></div>
+<button id="exactMode" class="pickup-mode" onclick="setPickupMode('exact')">
+Choose time
+</button>
 
 </div>
 
-<!-- =========================
-     ORDERS
-========================= -->
+<div id="asapTimes" class="times">
+
+<button class="time selected" onclick="chooseTime(this,10)">10 min</button>
+<button class="time" onclick="chooseTime(this,15)">15 min</button>
+<button class="time" onclick="chooseTime(this,20)">20 min</button>
+<button class="time" onclick="chooseTime(this,30)">30 min</button>
+
+</div>
+
+<div id="exactBox" class="exact-box">
+<select id="exactTime" class="exact-select" onchange="chooseExactTime()"></select>
+</div>
+
+<div id="pickupInfo" class="pickup-info"></div>
+
+</section>
+
+<div class="payment-note">
+<div id="paymentNoteTitle" class="payment-note-title">☕ Pay at pickup</div>
+<div id="paymentNoteText" class="payment-note-text">
+Order now and pay by card or cash when you collect your drinks.
+</div>
+</div>
+
+<div id="message" class="message"></div>
+
+</div>
 
 <div id="ordersPage" class="page">
 
-  <div class="app-page">
+<div class="app-page">
 
-    <div class="page-heading">
-
-      <h1 id="ordersHeading">
-        My Orders
-      </h1>
-
-      <p id="ordersSub">
-        Your TAKE AWAY order history
-      </p>
-
-    </div>
-
-    <div id="ordersContent"></div>
-
-  </div>
-
+<div class="page-heading">
+<h1 id="ordersHeading">My Orders</h1>
+<p id="ordersSub">Your TAKE AWAY order history</p>
 </div>
 
-<!-- =========================
-     REWARDS
-========================= -->
+<div id="ordersContent"></div>
+
+</div>
+</div>
 
 <div id="rewardsPage" class="page">
 
-  <div class="app-page">
+<div class="app-page">
 
-    <div class="page-heading">
+<div class="page-heading">
+<h1 id="rewardsHeading">Rewards</h1>
+<p id="rewardsSub">A little thank you for every cup</p>
+</div>
 
-      <h1 id="rewardsHeading">
-        Rewards
-      </h1>
+<div class="rewards-card">
 
-      <p id="rewardsSub">
-        A little thank you for every cup
-      </p>
+<div class="rewards-symbol">✦</div>
 
-    </div>
+<h2 id="rewardsTitle">Your coffee journey</h2>
 
-    <div class="rewards-card">
+<p id="rewardsDescription">
+Buy 9 paid drinks and get your 10th free.
+</p>
 
-      <div class="rewards-symbol">
-        ✦
-      </div>
+<div id="rewardReady"></div>
 
-      <h2 id="rewardsTitle">
-        Your coffee journey
-      </h2>
+<div id="stamps" class="stamps"></div>
 
-      <p id="rewardsDescription">
-        Buy 9 paid drinks and get your 10th free.
-      </p>
+<div id="rewardsCount" style="font:20px Georgia,serif;color:var(--gold)">
+0 / 9
+</div>
 
-      <div
-        id="stamps"
-        class="stamps"
-      ></div>
-
-      <div
-        id="rewardsCount"
-        style="font:20px Georgia,serif;color:var(--gold)"
-      >
-        0 / 9
-      </div>
-
-      <div
-        class="rewards-note"
-        id="rewardsNote"
-      >
-        Coming soon. Stamps will only be awarded after payment is confirmed.
-      </div>
-
-    </div>
-
-  </div>
+<div id="rewardsNote" class="rewards-note">
+Rewards are added after payment is confirmed by our barista.
+</div>
 
 </div>
 
-<!-- =========================
-     PROFILE
-========================= -->
+</div>
+</div>
 
 <div id="profilePage" class="page">
 
-  <div class="app-page">
+<div class="app-page">
 
-    <div class="page-heading">
+<div class="page-heading">
+<h1 id="profileHeading">Profile</h1>
+<p id="profileSub">Your TAKE AWAY account</p>
+</div>
 
-      <h1 id="profileHeading">
-        Profile
-      </h1>
+<div id="profileContent"></div>
 
-      <p id="profileSub">
-        Your TAKE AWAY account
-      </p>
-
-    </div>
-
-    <div id="profileContent"></div>
-
-  </div>
-
+</div>
 </div>
 
 </main>
+</div>
+
+<div id="orderBar" class="order-bar hidden">
+
+<div>
+<small id="itemCount">0 items</small>
+<div id="total" class="total">0 RSD</div>
+</div>
+
+<button class="order-button" id="orderButton" onclick="placeOrder()">
+CONTINUE →
+</button>
 
 </div>
 
-<!-- =========================
-     ORDER BAR
-========================= -->
+<nav class="bottom-nav">
 
-<div
-  id="orderBar"
-  class="order-bar hidden"
->
+<div class="nav-indicator" id="navIndicator"></div>
 
-  <div>
+<button id="nav-menu" class="nav-button active" onclick="showPage('menu')">
+<span class="nav-icon">☕</span>
+<span id="navMenuText">Menu</span>
+</button>
 
-    <small id="itemCount">
-      0 items
-    </small>
+<button id="nav-orders" class="nav-button" onclick="showPage('orders')">
+<span class="nav-icon">▤</span>
+<span id="navOrdersText">Orders</span>
+</button>
 
-    <div
-      id="total"
-      class="total"
-    >
-      0 RSD
-    </div>
+<button id="nav-rewards" class="nav-button" onclick="showPage('rewards')">
+<span class="nav-icon">✦</span>
+<span id="navRewardsText">Rewards</span>
+</button>
 
-  </div>
-
-  <button
-    class="order-button"
-    id="orderButton"
-    onclick="placeOrder()"
-  >
-    CONTINUE →
-  </button>
-
-</div>
-
-<!-- =========================
-     BOTTOM NAVIGATION
-========================= -->
-
-<nav
-  class="bottom-nav"
-  aria-label="Main navigation"
->
-
-  <div
-    class="nav-indicator"
-    id="navIndicator"
-  ></div>
-
-  <button
-    id="nav-menu"
-    class="nav-button active"
-    onclick="showPage('menu')"
-  >
-    <span class="nav-icon">☕</span>
-    <span id="navMenuText">Menu</span>
-  </button>
-
-  <button
-    id="nav-orders"
-    class="nav-button"
-    onclick="showPage('orders')"
-  >
-    <span class="nav-icon">▤</span>
-    <span id="navOrdersText">Orders</span>
-  </button>
-
-  <button
-    id="nav-rewards"
-    class="nav-button"
-    onclick="showPage('rewards')"
-  >
-    <span class="nav-icon">✦</span>
-    <span id="navRewardsText">Rewards</span>
-  </button>
-
-  <button
-    id="nav-profile"
-    class="nav-button"
-    onclick="showPage('profile')"
-  >
-    <span class="nav-icon">♙</span>
-    <span id="navProfileText">Profile</span>
-  </button>
+<button id="nav-profile" class="nav-button" onclick="showPage('profile')">
+<span class="nav-icon">♙</span>
+<span id="navProfileText">Profile</span>
+</button>
 
 </nav>
 
-<!-- =========================
-     PRODUCT MODAL
-========================= -->
+<!-- PRODUCT MODAL -->
 
-<div
-  id="modalBg"
-  class="modal-bg"
-  onclick="closeModal(event)"
->
+<div id="modalBg" class="modal-bg" onclick="closeModal(event)">
 
-<div
-  class="modal"
-  role="dialog"
-  aria-modal="true"
->
+<div class="modal">
 
 <div class="modal-handle"></div>
 
 <h2 id="modalName"></h2>
+<div id="modalPrice" class="modal-price"></div>
 
-<div
-  id="modalPrice"
-  class="modal-price"
-></div>
-
-<button
-  id="extraOption"
-  class="addon"
-  onclick="toggleAddon('extra')"
->
-
-<strong id="extraText">
-Extra espresso shot
-</strong>
-
-<span>
-+150 RSD
-</span>
-
+<button id="extraOption" class="addon" onclick="toggleAddon('extra')">
+<strong id="extraText">Extra espresso shot</strong>
+<span>+150 RSD</span>
 </button>
 
-<button
-  id="bobaOption"
-  class="addon"
-  onclick="toggleAddon('boba')"
->
-
-<strong id="bobaText">
-Add boba
-</strong>
-
-<span>
-+100 RSD
-</span>
-
+<button id="bobaOption" class="addon" onclick="toggleAddon('boba')">
+<strong id="bobaText">Add boba</strong>
+<span>+100 RSD</span>
 </button>
 
-<div
-  class="quantity-label"
-  id="quantityLabel"
->
-Quantity
-</div>
+<div id="quantityLabel" class="quantity-label">Quantity</div>
 
 <div class="quantity-wrap">
 
-<button
-  class="qty-btn"
-  onclick="changeModalQuantity(-1)"
->
-−
-</button>
+<button class="qty-btn" onclick="changeModalQuantity(-1)">−</button>
 
-<span
-  class="qty-number"
-  id="modalQuantity"
->
-1
-</span>
+<span class="qty-number" id="modalQuantity">1</span>
 
-<button
-  class="qty-btn"
-  onclick="changeModalQuantity(1)"
->
-+
-</button>
+<button class="qty-btn" onclick="changeModalQuantity(1)">+</button>
 
 </div>
 
-<button
-  id="modalAdd"
-  class="modal-add"
-  onclick="confirmAdd()"
->
+<button id="modalAdd" class="modal-add" onclick="confirmAdd()">
 Add to order
 </button>
 
 </div>
-
 </div>
 
-<!-- =========================
-     PAYMENT MODAL
-========================= -->
+<!-- PAYMENT -->
 
-<div
-  id="paymentModalBg"
-  class="modal-bg"
-  onclick="closePaymentModal(event)"
->
+<div id="paymentModalBg" class="modal-bg" onclick="closePaymentModal(event)">
 
-<div
-  class="modal payment-modal"
-  role="dialog"
-  aria-modal="true"
->
+<div class="modal payment-modal">
 
 <div class="modal-handle"></div>
 
-<div class="payment-lock">
-☕
-</div>
+<div class="payment-lock">☕</div>
 
-<h2 id="paymentModalTitle">
-Choose payment
-</h2>
+<h2 id="paymentModalTitle">Choose payment</h2>
 
-<div
-  id="paymentModalCopy"
-  class="payment-modal-copy"
->
+<div id="paymentModalCopy" class="payment-modal-copy">
 Order now and pay when you collect your drinks.
 </div>
 
-<div
-  id="paymentTotalLabel"
-  class="payment-total-label"
->
-ORDER TOTAL
-</div>
-
-<div
-  id="paymentModalTotal"
-  class="payment-total"
->
-0 RSD
-</div>
+<div id="paymentModalTotal" class="payment-total">0 RSD</div>
 
 <div class="payment-choice">
 
-<button
-  id="pay-online"
-  onclick="selectPayment('online')"
->
+<button id="pay-online" onclick="selectPayment('online')">
 💳 Pay online
 </button>
 
-<button
-  id="pay-pickup"
-  class="active"
-  onclick="selectPayment('pickup')"
->
+<button id="pay-pickup" class="active" onclick="selectPayment('pickup')">
 ☕ Pay at pickup
 </button>
 
 </div>
 
-<!-- PAYMENT LOGOS -->
-
-<div
-  class="payment-methods is-hidden"
-  id="paymentMethods"
->
-
-<div
-  class="payment-method visa"
-  aria-label="Visa"
->
-<span>VISA</span>
-</div>
-
-<div
-  class="payment-method mastercard"
-  aria-label="Mastercard"
->
-
-<svg
-  viewBox="0 0 54 34"
-  width="48"
-  height="30"
-  aria-hidden="true"
->
-
-<circle
-  cx="20"
-  cy="17"
-  r="14"
-  fill="#EB001B"
-/>
-
-<circle
-  cx="34"
-  cy="17"
-  r="14"
-  fill="#F79E1B"
-  fill-opacity=".95"
-/>
-
-</svg>
-
-</div>
-
-<div
-  class="payment-method applepay"
-  aria-label="Apple Pay"
->
-
-<span class="apple-symbol">
-
-</span>
-
-<span>
-Pay
-</span>
-
-</div>
-
-<div
-  class="payment-method googlepay"
-  aria-label="Google Pay"
->
-
-<span class="g-blue">G</span>
-<span class="g-red">o</span>
-<span class="g-yellow">o</span>
-<span class="g-blue">g</span>
-<span class="g-green">l</span>
-<span class="g-red">e</span>
-<span class="pay-text">&nbsp;Pay</span>
-
-</div>
-
-</div>
-
-<div
-  class="demo-pill"
-  id="paymentDemoPill"
->
+<div id="paymentDemoPill" class="demo-pill">
 PAY AT PICKUP · NO ONLINE CHARGE
 </div>
 
-<div
-  id="paymentPendingText"
-  class="payment-pending"
->
-Pay at the café by card or cash. Your order will be sent to our barista.
+<div id="paymentPendingText" class="payment-pending">
+Pay at the café by card or cash.
 </div>
 
-<button
-  id="paymentSubmitButton"
-  class="payment-close"
-  onclick="submitPickupOrder()"
->
+<button id="paymentSubmitButton" class="payment-close" onclick="submitPickupOrder()">
 PLACE ORDER · PAY AT CAFÉ
 </button>
 
-<button
-  id="paymentCloseButton"
-  class="payment-close"
-  onclick="closePaymentModal()"
-  style="background:transparent;color:#526258;margin-top:8px"
->
+<button id="paymentCloseButton" class="payment-close"
+onclick="closePaymentModal()"
+style="background:transparent;color:#526258;margin-top:8px">
 CLOSE
 </button>
 
-</div>
+<div id="paymentMethods" class="payment-methods"></div>
 
+</div>
 </div>
 
 <script>
 'use strict';
 
-/* =========================
-   TELEGRAM
-========================= */
-
-const tg =
-  window.Telegram?.WebApp || null;
+const tg=window.Telegram?.WebApp||null;
 
 try{
   tg?.ready();
@@ -2566,11 +1590,18 @@ try{
   tg?.disableVerticalSwipes?.();
 }catch(e){}
 
-/* =========================
-   TEXT
-========================= */
+const $=id=>document.getElementById(id);
 
-const TEXT = {
+const escapeHtml=value=>
+String(value??'').replace(/[&<>"']/g,c=>({
+'&':'&amp;',
+'<':'&lt;',
+'>':'&gt;',
+'"':'&quot;',
+"'":'&#39;'
+}[c]));
+
+const TEXT={
 
 en:{
 tea:'Thai Tea',
@@ -2607,11 +1638,11 @@ ordersSub:'Your TAKE AWAY order history',
 profileTitle:'Profile',
 profileSub:'Your TAKE AWAY account',
 noOrders:'No orders yet',
-noOrdersCopy:'Your confirmed orders will appear here.',
+noOrdersCopy:'Your orders will appear here.',
 reorder:'Order again',
 member:'TAKE AWAY MEMBER',
 totalOrders:'Orders',
-drinks:'Drinks',
+drinks:'Paid drinks',
 favorite:'Favourite drink',
 memberSince:'First order',
 noFavorite:'Not yet',
@@ -2624,14 +1655,11 @@ maxOrder:'Maximum 30 drinks per order.',
 rewardsTitle:'Your coffee journey',
 rewardsSub:'A little thank you for every cup',
 rewardsDescription:'Buy 9 paid drinks and get your 10th free.',
-rewardsNote:'Coming soon. Stamps will only be awarded after payment is confirmed.',
-greetings:[
-  'Good morning',
-  'Good afternoon',
-  'Good evening'
-],
-welcome:'Welcome to TAKE AWAY',
-noSearch:'No drinks found'
+rewardNote:'Rewards are added after payment is confirmed by our barista.',
+freeReady:'FREE DRINK AVAILABLE 🎁',
+freeCount:'Free drinks available',
+greetings:['Good morning','Good afternoon','Good evening'],
+welcome:'Welcome to TAKE AWAY'
 },
 
 sr:{
@@ -2669,11 +1697,11 @@ ordersSub:'Istorija TAKE AWAY porudžbina',
 profileTitle:'Profil',
 profileSub:'Vaš TAKE AWAY nalog',
 noOrders:'Još nema porudžbina',
-noOrdersCopy:'Potvrđene porudžbine će se pojaviti ovde.',
+noOrdersCopy:'Porudžbine će se pojaviti ovde.',
 reorder:'Poruči ponovo',
 member:'TAKE AWAY ČLAN',
 totalOrders:'Porudžbine',
-drinks:'Pića',
+drinks:'Plaćena pića',
 favorite:'Omiljeno piće',
 memberSince:'Prva porudžbina',
 noFavorite:'Još nema',
@@ -2683,17 +1711,14 @@ readyStatus:'Spremno',
 completedStatus:'Završeno',
 cancelledStatus:'Otkazano',
 maxOrder:'Maksimalno 30 pića po porudžbini.',
-rewardsTitle:'Vaša kafa, vaše nagrade',
-rewardsSub:'Mala zahvalnost za svaku šolju',
+rewardsTitle:'Vaše nagrade',
+rewardsSub:'Mala zahvalnost za svako piće',
 rewardsDescription:'Kupite 9 plaćenih pića i 10. dobijate gratis.',
-rewardsNote:'Uskoro. Pečati se dobijaju tek nakon potvrđenog plaćanja.',
-greetings:[
-  'Dobro jutro',
-  'Dobar dan',
-  'Dobro veče'
-],
-welcome:'Dobro došli u TAKE AWAY',
-noSearch:'Nema pronađenih pića'
+rewardNote:'Nagrade se dodaju nakon potvrde plaćanja.',
+freeReady:'BESPLATNO PIĆE JE SPREMNO 🎁',
+freeCount:'Besplatna pića',
+greetings:['Dobro jutro','Dobar dan','Dobro veče'],
+welcome:'Dobro došli u TAKE AWAY'
 },
 
 ru:{
@@ -2731,11 +1756,11 @@ ordersSub:'История заказов TAKE AWAY',
 profileTitle:'Профиль',
 profileSub:'Ваш аккаунт TAKE AWAY',
 noOrders:'Заказов пока нет',
-noOrdersCopy:'Здесь появятся подтверждённые заказы.',
+noOrdersCopy:'Здесь появятся ваши заказы.',
 reorder:'Повторить',
 member:'УЧАСТНИК TAKE AWAY',
 totalOrders:'Заказы',
-drinks:'Напитки',
+drinks:'Оплаченные напитки',
 favorite:'Любимый напиток',
 memberSince:'Первый заказ',
 noFavorite:'Пока нет',
@@ -2748,664 +1773,234 @@ maxOrder:'Максимум 30 напитков в одном заказе.',
 rewardsTitle:'Ваши бонусы',
 rewardsSub:'Благодарность за каждый напиток',
 rewardsDescription:'Купите 9 оплаченных напитков — 10-й бесплатно.',
-rewardsNote:'Скоро. Бонусы начисляются только после подтверждённой оплаты.',
-greetings:[
-  'Доброе утро',
-  'Добрый день',
-  'Добрый вечер'
-],
-welcome:'Добро пожаловать в TAKE AWAY',
-noSearch:'Напитки не найдены'
+rewardNote:'Бонусы начисляются после подтверждения оплаты бариста.',
+freeReady:'БЕСПЛАТНЫЙ НАПИТОК ДОСТУПЕН 🎁',
+freeCount:'Бесплатных напитков',
+greetings:['Доброе утро','Добрый день','Добрый вечер'],
+welcome:'Добро пожаловать в TAKE AWAY'
 }
 
 };
-
-/* =========================
-   PRODUCT TEXT
-========================= */
 
 const PRODUCT_TEXT={
-
-espresso:{
-en:['Espresso','Classic espresso'],
-sr:['Espresso','Klasični espresso'],
-ru:['Эспрессо','Классический эспрессо']
-},
-
-americano:{
-en:['Americano','Espresso + hot water'],
-sr:['Amerikano','Espresso + topla voda'],
-ru:['Американо','Эспрессо + горячая вода']
-},
-
-cappuccino:{
-en:['Cappuccino','Espresso + milk foam'],
-sr:['Kapućino','Espresso + mlečna pena'],
-ru:['Капучино','Эспрессо + молочная пена']
-},
-
-latte:{
-en:['Latte','Espresso + milk'],
-sr:['Latte','Espresso + mleko'],
-ru:['Латте','Эспрессо + молоко']
-},
-
-flatwhite:{
-en:['Flat White','Double espresso + milk'],
-sr:['Flat White','Dupli espresso + mleko'],
-ru:['Флэт уайт','Двойной эспрессо + молоко']
-},
-
-icedlatte:{
-en:['Iced Latte','Espresso + milk + ice'],
-sr:['Ledeni Latte','Espresso + mleko + led'],
-ru:['Айс латте','Эспрессо + молоко + лёд']
-},
-
-americanocream:{
-en:['Iced Americano with Cream','Double espresso + water + ice + cream'],
-sr:['Ledeni Amerikano sa kremom','Dupli espresso + voda + led + krem'],
-ru:['Айс американо с кремом','Двойной эспрессо + вода + лёд + крем']
-},
-
-strawberrymatcha:{
-en:['Strawberry Matcha Latte','Strawberry + matcha + milk'],
-sr:['Strawberry Matcha Latte','Jagoda + matcha + mleko'],
-ru:['Клубничный матча латте','Клубника + матча + молоко']
-},
-
-peanutlatte:{
-en:['Peanut Latte','Double espresso + peanut + milk'],
-sr:['Peanut Latte','Dupli espresso + kikiriki + mleko'],
-ru:['Арахисовый латте','Двойной эспрессо + арахис + молоко']
-},
-
-thai:{
-en:['Classic Thai Milk Tea','Thai tea + milk + cream'],
-sr:['Klasični tajski mlečni čaj','Tajski čaj + mleko + krem'],
-ru:['Классический тайский чай','Тайский чай + молоко + крем']
-},
-
-green:{
-en:['Thai Green Milk Tea','Thai green tea + milk + cream'],
-sr:['Tajski zeleni mlečni čaj','Zeleni čaj + mleko + krem'],
-ru:['Тайский зелёный чай','Зелёный чай + молоко + крем']
-},
-
-lime:{
-en:['Thai Iced Lime Tea','Black tea + fresh lime + ice'],
-sr:['Tajski ledeni čaj sa limetom','Crni čaj + sveža limeta + led'],
-ru:['Тайский чай с лаймом','Чёрный чай + лайм + лёд']
-},
-
-tonic:{
-en:['Tonic Coffee','Espresso + tonic + ice'],
-sr:['Tonic Coffee','Espresso + tonik + led'],
-ru:['Тоник кофе','Эспрессо + тоник + лёд']
-},
-
-bumble:{
-en:['Bumble Coffee','Espresso + orange juice + ice'],
-sr:['Bumble Coffee','Espresso + sok od pomorandže + led'],
-ru:['Бамбл кофе','Эспрессо + апельсиновый сок + лёд']
-}
-
-};
-
-/* =========================
-   HELPERS / STATE
-========================= */
-
-const $ = id =>
-  document.getElementById(id);
-
-const escapeHtml = value =>
-  String(value ?? '').replace(
-    /[&<>"']/g,
-    char => ({
-      '&':'&amp;',
-      '<':'&lt;',
-      '>':'&gt;',
-      '"':'&quot;',
-      "'":'&#39;'
-    }[char])
-  );
-
-const haptic = () => {
-  try{
-    tg?.HapticFeedback?.impactOccurred('light');
-  }catch(e){}
+espresso:{en:['Espresso','Classic espresso'],sr:['Espresso','Klasični espresso'],ru:['Эспрессо','Классический эспрессо']},
+americano:{en:['Americano','Espresso + hot water'],sr:['Amerikano','Espresso + topla voda'],ru:['Американо','Эспрессо + горячая вода']},
+cappuccino:{en:['Cappuccino','Espresso + milk foam'],sr:['Kapućino','Espresso + mlečna pena'],ru:['Капучино','Эспрессо + молочная пена']},
+latte:{en:['Latte','Espresso + milk'],sr:['Latte','Espresso + mleko'],ru:['Латте','Эспрессо + молоко']},
+flatwhite:{en:['Flat White','Double espresso + milk'],sr:['Flat White','Dupli espresso + mleko'],ru:['Флэт уайт','Двойной эспрессо + молоко']},
+icedlatte:{en:['Iced Latte','Espresso + milk + ice'],sr:['Ledeni Latte','Espresso + mleko + led'],ru:['Айс латте','Эспрессо + молоко + лёд']},
+americanocream:{en:['Iced Americano with Cream','Double espresso + water + ice + cream'],sr:['Ledeni Amerikano sa kremom','Dupli espresso + voda + led + krem'],ru:['Айс американо с кремом','Двойной эспрессо + вода + лёд + крем']},
+strawberrymatcha:{en:['Strawberry Matcha Latte','Strawberry + matcha + milk'],sr:['Strawberry Matcha Latte','Jagoda + matcha + mleko'],ru:['Клубничный матча латте','Клубника + матча + молоко']},
+peanutlatte:{en:['Peanut Latte','Double espresso + peanut + milk'],sr:['Peanut Latte','Dupli espresso + kikiriki + mleko'],ru:['Арахисовый латте','Двойной эспрессо + арахис + молоко']},
+thai:{en:['Classic Thai Milk Tea','Thai tea + milk + cream'],sr:['Klasični tajski mlečni čaj','Tajski čaj + mleko + krem'],ru:['Классический тайский чай','Тайский чай + молоко + крем']},
+green:{en:['Thai Green Milk Tea','Thai green tea + milk + cream'],sr:['Tajski zeleni mlečni čaj','Zeleni čaj + mleko + krem'],ru:['Тайский зелёный чай','Зелёный чай + молоко + крем']},
+lime:{en:['Thai Iced Lime Tea','Black tea + fresh lime + ice'],sr:['Tajski ledeni čaj sa limetom','Crni čaj + sveža limeta + led'],ru:['Тайский чай с лаймом','Чёрный чай + лайм + лёд']},
+tonic:{en:['Tonic Coffee','Espresso + tonic + ice'],sr:['Tonic Coffee','Espresso + tonik + led'],ru:['Тоник кофе','Эспрессо + тоник + лёд']},
+bumble:{en:['Bumble Coffee','Espresso + orange juice + ice'],sr:['Bumble Coffee','Espresso + sok od pomorandže + led'],ru:['Бамбл кофе','Эспрессо + апельсиновый сок + лёд']}
 };
 
 let language='en';
-
 let menu=[];
-
 let cart=[];
-
 let category='tea';
-
 let currentPage='menu';
-
 let selectedProduct=null;
-
 let modalExtra=false;
-
 let modalBoba=false;
-
 let modalQuantity=1;
-
 let pickupMode='asap';
-
 let pickupMinutes=10;
-
 let exactPickupDate=null;
-
 let customerOrders=[];
-
 let customerProfile=null;
-
+let rewardsData=null;
 let paymentMethod='pickup';
-
 let sendingPickupOrder=false;
 
-/* =========================
-   PICKUP PAYMENT TEXT
-========================= */
-
-const PICKUP_COPY={
-
-en:{
-title:'Choose payment',
-copy:'Order now and pay when you collect your drinks.',
-note:'Pay at the café by card or cash. Your order will be sent to our barista.',
-online:'Online payments are coming soon. Please choose Pay at pickup.',
-submit:'PLACE ORDER · PAY AT CAFÉ',
-busy:'SENDING ORDER…',
-success:'Order received! Pay at the café when you collect your drinks.',
-error:'Could not send the order. Please try again.',
-telegram:'Please open TAKE AWAY inside Telegram to order.',
-payOnline:'💳 Pay online',
-payPickup:'☕ Pay at pickup',
-badgePickup:'PAY AT PICKUP · NO ONLINE CHARGE',
-badgeOnline:'ONLINE PAYMENTS COMING SOON',
-noteTitle:'☕ Pay at pickup',
-noteText:'Order now and pay by card or cash when you collect your drinks.'
-},
-
-sr:{
-title:'Način plaćanja',
-copy:'Poručite sada i platite pri preuzimanju.',
-note:'Platite karticom ili gotovinom u lokalu. Porudžbina stiže baristi.',
-online:'Online plaćanje uskoro. Izaberite plaćanje pri preuzimanju.',
-submit:'PORUČI · PLATI U LOKALU',
-busy:'ŠALJEMO…',
-success:'Porudžbina je primljena! Platite pri preuzimanju.',
-error:'Slanje nije uspelo. Pokušajte ponovo.',
-telegram:'Otvorite TAKE AWAY u Telegramu da poručite.',
-payOnline:'💳 Online',
-payPickup:'☕ Pri preuzimanju',
-badgePickup:'PLAĆANJE PRI PREUZIMANJU',
-badgeOnline:'ONLINE PLAĆANJE USKORO',
-noteTitle:'☕ Plaćanje pri preuzimanju',
-noteText:'Poručite sada i platite karticom ili gotovinom pri preuzimanju.'
-},
-
-ru:{
-title:'Способ оплаты',
-copy:'Закажите сейчас и оплатите при получении.',
-note:'Оплатите картой или наличными в кофейне. Заказ поступит бариста.',
-online:'Онлайн-оплата скоро появится. Выберите оплату при получении.',
-submit:'ЗАКАЗАТЬ · ОПЛАТА В КАФЕ',
-busy:'ОТПРАВЛЯЕМ…',
-success:'Заказ принят! Оплатите в кофейне при получении.',
-error:'Не удалось отправить заказ. Попробуйте снова.',
-telegram:'Откройте TAKE AWAY внутри Telegram для оформления заказа.',
-payOnline:'💳 Онлайн',
-payPickup:'☕ При получении',
-badgePickup:'ОПЛАТА ПРИ ПОЛУЧЕНИИ',
-badgeOnline:'ОНЛАЙН-ОПЛАТА СКОРО',
-noteTitle:'☕ Оплата при получении',
-noteText:'Закажите сейчас и оплатите картой или наличными при получении.'
+function productText(id){
+  return PRODUCT_TEXT[id]?.[language]||
+  [menu.find(p=>p.id===id)?.name||id,''];
 }
 
-};
-
-/* =========================
-   CART STORAGE
-========================= */
-
 function saveCart(){
-
   try{
-    localStorage.setItem(
-      'takeaway_cart_v2',
-      JSON.stringify(cart)
-    );
+    localStorage.setItem('takeaway_cart_v2',JSON.stringify(cart));
   }catch(e){}
-
 }
 
 function restoreCart(){
-
   try{
-
-    const saved =
-      JSON.parse(
-        localStorage.getItem(
-          'takeaway_cart_v2'
-        ) || '[]'
-      );
-
-    if(Array.isArray(saved)){
-
-      cart = saved
-        .filter(
-          x =>
-            x &&
-            typeof x.id === 'string' &&
-            Number.isInteger(x.qty) &&
-            x.qty > 0 &&
-            x.qty <= 10
-        )
-        .slice(0,30);
-
-    }
-
+    const saved=JSON.parse(localStorage.getItem('takeaway_cart_v2')||'[]');
+    if(Array.isArray(saved)) cart=saved;
   }catch(e){
-
     cart=[];
-
   }
-
 }
 
-/* =========================
-   CART CALCULATIONS
-========================= */
-
 function totalCartQuantity(){
-
-  return cart.reduce(
-    (sum,item) =>
-      sum + item.qty,
-    0
-  );
-
+  return cart.reduce((s,x)=>s+Number(x.qty||0),0);
 }
 
 function itemPrice(item){
-
-  const product =
-    menu.find(
-      x => x.id === item.id
-    );
-
-  if(!product){
-    return 0;
-  }
+  const p=menu.find(x=>x.id===item.id);
+  if(!p)return 0;
 
   return (
-    Number(product.price) +
-    (item.extra_shot ? 150 : 0) +
-    (item.boba ? 100 : 0)
-  ) * item.qty;
-
+    Number(p.price)+
+    (item.extra_shot?150:0)+
+    (item.boba?100:0)
+  )*item.qty;
 }
 
 function cartTotal(){
-
-  return cart.reduce(
-    (sum,item) =>
-      sum + itemPrice(item),
-    0
-  );
-
+  return cart.reduce((s,x)=>s+itemPrice(x),0);
 }
-
-function productText(id){
-
-  return (
-    PRODUCT_TEXT[id]?.[language] ||
-    [
-      menu.find(p => p.id === id)?.name || id,
-      ''
-    ]
-  );
-
-}
-
-/* =========================
-   LANGUAGE
-========================= */
 
 function changeLanguage(lang){
 
-  if(!TEXT[lang]){
-    return;
-  }
+  if(!TEXT[lang])return;
 
   language=lang;
 
-  document.documentElement.lang=lang;
-
   try{
-    localStorage.setItem(
-      'takeaway_language',
-      lang
-    );
+    localStorage.setItem('takeaway_language',lang);
   }catch(e){}
 
-  document
-    .querySelectorAll('.lang')
-    .forEach(
-      element =>
-        element.classList.toggle(
-          'active',
-          element.id === 'lang-' + lang
-        )
-    );
+  document.querySelectorAll('.lang').forEach(x=>{
+    x.classList.toggle('active',x.id==='lang-'+lang);
+  });
 
   const t=TEXT[lang];
-  const pay=PICKUP_COPY[lang];
 
   const labels={
-
     'tab-tea':t.tea,
     'tab-coffee':t.coffee,
     'tab-special':t.specials,
-
     cartTitle:t.cart,
-
     pickupTitle:t.pickup,
     pickupSubtitle:t.pickupSub,
-
     asapMode:t.asap,
     exactMode:t.choose,
-
     orderButton:t.order,
-
     extraText:t.extra,
     bobaText:t.boba,
     quantityLabel:t.quantity,
-
     navMenuText:t.menuNav,
     navOrdersText:t.ordersNav,
     navRewardsText:t.rewardsNav,
     navProfileText:t.profileNav,
-
     ordersHeading:t.ordersTitle,
     ordersSub:t.ordersSub,
-
     profileHeading:t.profileTitle,
     profileSub:t.profileSub,
-
     rewardsHeading:t.rewardsNav,
     rewardsSub:t.rewardsSub,
     rewardsTitle:t.rewardsTitle,
     rewardsDescription:t.rewardsDescription,
-    rewardsNote:t.rewardsNote,
-
-    paymentNoteTitle:pay.noteTitle,
-    paymentNoteText:pay.noteText,
-
-    'pay-online':pay.payOnline,
-    'pay-pickup':pay.payPickup,
-
-    paymentCloseButton:
-      lang === 'ru'
-        ? 'ЗАКРЫТЬ'
-        : lang === 'sr'
-        ? 'ZATVORI'
-        : 'CLOSE'
+    rewardsNote:t.rewardNote
   };
 
-  Object.entries(labels)
-    .forEach(([id,value]) => {
-
-      if($(id)){
-        $(id).textContent=value;
-      }
-
-    });
+  Object.entries(labels).forEach(([id,value])=>{
+    if($(id))$(id).textContent=value;
+  });
 
   updateGreeting();
-
   renderMenu();
-
   updateCart();
-
   renderOrders();
-
   renderProfile();
-
   renderRewards();
-
-  updatePickupCheckoutUI();
-
-  if(selectedProduct){
-    updateModalAddButton();
-  }
-
-  if(pickupMode === 'exact'){
-    generateExactTimes();
-  }else{
-    updatePickupInfo();
-  }
-
+  updatePickupInfo();
 }
-
-/* =========================
-   GREETING
-========================= */
 
 function updateGreeting(){
 
-  const t=TEXT[language];
+  const hour=new Date().getHours();
 
-  const hour =
-    new Date().getHours();
+  const part=
+    hour<12?0:
+    hour<18?1:2;
 
-  const part =
-    hour < 12
-      ? 0
-      : hour < 18
-      ? 1
-      : 2;
+  const first=tg?.initDataUnsafe?.user?.first_name;
 
-  const first =
-    tg?.initDataUnsafe?.user?.first_name;
+  $('greetingText').textContent=
+    TEXT[language].greetings[part];
 
-  $('greetingText').textContent =
-    t.greetings[part];
-
-  $('greetingName').textContent =
-    first
-      ? first + ' ✦'
-      : t.welcome;
-
+  $('greetingName').textContent=
+    first?first+' ✦':TEXT[language].welcome;
 }
-
-/* =========================
-   NAVIGATION
-========================= */
 
 function showPage(page){
 
-  if(
-    ![
-      'menu',
-      'orders',
-      'rewards',
-      'profile'
-    ].includes(page)
-  ){
-    return;
-  }
-
   currentPage=page;
 
-  document
-    .querySelectorAll('.page')
-    .forEach(
-      element =>
-        element.classList.toggle(
-          'active',
-          element.id === page + 'Page'
-        )
+  ['menu','orders','rewards','profile'].forEach(name=>{
+
+    $(name+'Page').classList.toggle(
+      'active',
+      name===page
     );
 
-  document
-    .querySelectorAll('.nav-button')
-    .forEach(
-      element =>
-        element.classList.toggle(
-          'active',
-          element.id === 'nav-' + page
-        )
+    $('nav-'+name).classList.toggle(
+      'active',
+      name===page
     );
 
-  $('navIndicator').style.transform =
-    `translateX(${
-      [
-        'menu',
-        'orders',
-        'rewards',
-        'profile'
-      ].indexOf(page) * 100
-    }%)`;
-
-  $('orderBar')
-    .classList.toggle(
-      'hidden',
-      page !== 'menu' ||
-      cart.length === 0
-    );
-
-  if(page === 'orders'){
-    loadOrders();
-  }
-
-  if(page === 'profile'){
-    loadProfile();
-  }
-
-  if(page === 'rewards'){
-    renderRewards();
-  }
-
-  window.scrollTo({
-    top:0,
-    behavior:'smooth'
   });
 
-  haptic();
+  const index=['menu','orders','rewards','profile'].indexOf(page);
 
+  $('navIndicator').style.transform=
+    `translateX(${index*100}%)`;
+
+  $('orderBar').classList.toggle(
+    'hidden',
+    page!=='menu'||cart.length===0
+  );
+
+  if(page==='orders')loadOrders();
+  if(page==='profile')loadProfile();
+  if(page==='rewards')loadRewards();
+
+  window.scrollTo({top:0,behavior:'smooth'});
 }
-
-/* =========================
-   LOAD MENU
-========================= */
 
 async function loadMenu(){
 
   try{
 
-    const response =
-      await fetch(
-        '/api/menu?ts=' + Date.now(),
-        {
-          cache:'no-store'
-        }
-      );
+    const response=await fetch('/api/menu?ts='+Date.now(),{
+      cache:'no-store'
+    });
 
-    if(!response.ok){
-      throw Error(
-        'Could not load menu'
-      );
-    }
-
-    const data =
-      await response.json();
-
-    if(!Array.isArray(data)){
-      throw Error(
-        'Invalid menu response'
-      );
-    }
-
-    menu =
-      data.filter(
-        product =>
-          product &&
-          typeof product.id === 'string' &&
-          Number.isFinite(
-            Number(product.price)
-          )
-      );
-
-    cart =
-      cart.filter(
-        item =>
-          menu.some(
-            product =>
-              product.id === item.id
-          )
-      );
-
-    saveCart();
+    menu=await response.json();
 
     renderMenu();
-
     updateCart();
 
-  }catch(error){
+  }catch(e){
 
-    $('menu').innerHTML =
-      `<div class="empty-state">${
-        escapeHtml(error.message)
-      }</div>`;
+    $('menu').innerHTML=
+      '<div class="empty-state">Could not load menu</div>';
 
   }
-
 }
-
-/* =========================
-   CATEGORY
-========================= */
 
 function showCategory(cat){
 
   category=cat;
 
-  document
-    .querySelectorAll('.tab')
-    .forEach(
-      element =>
-        element.classList.toggle(
-          'active',
-          element.id === 'tab-' + cat
-        )
-    );
+  ['tea','coffee','special'].forEach(name=>{
+    $('tab-'+name).classList.toggle('active',name===cat);
+  });
 
-  $('tabIndicator').style.transform =
-    `translateX(${
-      [
-        'tea',
-        'coffee',
-        'special'
-      ].indexOf(cat) * 100
-    }%)`;
+  const i=['tea','coffee','special'].indexOf(cat);
+
+  $('tabIndicator').style.transform=
+    `translateX(${i*100}%)`;
 
   renderMenu();
-
-  haptic();
-
 }
-
-/* =========================
-   DRINK VISUAL
-========================= */
 
 function drinkClass(id){
 
@@ -3413,358 +2008,193 @@ function drinkClass(id){
     green:'greentea',
     lime:'limetea',
     strawberrymatcha:'matcha',
-    peanutlatte:'peanut',
-    americanocream:'americanocream'
-  }[id] || id);
-
+    peanutlatte:'peanut'
+  }[id]||id);
 }
 
 function drinkVisual(id){
 
-  const ice =
-    [
-      'icedlatte',
-      'americanocream',
-      'thai',
-      'green',
-      'lime',
-      'bumble',
-      'tonic',
-      'strawberrymatcha'
-    ].includes(id)
-      ? '<span class="ice">◇ ◇</span>'
-      : '';
+  const ice=[
+    'icedlatte','americanocream','thai','green',
+    'lime','bumble','tonic','strawberrymatcha'
+  ].includes(id)
+    ?'<span class="ice">◇ ◇</span>'
+    :'';
 
-  const lime =
-    id === 'lime'
-      ? '<span class="lime"></span>'
-      : '';
+  const lime=id==='lime'
+    ?'<span class="lime"></span>'
+    :'';
 
   return `
-    <div class="drink">
-      <div class="cup ${drinkClass(id)}">
-        <div class="liquid"></div>
-        ${ice}
-        ${lime}
-      </div>
+  <div class="drink">
+    <div class="cup ${drinkClass(id)}">
+      <div class="liquid"></div>
+      ${ice}
+      ${lime}
     </div>
-  `;
-
+  </div>`;
 }
-
-/* =========================
-   RENDER MENU
-========================= */
 
 function renderMenu(){
 
-  const filtered =
-    menu.filter(
-      product =>
-        product.category === category
-    );
+  const filtered=menu.filter(x=>x.category===category);
 
-  const icon =
-    category === 'tea'
-      ? '🍃'
-      : category === 'coffee'
-      ? '☕'
-      : '✦';
+  const heading=
+    category==='tea'
+      ?TEXT[language].teaTitle
+      :category==='coffee'
+      ?TEXT[language].coffeeTitle
+      :TEXT[language].specialTitle;
 
-  const heading =
-    TEXT[language][
-      category === 'tea'
-        ? 'teaTitle'
-        : category === 'coffee'
-        ? 'coffeeTitle'
-        : 'specialTitle'
-    ];
+  const icon=
+    category==='tea'
+      ?'🍃'
+      :category==='coffee'
+      ?'☕'
+      :'✦';
 
-  $('menu').innerHTML = `
-    <section class="section">
+  $('menu').innerHTML=`
+  <section class="section">
 
-      <div class="section-header">
+    <div class="section-header">
+      <span class="section-icon">${icon}</span>
+      <span class="section-title">${heading}</span>
+      <span class="section-line"></span>
+    </div>
 
-        <span class="section-icon">
-          ${icon}
-        </span>
+    <div class="products">
 
-        <span class="section-title">
-          ${escapeHtml(heading)}
-        </span>
+    ${filtered.map(product=>{
 
-        <span class="section-line"></span>
+      const copy=productText(product.id);
 
-      </div>
+      return `
+      <article class="product">
 
-      ${
-        filtered.length
-          ? `
-            <div class="products">
+        ${drinkVisual(product.id)}
 
-            ${
-              filtered
-                .map(
-                  (product,index) => {
+        <div class="product-name">
+          ${escapeHtml(copy[0])}
+        </div>
 
-                    const copy =
-                      productText(
-                        product.id
-                      );
+        <div class="product-desc">
+          ${escapeHtml(copy[1])}
+        </div>
 
-                    return `
-                      <article
-                        class="product"
-                        style="animation-delay:${
-                          Math.min(index,7) * 30
-                        }ms"
-                      >
+        <div class="product-price">
+          ${product.price} RSD
+        </div>
 
-                        ${drinkVisual(product.id)}
+        <button class="add"
+        onclick='openProduct(${JSON.stringify(product.id)})'>
+          + ${TEXT[language].add}
+        </button>
 
-                        <div class="product-name">
-                          ${escapeHtml(copy[0])}
-                        </div>
+      </article>`;
 
-                        <div class="product-desc">
-                          ${escapeHtml(copy[1])}
-                        </div>
+    }).join('')}
 
-                        <div class="product-price">
-                          ${Number(product.price)} RSD
-                        </div>
+    </div>
 
-                        <button
-                          class="add"
-                          onclick='openProduct(${JSON.stringify(product.id)})'
-                        >
-                          + ${TEXT[language].add}
-                        </button>
-
-                      </article>
-                    `;
-
-                  }
-                )
-                .join('')
-            }
-
-            </div>
-          `
-          : `
-            <div class="empty-state">
-              ${TEXT[language].noSearch}
-            </div>
-          `
-      }
-
-    </section>
-  `;
-
+  </section>`;
 }
 
-/* =========================
-   PRODUCT MODAL
-========================= */
-
 function canExtra(id){
-
   return [
-    'espresso',
-    'americano',
-    'cappuccino',
-    'latte',
-    'flatwhite',
-    'icedlatte',
-    'americanocream',
-    'peanutlatte',
-    'tonic',
-    'bumble'
+    'espresso','americano','cappuccino','latte',
+    'flatwhite','icedlatte','americanocream',
+    'peanutlatte','tonic','bumble'
   ].includes(id);
-
 }
 
 function openProduct(id){
 
-  selectedProduct =
-    menu.find(
-      product =>
-        product.id === id
-    );
+  selectedProduct=menu.find(x=>x.id===id);
 
-  if(!selectedProduct){
-    return;
-  }
+  if(!selectedProduct)return;
 
   modalExtra=false;
   modalBoba=false;
   modalQuantity=1;
 
-  $('modalName').textContent =
-    productText(id)[0];
-
-  $('modalPrice').textContent =
-    selectedProduct.price + ' RSD';
-
+  $('modalName').textContent=productText(id)[0];
+  $('modalPrice').textContent=selectedProduct.price+' RSD';
   $('modalQuantity').textContent='1';
 
-  $('extraOption').style.display =
-    canExtra(id)
-      ? 'flex'
-      : 'none';
+  $('extraOption').style.display=
+    canExtra(id)?'flex':'none';
 
-  $('bobaOption').style.display =
-    selectedProduct.boba
-      ? 'flex'
-      : 'none';
+  $('bobaOption').style.display=
+    selectedProduct.boba?'flex':'none';
 
-  $('extraOption')
-    .classList.remove('selected');
-
-  $('bobaOption')
-    .classList.remove('selected');
+  $('extraOption').classList.remove('selected');
+  $('bobaOption').classList.remove('selected');
 
   updateModalAddButton();
 
-  $('modalBg')
-    .classList.add('open');
-
-  haptic();
-
+  $('modalBg').classList.add('open');
 }
 
 function toggleAddon(type){
 
-  if(
-    type === 'extra' &&
-    selectedProduct &&
-    canExtra(selectedProduct.id)
-  ){
-
+  if(type==='extra'&&canExtra(selectedProduct.id)){
     modalExtra=!modalExtra;
-
-    $('extraOption')
-      .classList.toggle(
-        'selected',
-        modalExtra
-      );
-
+    $('extraOption').classList.toggle('selected',modalExtra);
   }
 
-  if(
-    type === 'boba' &&
-    selectedProduct?.boba
-  ){
-
+  if(type==='boba'&&selectedProduct.boba){
     modalBoba=!modalBoba;
-
-    $('bobaOption')
-      .classList.toggle(
-        'selected',
-        modalBoba
-      );
-
+    $('bobaOption').classList.toggle('selected',modalBoba);
   }
 
   updateModalAddButton();
-
-  haptic();
-
 }
 
-function changeModalQuantity(change){
+function changeModalQuantity(delta){
 
-  const next =
-    Math.max(
-      1,
-      Math.min(
-        10,
-        modalQuantity + change
-      )
-    );
+  modalQuantity=Math.max(
+    1,
+    Math.min(10,modalQuantity+delta)
+  );
 
-  if(
-    totalCartQuantity() +
-    next >
-    30
-  ){
-
-    showMessage(
-      TEXT[language].maxOrder,
-      'error'
-    );
-
-    return;
-
-  }
-
-  modalQuantity=next;
-
-  $('modalQuantity').textContent =
-    next;
+  $('modalQuantity').textContent=modalQuantity;
 
   updateModalAddButton();
-
-  haptic();
-
 }
 
 function updateModalAddButton(){
 
-  if(!selectedProduct){
-    return;
-  }
+  if(!selectedProduct)return;
 
-  const price =
-    (
-      Number(selectedProduct.price) +
-      (modalExtra ? 150 : 0) +
-      (modalBoba ? 100 : 0)
-    ) *
-    modalQuantity;
+  const price=(
+    Number(selectedProduct.price)+
+    (modalExtra?150:0)+
+    (modalBoba?100:0)
+  )*modalQuantity;
 
-  $('modalAdd').textContent =
+  $('modalAdd').textContent=
     `${TEXT[language].addOrder} — ${price} RSD`;
-
 }
 
 function confirmAdd(){
 
-  if(!selectedProduct){
+  if(totalCartQuantity()+modalQuantity>30){
+    showMessage(TEXT[language].maxOrder,'error');
     return;
   }
 
-  const existing =
-    cart.find(
-      item =>
-        item.id === selectedProduct.id &&
-        item.extra_shot === modalExtra &&
-        item.boba === modalBoba
-    );
-
-  const allowed =
-    Math.min(
-      30 - totalCartQuantity(),
-      existing
-        ? 10 - existing.qty
-        : 10
-    );
-
-  if(modalQuantity > allowed){
-
-    showMessage(
-      TEXT[language].maxOrder,
-      'error'
-    );
-
-    return;
-
-  }
+  const existing=cart.find(x=>
+    x.id===selectedProduct.id&&
+    x.extra_shot===modalExtra&&
+    x.boba===modalBoba
+  );
 
   if(existing){
 
-    existing.qty +=
-      modalQuantity;
+    existing.qty=Math.min(
+      10,
+      existing.qty+modalQuantity
+    );
 
   }else{
 
@@ -3777,732 +2207,343 @@ function confirmAdd(){
 
   }
 
-  $('modalBg')
-    .classList.remove('open');
+  $('modalBg').classList.remove('open');
 
   updateCart();
-
-  haptic();
-
 }
 
 function closeModal(event){
 
-  if(
-    !event ||
-    event.target.id === 'modalBg'
-  ){
-
-    $('modalBg')
-      .classList.remove('open');
-
+  if(!event||event.target.id==='modalBg'){
+    $('modalBg').classList.remove('open');
   }
-
 }
-
-/* =========================
-   CART
-========================= */
 
 function updateCart(){
 
   saveCart();
 
-  const count =
-    totalCartQuantity();
+  const count=totalCartQuantity();
 
-  $('itemCount').textContent =
-    `${count} ${
-      count === 1
-        ? TEXT[language].item
-        : TEXT[language].items
-    }`;
+  $('itemCount').textContent=
+    `${count} ${count===1?TEXT[language].item:TEXT[language].items}`;
 
-  $('total').textContent =
-    cartTotal() + ' RSD';
+  $('total').textContent=
+    cartTotal()+' RSD';
 
-  $('cartSection')
-    .classList.toggle(
-      'show',
-      cart.length > 0
-    );
+  $('cartSection').classList.toggle('show',cart.length>0);
 
-  $('orderBar')
-    .classList.toggle(
-      'hidden',
-      cart.length === 0 ||
-      currentPage !== 'menu'
-    );
+  $('orderBar').classList.toggle(
+    'hidden',
+    cart.length===0||currentPage!=='menu'
+  );
 
-  $('cartItems').innerHTML =
-    cart
-      .map(
-        (item,index) => {
+  $('cartItems').innerHTML=
+    cart.map((item,index)=>{
 
-          const extras = [
-            item.extra_shot
-              ? TEXT[language].extra
-              : null,
+      const extras=[
+        item.extra_shot?TEXT[language].extra:null,
+        item.boba?TEXT[language].boba:null
+      ].filter(Boolean);
 
-            item.boba
-              ? TEXT[language].boba
-              : null
-          ].filter(Boolean);
+      return `
+      <div class="cart-item">
 
-          return `
-            <div class="cart-item">
+        <div class="cart-item-info">
 
-              <div class="cart-item-info">
+          <strong>
+            ${escapeHtml(productText(item.id)[0])}
+          </strong>
 
-                <strong>
-                  ${escapeHtml(productText(item.id)[0])}
-                </strong>
+          ${extras.length
+            ?`<div class="cart-extra">${escapeHtml(extras.join(' · '))}</div>`
+            :''}
 
-                ${
-                  extras.length
-                    ? `
-                      <div class="cart-extra">
-                        ${escapeHtml(extras.join(' · '))}
-                      </div>
-                    `
-                    : ''
-                }
+        </div>
 
-              </div>
+        <div class="cart-right">
 
-              <div class="cart-right">
+          <div class="cart-quantity">
 
-                <div class="cart-quantity">
+            <button class="cart-qty-btn"
+            onclick="changeCartQuantity(${index},-1)">−</button>
 
-                  <button
-                    class="cart-qty-btn"
-                    onclick="changeCartQuantity(${index},-1)"
-                  >
-                    −
-                  </button>
+            <span class="cart-qty-number">${item.qty}</span>
 
-                  <span class="cart-qty-number">
-                    ${item.qty}
-                  </span>
+            <button class="cart-qty-btn"
+            onclick="changeCartQuantity(${index},1)">+</button>
 
-                  <button
-                    class="cart-qty-btn"
-                    onclick="changeCartQuantity(${index},1)"
-                  >
-                    +
-                  </button>
+          </div>
 
-                </div>
+          <div class="cart-price">
+            ${itemPrice(item)} RSD
+          </div>
 
-                <div class="cart-price">
-                  ${itemPrice(item)} RSD
-                </div>
+          <button class="remove"
+          onclick="deleteCartItem(${index})">×</button>
 
-                <button
-                  class="remove"
-                  onclick="deleteCartItem(${index})"
-                  aria-label="Remove"
-                >
-                  ×
-                </button>
+        </div>
 
-              </div>
+      </div>`;
 
-            </div>
-          `;
-
-        }
-      )
-      .join('');
-
+    }).join('');
 }
 
-function changeCartQuantity(
-  index,
-  delta
-){
+function changeCartQuantity(index,delta){
 
-  if(!cart[index]){
+  if(!cart[index])return;
+
+  if(delta>0&&totalCartQuantity()>=30){
+    showMessage(TEXT[language].maxOrder,'error');
     return;
   }
 
-  if(
-    delta > 0 &&
-    (
-      totalCartQuantity() >= 30 ||
-      cart[index].qty >= 10
-    )
-  ){
+  cart[index].qty+=delta;
 
-    showMessage(
-      TEXT[language].maxOrder,
-      'error'
-    );
-
-    return;
-
+  if(cart[index].qty<=0){
+    cart.splice(index,1);
   }
 
-  cart[index].qty += delta;
-
-  if(cart[index].qty <= 0){
-
-    cart.splice(
-      index,
-      1
-    );
-
+  if(cart[index]&&cart[index].qty>10){
+    cart[index].qty=10;
   }
 
   updateCart();
-
-  haptic();
-
 }
 
 function deleteCartItem(index){
-
-  cart.splice(
-    index,
-    1
-  );
-
+  cart.splice(index,1);
   updateCart();
-
-  haptic();
-
 }
-
-/* =========================
-   PICKUP TIME
-========================= */
 
 function setPickupMode(mode){
 
   pickupMode=mode;
 
-  $('asapMode')
-    .classList.toggle(
-      'active',
-      mode === 'asap'
-    );
+  $('asapMode').classList.toggle('active',mode==='asap');
+  $('exactMode').classList.toggle('active',mode==='exact');
 
-  $('exactMode')
-    .classList.toggle(
-      'active',
-      mode === 'exact'
-    );
+  $('asapTimes').style.display=
+    mode==='asap'?'grid':'none';
 
-  $('asapTimes').style.display =
-    mode === 'asap'
-      ? 'grid'
-      : 'none';
+  $('exactBox').classList.toggle('show',mode==='exact');
 
-  $('exactBox')
-    .classList.toggle(
-      'show',
-      mode === 'exact'
-    );
-
-  if(mode === 'exact'){
-
+  if(mode==='exact'){
     generateExactTimes();
-
   }else{
-
     exactPickupDate=null;
-
     updatePickupInfo();
-
   }
-
-  haptic();
-
 }
 
-function chooseTime(
-  button,
-  minutes
-){
+function chooseTime(button,minutes){
 
   pickupMinutes=minutes;
 
-  document
-    .querySelectorAll('.time')
-    .forEach(
-      element =>
-        element.classList.remove(
-          'selected'
-        )
-    );
+  document.querySelectorAll('.time').forEach(x=>{
+    x.classList.remove('selected');
+  });
 
-  button.classList.add(
-    'selected'
-  );
+  button.classList.add('selected');
 
   updatePickupInfo();
-
-  haptic();
-
 }
 
 function generateExactTimes(){
 
-  const select =
-    $('exactTime');
+  const select=$('exactTime');
 
-  const now =
-    new Date();
+  const now=new Date();
 
-  const first =
-    new Date(
-      now.getTime() +
-      11 * 60000
-    );
-
-  first.setSeconds(
-    0,
-    0
+  const first=new Date(
+    now.getTime()+11*60000
   );
 
-  const remainder =
-    first.getMinutes() %
-    15;
+  first.setSeconds(0,0);
+
+  const remainder=first.getMinutes()%15;
 
   if(remainder){
-
     first.setMinutes(
-      first.getMinutes() +
-      15 -
-      remainder
+      first.getMinutes()+15-remainder
     );
-
   }
 
-  const opening =
-    new Date(now);
+  const closing=new Date(now);
 
-  opening.setHours(
-    7,
-    0,
-    0,
-    0
-  );
-
-  const closing =
-    new Date(now);
-
-  closing.setHours(
-    17,
-    0,
-    0,
-    0
-  );
-
-  let current =
-    new Date(
-      Math.max(
-        first.getTime(),
-        opening.getTime()
-      )
-    );
-
-  const previous =
-    exactPickupDate?.toISOString();
+  closing.setHours(17,0,0,0);
 
   select.innerHTML='';
 
-  while(current < closing){
+  let current=first;
 
-    const option =
-      document.createElement(
-        'option'
-      );
+  while(current<closing){
 
-    option.value =
-      current.toISOString();
+    const option=document.createElement('option');
 
-    option.textContent =
-      String(
-        current.getHours()
-      ).padStart(2,'0') +
-      ':' +
-      String(
-        current.getMinutes()
-      ).padStart(2,'0');
+    option.value=current.toISOString();
 
-    select.appendChild(
-      option
+    option.textContent=
+      String(current.getHours()).padStart(2,'0')+
+      ':'+
+      String(current.getMinutes()).padStart(2,'0');
+
+    select.appendChild(option);
+
+    current=new Date(
+      current.getTime()+15*60000
     );
-
-    current =
-      new Date(
-        current.getTime() +
-        15 * 60000
-      );
-
   }
 
-  if(!select.options.length){
-
-    select.add(
-      new Option(
-        TEXT[language].noTimes,
-        ''
-      )
-    );
-
-    exactPickupDate=null;
-
-  }else{
-
-    if(
-      previous &&
-      Array
-        .from(select.options)
-        .some(
-          option =>
-            option.value === previous
-        )
-    ){
-
-      select.value =
-        previous;
-
-    }
-
-    exactPickupDate =
-      new Date(
-        select.value
-      );
-
-  }
+  exactPickupDate=
+    select.value
+      ?new Date(select.value)
+      :null;
 
   updatePickupInfo();
-
 }
 
 function chooseExactTime(){
 
-  exactPickupDate =
+  exactPickupDate=
     $('exactTime').value
-      ? new Date(
-          $('exactTime').value
-        )
-      : null;
+      ?new Date($('exactTime').value)
+      :null;
 
   updatePickupInfo();
-
-  haptic();
-
 }
 
 function updatePickupInfo(){
 
-  const t =
-    TEXT[language];
+  const t=TEXT[language];
 
-  if(pickupMode === 'asap'){
+  if(pickupMode==='asap'){
 
-    $('pickupInfo').textContent =
+    $('pickupInfo').textContent=
       `${t.ready} ${pickupMinutes} ${t.minutes}`;
 
   }else{
 
-    $('pickupInfo').textContent =
+    $('pickupInfo').textContent=
       exactPickupDate
-        ? `${t.pickupAt} ${
-            String(
-              exactPickupDate.getHours()
-            ).padStart(2,'0')
-          }:${
-            String(
-              exactPickupDate.getMinutes()
-            ).padStart(2,'0')
-          }`
-        : t.noTimes;
+        ?`${t.pickupAt} ${String(exactPickupDate.getHours()).padStart(2,'0')}:${String(exactPickupDate.getMinutes()).padStart(2,'0')}`
+        :t.noTimes;
 
   }
-
 }
 
 function pickupISO(){
 
-  if(pickupMode === 'exact'){
-
-    return (
-      exactPickupDate &&
-      exactPickupDate.getTime() >
-      Date.now()
-    )
-      ? exactPickupDate.toISOString()
-      : null;
-
+  if(pickupMode==='exact'){
+    return exactPickupDate
+      ?exactPickupDate.toISOString()
+      :null;
   }
 
   return new Date(
-    Date.now() +
-    pickupMinutes * 60000 +
-    45000
+    Date.now()+pickupMinutes*60000+45000
   ).toISOString();
-
 }
 
-/* =========================
-   MESSAGE
-========================= */
+function showMessage(message,type){
 
-function showMessage(
-  message,
-  type
-){
+  $('message').className=
+    'message '+type;
 
-  $('message').className =
-    'message ' + type;
-
-  $('message').textContent =
+  $('message').textContent=
     message;
+}
 
-  if(currentPage === 'menu'){
+function placeOrder(){
 
-    $('message').scrollIntoView({
-      behavior:'smooth',
-      block:'center'
-    });
-
+  if(!cart.length){
+    showMessage(TEXT[language].empty,'error');
+    return;
   }
 
-}
+  if(!pickupISO()){
+    showMessage(TEXT[language].choosePickup,'error');
+    return;
+  }
 
-/* =========================
-   PAYMENT / PICKUP ORDER
-========================= */
+  paymentMethod='pickup';
 
-function updatePickupCheckoutUI(){
+  $('paymentModalTotal').textContent=
+    cartTotal()+' RSD';
 
-  const t =
-    PICKUP_COPY[language];
-
-  $('paymentModalTitle').textContent =
-    t.title;
-
-  $('paymentModalCopy').textContent =
-    t.copy;
-
-  $('paymentMethods')
-    .classList.toggle(
-      'is-hidden',
-      paymentMethod !== 'online'
-    );
-
-  $('paymentPendingText').textContent =
-    paymentMethod === 'pickup'
-      ? t.note
-      : t.online;
-
-  $('paymentSubmitButton').textContent =
-    sendingPickupOrder
-      ? t.busy
-      : t.submit;
-
-  $('paymentSubmitButton').disabled =
-    sendingPickupOrder ||
-    paymentMethod !== 'pickup';
-
-  $('paymentDemoPill').textContent =
-    paymentMethod === 'pickup'
-      ? t.badgePickup
-      : t.badgeOnline;
-
+  $('paymentModalBg').classList.add('open');
 }
 
 function selectPayment(method){
 
   paymentMethod=method;
 
-  $('pay-online')
-    .classList.toggle(
-      'active',
-      method === 'online'
-    );
+  $('pay-online').classList.toggle(
+    'active',
+    method==='online'
+  );
 
-  $('pay-pickup')
-    .classList.toggle(
-      'active',
-      method === 'pickup'
-    );
+  $('pay-pickup').classList.toggle(
+    'active',
+    method==='pickup'
+  );
 
-  updatePickupCheckoutUI();
+  $('paymentSubmitButton').disabled=
+    method!=='pickup';
 
-  haptic();
-
-}
-
-function openPaymentModal(){
-
-  if(!cart.length){
-    return;
-  }
-
-  $('paymentModalTotal').textContent =
-    cartTotal() + ' RSD';
-
-  /* Until online payment is activated,
-     pickup is selected by default. */
-
-  selectPayment('pickup');
-
-  $('paymentModalBg')
-    .classList.add('open');
-
-  haptic();
-
+  $('paymentPendingText').textContent=
+    method==='pickup'
+      ?'Pay at the café by card or cash.'
+      :'Online payment is coming soon.';
 }
 
 function closePaymentModal(event){
 
-  if(
-    !event ||
-    event.target.id ===
-      'paymentModalBg'
-  ){
-
-    $('paymentModalBg')
-      .classList.remove('open');
-
+  if(!event||event.target.id==='paymentModalBg'){
+    $('paymentModalBg').classList.remove('open');
   }
-
 }
-
-function placeOrder(){
-
-  if(!cart.length){
-
-    showMessage(
-      TEXT[language].empty,
-      'error'
-    );
-
-    return;
-
-  }
-
-  if(!pickupISO()){
-
-    showMessage(
-      TEXT[language].choosePickup,
-      'error'
-    );
-
-    return;
-
-  }
-
-  openPaymentModal();
-
-}
-
-/* =========================
-   SEND REAL PICKUP ORDER
-========================= */
 
 async function submitPickupOrder(){
 
-  if(
-    sendingPickupOrder ||
-    paymentMethod !== 'pickup' ||
-    !cart.length
-  ){
-    return;
-  }
+  if(sendingPickupOrder)return;
 
-  const initData =
-    tg?.initData || '';
+  const initData=tg?.initData||'';
 
   if(!initData){
-
-    $('paymentPendingText').textContent =
-      PICKUP_COPY[language].telegram;
-
+    $('paymentPendingText').textContent=
+      'Please open TAKE AWAY inside Telegram.';
     return;
-
-  }
-
-  const pickup =
-    pickupISO();
-
-  if(!pickup){
-
-    $('paymentPendingText').textContent =
-      TEXT[language].choosePickup;
-
-    return;
-
   }
 
   sendingPickupOrder=true;
 
-  updatePickupCheckoutUI();
+  $('paymentSubmitButton').disabled=true;
+  $('paymentSubmitButton').textContent='SENDING ORDER…';
 
   try{
 
-    const response =
-      await fetch(
-        '/api/order',
-        {
-          method:'POST',
+    const response=await fetch('/api/order',{
 
-          headers:{
-            'Content-Type':
-              'application/json'
-          },
+      method:'POST',
 
-          body:JSON.stringify({
+      headers:{
+        'Content-Type':'application/json'
+      },
 
-            initData:initData,
+      body:JSON.stringify({
+        initData,
+        items:cart,
+        pickup:pickupISO(),
+        payment_method:'pickup'
+      })
 
-            items:
-              cart.map(
-                ({
-                  id,
-                  qty,
-                  extra_shot,
-                  boba
-                }) => ({
-                  id,
-                  qty,
-                  extra_shot,
-                  boba
-                })
-              ),
+    });
 
-            pickup:pickup,
+    const data=await response.json();
 
-            payment_method:
-              'pickup'
-
-          })
-
-        }
-      );
-
-    const data =
-      await response
-        .json()
-        .catch(
-          () => ({})
-        );
-
-    if(
-      !response.ok ||
-      !data.success
-    ){
-
-      throw Error(
-        data.error ||
-        PICKUP_COPY[language].error
-      );
-
+    if(!response.ok||!data.success){
+      throw Error(data.error||'Could not send order');
     }
 
     cart=[];
@@ -4512,10 +2553,7 @@ async function submitPickupOrder(){
     closePaymentModal();
 
     showMessage(
-      '#' +
-      data.order_id +
-      ' · ' +
-      PICKUP_COPY[language].success,
+      `Order #${data.order_id} received!`,
       'success'
     );
 
@@ -4523,614 +2561,468 @@ async function submitPickupOrder(){
 
     showPage('orders');
 
-    haptic();
+  }catch(e){
 
-  }catch(error){
-
-    $('paymentPendingText').textContent =
-      error.message ||
-      PICKUP_COPY[language].error;
+    $('paymentPendingText').textContent=
+      e.message;
 
   }finally{
 
     sendingPickupOrder=false;
 
-    updatePickupCheckoutUI();
+    $('paymentSubmitButton').disabled=false;
+
+    $('paymentSubmitButton').textContent=
+      'PLACE ORDER · PAY AT CAFÉ';
 
   }
-
 }
 
-/* =========================
-   ORDERS
-========================= */
+/* ORDERS */
 
 async function loadOrders(){
 
-  const initData =
-    tg?.initData || '';
+  const initData=tg?.initData||'';
 
-  if(!initData){
-
-    customerOrders=[];
-
-    renderOrders();
-
-    return;
-
-  }
+  if(!initData)return;
 
   try{
 
-    const response =
-      await fetch(
-        '/api/orders',
-        {
-          method:'POST',
+    const response=await fetch('/api/orders',{
 
-          headers:{
-            'Content-Type':
-              'application/json'
-          },
+      method:'POST',
 
-          cache:'no-store',
+      headers:{
+        'Content-Type':'application/json'
+      },
 
-          body:JSON.stringify({
-            initData
-          })
-        }
-      );
+      cache:'no-store',
 
-    const data =
-      await response.json();
+      body:JSON.stringify({
+        initData
+      })
 
-    if(!response.ok){
+    });
 
-      throw Error(
-        data.error ||
-        'Could not load orders'
-      );
+    const data=await response.json();
 
-    }
-
-    customerOrders =
+    customerOrders=
       Array.isArray(data.orders)
-        ? data.orders
-        : [];
+        ?data.orders
+        :[];
 
     renderOrders();
 
-  }catch(error){
+  }catch(e){
 
-    $('ordersContent').innerHTML =
-      `<div class="empty-state">${
-        escapeHtml(error.message)
-      }</div>`;
+    $('ordersContent').innerHTML=
+      '<div class="empty-state">Could not load orders</div>';
 
   }
-
 }
 
 function statusText(status){
 
-  const key = ({
+  const key={
     new:'newStatus',
     preparing:'preparingStatus',
     ready:'readyStatus',
     completed:'completedStatus',
     cancelled:'cancelledStatus'
-  })[status];
+  }[status];
 
-  return (
-    TEXT[language][key] ||
-    status
-  );
-
+  return TEXT[language][key]||status;
 }
 
 function renderOrders(){
 
-  const box =
-    $('ordersContent');
+  const box=$('ordersContent');
 
   if(!customerOrders.length){
 
-    box.innerHTML = `
-      <div class="empty-state">
+    box.innerHTML=`
+    <div class="empty-state">
 
-        <div class="empty-icon">
-          ▤
+      <div class="empty-icon">▤</div>
+
+      <div class="empty-title">
+        ${TEXT[language].noOrders}
+      </div>
+
+      <div>
+        ${TEXT[language].noOrdersCopy}
+      </div>
+
+    </div>`;
+
+    return;
+  }
+
+  box.innerHTML=
+    customerOrders.map(order=>`
+
+    <div class="order-card">
+
+      <div class="order-card-top">
+
+        <div>
+
+          <div class="order-number">
+            Order #${escapeHtml(order.id)}
+          </div>
+
+          <div class="order-date">
+            ${escapeHtml(order.created)}
+            ·
+            ${escapeHtml(order.pickup)}
+          </div>
+
         </div>
 
-        <div class="empty-title">
-          ${TEXT[language].noOrders}
-        </div>
-
-        <div class="empty-copy">
-          ${TEXT[language].noOrdersCopy}
+        <div class="status ${escapeHtml(order.status)}">
+          ${escapeHtml(statusText(order.status))}
         </div>
 
       </div>
-    `;
 
-    return;
+      <div class="order-products">
 
-  }
+      ${(order.items||[]).map(item=>`
 
-  box.innerHTML =
-    customerOrders
-      .map(order => {
+        <div class="order-product-line">
 
-        const items =
-          Array.isArray(order.items)
-            ? order.items
-            : [];
+          <span>
+            ${escapeHtml(item.qty)}
+            ×
+            ${escapeHtml(productText(item.id)[0])}
+          </span>
 
-        return `
-          <div class="order-card">
+          <strong>
+            ${escapeHtml(item.line_total)} RSD
+          </strong>
 
-            <div class="order-card-top">
+        </div>
 
-              <div>
+      `).join('')}
 
-                <div class="order-number">
-                  Order #${escapeHtml(order.id)}
-                </div>
+      </div>
 
-                <div class="order-date">
-                  ${escapeHtml(order.created)}
-                  ·
-                  ${escapeHtml(order.pickup)}
-                </div>
+      <div class="order-card-bottom">
 
-              </div>
+        <div class="order-total">
+          ${escapeHtml(order.total)} RSD
+        </div>
 
-              <div class="status ${escapeHtml(order.status)}">
-                ${escapeHtml(statusText(order.status))}
-              </div>
+        ${order.status!=='cancelled'
+          ?`
+          <button class="reorder"
+          onclick='reorder(${JSON.stringify(String(order.id))})'>
+            ${TEXT[language].reorder}
+          </button>
+          `
+          :''}
 
-            </div>
+      </div>
 
-            <div class="order-products">
+    </div>
 
-              ${
-                items
-                  .map(item => {
-
-                    const extras = [
-                      item.extra_shot
-                        ? TEXT[language].extra
-                        : null,
-
-                      item.boba
-                        ? TEXT[language].boba
-                        : null
-                    ].filter(Boolean);
-
-                    return `
-                      <div class="order-product-line">
-
-                        <span>
-                          ${escapeHtml(item.qty)}
-                          ×
-                          ${escapeHtml(productText(item.id)[0])}
-
-                          ${
-                            extras.length
-                              ? `<small> · ${
-                                  escapeHtml(
-                                    extras.join(', ')
-                                  )
-                                }</small>`
-                              : ''
-                          }
-
-                        </span>
-
-                        <strong>
-                          ${escapeHtml(item.line_total)} RSD
-                        </strong>
-
-                      </div>
-                    `;
-
-                  })
-                  .join('')
-              }
-
-            </div>
-
-            <div class="order-card-bottom">
-
-              <div class="order-total">
-                ${escapeHtml(order.total)} RSD
-              </div>
-
-              ${
-                order.status !== 'cancelled'
-                  ? `
-                    <button
-                      class="reorder"
-                      onclick='reorder(${JSON.stringify(String(order.id))})'
-                    >
-                      ${TEXT[language].reorder}
-                    </button>
-                  `
-                  : ''
-              }
-
-            </div>
-
-          </div>
-        `;
-
-      })
-      .join('');
-
+    `).join('');
 }
-
-/* =========================
-   REORDER
-========================= */
 
 function reorder(id){
 
-  const order =
-    customerOrders.find(
-      item =>
-        String(item.id) ===
-        String(id)
-    );
+  const order=customerOrders.find(
+    x=>String(x.id)===String(id)
+  );
 
-  if(!order){
-    return;
-  }
+  if(!order)return;
 
-  cart=[];
-
-  let remaining=30;
-
-  for(
-    const item
-    of order.items || []
-  ){
-
-    const product =
-      menu.find(
-        x =>
-          x.id === item.id
-      );
-
-    if(
-      !product ||
-      remaining <= 0
-    ){
-      continue;
-    }
-
-    const qty =
-      Math.min(
-        10,
-        remaining,
-        Math.max(
-          1,
-          Number(item.qty) || 1
-        )
-      );
-
-    cart.push({
-
-      id:item.id,
-
-      qty:qty,
-
-      extra_shot:
-        !!item.extra_shot &&
-        canExtra(item.id),
-
-      boba:
-        !!item.boba &&
-        !!product.boba
-
-    });
-
-    remaining -= qty;
-
-  }
+  cart=(order.items||[]).map(item=>({
+    id:item.id,
+    qty:Number(item.qty)||1,
+    extra_shot:!!item.extra_shot,
+    boba:!!item.boba
+  }));
 
   updateCart();
 
   showPage('menu');
-
-  setTimeout(
-    () =>
-      $('cartSection')
-        .scrollIntoView({
-          behavior:'smooth',
-          block:'center'
-        }),
-    120
-  );
-
 }
 
-/* =========================
-   PROFILE
-========================= */
+/* PROFILE */
 
 async function loadProfile(){
 
-  const initData =
-    tg?.initData || '';
+  const initData=tg?.initData||'';
 
-  if(!initData){
+  if(!initData)return;
 
-    customerProfile=null;
+  try{
+
+    const response=await fetch('/api/profile',{
+
+      method:'POST',
+
+      headers:{
+        'Content-Type':'application/json'
+      },
+
+      cache:'no-store',
+
+      body:JSON.stringify({
+        initData
+      })
+
+    });
+
+    customerProfile=await response.json();
 
     renderProfile();
 
+  }catch(e){}
+}
+
+function renderProfile(){
+
+  const box=$('profileContent');
+
+  if(!customerProfile){
+
+    const first=
+      tg?.initDataUnsafe?.user?.first_name||'TAKE AWAY';
+
+    box.innerHTML=`
+    <div class="profile-card">
+
+      <div class="avatar">
+        ${escapeHtml(first.charAt(0).toUpperCase())}
+      </div>
+
+      <div class="profile-name">
+        ${escapeHtml(first)}
+      </div>
+
+      <div class="member">
+        ${TEXT[language].member}
+      </div>
+
+    </div>`;
+
+    return;
+  }
+
+  const p=customerProfile;
+
+  const favorite=
+    p.favorite?.id
+      ?productText(p.favorite.id)[0]
+      :TEXT[language].noFavorite;
+
+  box.innerHTML=`
+
+  <div class="profile-card">
+
+    <div class="avatar">
+      ${escapeHtml((p.first_name||'T').charAt(0).toUpperCase())}
+    </div>
+
+    <div class="profile-name">
+      ${escapeHtml(p.name||'TAKE AWAY Member')}
+    </div>
+
+    ${p.username
+      ?`<div class="profile-user">@${escapeHtml(p.username)}</div>`
+      :''}
+
+    <div class="member">
+      ${TEXT[language].member}
+    </div>
+
+  </div>
+
+  <div class="stats">
+
+    <div class="stat">
+
+      <div class="stat-number">
+        ${escapeHtml(p.orders||0)}
+      </div>
+
+      <div class="stat-label">
+        ${TEXT[language].totalOrders}
+      </div>
+
+    </div>
+
+    <div class="stat">
+
+      <div class="stat-number">
+        ${escapeHtml(p.drinks||0)}
+      </div>
+
+      <div class="stat-label">
+        ${TEXT[language].drinks}
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="profile-info">
+
+    <div class="profile-row">
+
+      <span>
+        ${TEXT[language].favorite}
+      </span>
+
+      <strong>
+        ${escapeHtml(favorite)}
+      </strong>
+
+    </div>
+
+    <div class="profile-row">
+
+      <span>
+        ${TEXT[language].memberSince}
+      </span>
+
+      <strong>
+        ${escapeHtml(p.first_order||'—')}
+      </strong>
+
+    </div>
+
+  </div>`;
+}
+
+/* =========================
+   REAL REWARDS
+========================= */
+
+async function loadRewards(){
+
+  const initData=tg?.initData||'';
+
+  if(!initData){
+
+    rewardsData=null;
+    renderRewards();
     return;
 
   }
 
   try{
 
-    const response =
-      await fetch(
-        '/api/profile',
-        {
-          method:'POST',
+    const response=await fetch('/api/rewards',{
 
-          headers:{
-            'Content-Type':
-              'application/json'
-          },
+      method:'POST',
 
-          cache:'no-store',
+      headers:{
+        'Content-Type':'application/json'
+      },
 
-          body:JSON.stringify({
-            initData
-          })
-        }
-      );
+      cache:'no-store',
 
-    const data =
-      await response.json();
+      body:JSON.stringify({
+        initData
+      })
+
+    });
+
+    const data=await response.json();
 
     if(!response.ok){
-
-      throw Error(
-        data.error ||
-        'Could not load profile'
-      );
-
+      throw Error(data.error||'Could not load rewards');
     }
 
-    customerProfile=data;
+    rewardsData=data;
 
-    renderProfile();
+    renderRewards();
 
-  }catch(error){
+  }catch(e){
 
-    $('profileContent').innerHTML =
-      `<div class="empty-state">${
-        escapeHtml(error.message)
-      }</div>`;
+    rewardsData=null;
 
-  }
+    $('rewardsNote').textContent=
+      e.message||'Could not load rewards';
 
-}
-
-function renderProfile(){
-
-  const box =
-    $('profileContent');
-
-  if(!customerProfile){
-
-    const name =
-      tg?.initDataUnsafe
-        ?.user
-        ?.first_name;
-
-    box.innerHTML = `
-      <div class="profile-card">
-
-        <div class="avatar">
-          ${
-            escapeHtml(
-              (name || 'T')[0]
-                .toUpperCase()
-            )
-          }
-        </div>
-
-        <div class="profile-name">
-          ${escapeHtml(name || 'TAKE AWAY')}
-        </div>
-
-        <div class="member">
-          ${TEXT[language].member}
-        </div>
-
-      </div>
-    `;
-
-    return;
+    renderRewards();
 
   }
-
-  const profile =
-    customerProfile;
-
-  const name =
-    profile.name ||
-    'TAKE AWAY Member';
-
-  const initial =
-    (
-      profile.first_name ||
-      name ||
-      'T'
-    )
-      .charAt(0)
-      .toUpperCase();
-
-  const favorite =
-    profile.favorite?.id
-      ? productText(
-          profile.favorite.id
-        )[0]
-      : TEXT[language].noFavorite;
-
-  box.innerHTML = `
-
-    <div class="profile-card">
-
-      <div class="avatar">
-        ${escapeHtml(initial)}
-      </div>
-
-      <div class="profile-name">
-        ${escapeHtml(name)}
-      </div>
-
-      ${
-        profile.username
-          ? `
-            <div class="profile-user">
-              @${escapeHtml(profile.username)}
-            </div>
-          `
-          : ''
-      }
-
-      <div class="member">
-        ${TEXT[language].member}
-      </div>
-
-    </div>
-
-    <div class="stats">
-
-      <div class="stat">
-
-        <div class="stat-number">
-          ${escapeHtml(profile.orders || 0)}
-        </div>
-
-        <div class="stat-label">
-          ${TEXT[language].totalOrders}
-        </div>
-
-      </div>
-
-      <div class="stat">
-
-        <div class="stat-number">
-          ${escapeHtml(profile.drinks || 0)}
-        </div>
-
-        <div class="stat-label">
-          ${TEXT[language].drinks}
-        </div>
-
-      </div>
-
-    </div>
-
-    <div class="profile-info">
-
-      <div class="profile-row">
-
-        <span>
-          ${TEXT[language].favorite}
-        </span>
-
-        <strong>
-          ${escapeHtml(favorite)}
-        </strong>
-
-      </div>
-
-      <div class="profile-row">
-
-        <span>
-          ${TEXT[language].memberSince}
-        </span>
-
-        <strong>
-          ${escapeHtml(profile.first_order || '—')}
-        </strong>
-
-      </div>
-
-    </div>
-  `;
-
 }
-
-/* =========================
-   REWARDS
-========================= */
 
 function renderRewards(){
 
-  $('stamps').innerHTML =
-    Array
-      .from(
-        {length:10},
-        () =>
-          '<div class="stamp">✦</div>'
-      )
-      .join('');
+  const stamps=Math.max(
+    0,
+    Math.min(
+      9,
+      Number(rewardsData?.stamps||0)
+    )
+  );
 
-  $('rewardsCount').textContent =
-    '0 / 9';
+  const freeDrinks=Math.max(
+    0,
+    Number(rewardsData?.free_drinks||0)
+  );
 
-}
+  $('stamps').innerHTML=
+    Array.from({length:9},(_,index)=>`
+      <div class="stamp ${index<stamps?'filled':''}">
+        ✦
+      </div>
+    `).join('');
 
-/* =========================
-   START APP
-========================= */
+  $('rewardsCount').textContent=
+    `${stamps} / 9`;
 
-document.addEventListener(
-  'DOMContentLoaded',
-  async () => {
+  if(freeDrinks>0){
 
-    restoreCart();
+    $('rewardReady').innerHTML=`
+      <div class="reward-ready">
+        🎁 ${TEXT[language].freeReady}
+        <br>
+        <small>
+          ${TEXT[language].freeCount}: ${freeDrinks}
+        </small>
+      </div>
+    `;
 
-    let saved='en';
+  }else{
 
-    try{
-
-      saved =
-        localStorage.getItem(
-          'takeaway_language'
-        ) ||
-        'en';
-
-    }catch(e){}
-
-    changeLanguage(
-      TEXT[saved]
-        ? saved
-        : 'en'
-    );
-
-    updatePickupInfo();
-
-    updatePickupCheckoutUI();
-
-    await loadMenu();
-
-    loadOrders();
-
-    loadProfile();
+    $('rewardReady').innerHTML='';
 
   }
-);
 
+  $('rewardsNote').textContent=
+    TEXT[language].rewardNote;
+}
+
+/* START */
+
+document.addEventListener('DOMContentLoaded',async()=>{
+
+  restoreCart();
+
+  let saved='en';
+
+  try{
+    saved=localStorage.getItem('takeaway_language')||'en';
+  }catch(e){}
+
+  changeLanguage(TEXT[saved]?saved:'en');
+
+  updatePickupInfo();
+
+  await loadMenu();
+
+  loadOrders();
+  loadProfile();
+  loadRewards();
+
+});
 </script>
 
 </body>
