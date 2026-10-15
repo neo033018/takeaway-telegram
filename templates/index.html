@@ -710,10 +710,11 @@ select:focus-visible{
   color:var(--gold);
 }
 
-/* PICKUP */
+/* PICKUP + LOCATION */
 
 .pickup,
 .payment-note,
+.location-card,
 .profile-card,
 .rewards-card,
 .order-card{
@@ -723,7 +724,8 @@ select:focus-visible{
 }
 
 .pickup,
-.payment-note{
+.payment-note,
+.location-card{
   margin:16px 13px 12px;
   padding:17px;
   border-radius:22px;
@@ -818,6 +820,91 @@ select:focus-visible{
   color:var(--muted);
   font-size:11px;
   line-height:1.5;
+}
+
+/* FIND US */
+
+.location-card{
+  position:relative;
+  overflow:hidden;
+  border-color:rgba(214,179,106,.48);
+  background:
+    radial-gradient(circle at 100% 0%,rgba(214,179,106,.19),transparent 42%),
+    linear-gradient(145deg,rgba(255,255,255,.15),rgba(255,255,255,.045) 65%);
+}
+
+.location-card::after{
+  content:"";
+  position:absolute;
+  width:145px;
+  height:145px;
+  right:-65px;
+  bottom:-85px;
+  border:1px solid rgba(214,179,106,.18);
+  border-radius:50%;
+  pointer-events:none;
+}
+
+.location-top{
+  position:relative;
+  z-index:1;
+  display:flex;
+  align-items:center;
+  gap:13px;
+}
+
+.location-icon{
+  width:48px;
+  height:48px;
+  flex:0 0 48px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:16px;
+  background:rgba(214,179,106,.18);
+  border:1px solid rgba(214,179,106,.42);
+  font-size:22px;
+}
+
+.location-copy{
+  min-width:0;
+}
+
+.location-title{
+  color:var(--gold);
+  font:20px Georgia,serif;
+  letter-spacing:1px;
+}
+
+.location-name{
+  margin-top:4px;
+  color:white;
+  font-size:12px;
+  font-weight:800;
+}
+
+.location-text{
+  position:relative;
+  z-index:1;
+  margin-top:13px;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.5;
+}
+
+.directions-button{
+  position:relative;
+  z-index:1;
+  width:100%;
+  min-height:50px;
+  margin-top:14px;
+  border-radius:14px;
+  background:var(--gold);
+  color:var(--green);
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.4px;
+  box-shadow:0 9px 24px rgba(0,0,0,.15);
 }
 
 /* MESSAGES */
@@ -1136,10 +1223,6 @@ select:focus-visible{
   box-shadow:0 8px 24px rgba(0,0,0,.16);
 }
 
-.use-reward-button:active{
-  transform:scale(.975);
-}
-
 /* ORDER BAR */
 
 .order-bar{
@@ -1368,11 +1451,6 @@ select:focus-visible{
   font-weight:800;
 }
 
-.modal-add.reward-confirm{
-  background:#c8a24e;
-  color:#173326;
-}
-
 /* PAYMENT */
 
 .payment-modal{
@@ -1417,27 +1495,6 @@ select:focus-visible{
 
 .payment-reward-info.show{
   display:block;
-}
-
-.payment-choice{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin:20px 0 13px;
-}
-
-.payment-choice button{
-  min-height:58px;
-  border:1px solid #cdd8d0;
-  border-radius:15px;
-  background:white;
-  color:var(--green);
-  font-weight:800;
-}
-
-.payment-choice button.active{
-  background:var(--green);
-  color:white;
 }
 
 .payment-pending{
@@ -1515,16 +1572,13 @@ select:focus-visible{
 </div>
 
 <div class="brand">
-
 <div class="walking-logo">
 <img src="/static/logo.png" alt="TAKE AWAY">
 </div>
-
 <div class="logo">TAKE AWAY</div>
 <div class="subtitle">THAI TEA &amp; COFFEE</div>
 <div class="brand-line"></div>
 <div class="tagline">SAME GOOD ENERGY DAILY</div>
-
 </div>
 
 </header>
@@ -1540,48 +1594,30 @@ select:focus-visible{
 
 <div class="tabs-wrap">
 <div class="tabs">
-
 <div id="tabIndicator" class="tab-indicator"></div>
-
 <button id="tab-tea" class="tab active" onclick="showCategory('tea')">Thai Tea</button>
 <button id="tab-coffee" class="tab" onclick="showCategory('coffee')">Coffee</button>
 <button id="tab-special" class="tab" onclick="showCategory('special')">Specials</button>
-
 </div>
 </div>
 
 <div id="rewardModeBanner" class="reward-mode-banner">
-
 <div class="reward-mode-top">
-
 <div class="reward-mode-icon">🎁</div>
-
 <div class="reward-mode-copy">
 <div id="rewardModeTitle" class="reward-mode-title">Choose your free drink</div>
-<div id="rewardModeText" class="reward-mode-text">
-Choose any drink below. The base drink is free.
+<div id="rewardModeText" class="reward-mode-text">Choose any drink below. The base drink is free.</div>
 </div>
 </div>
-
-</div>
-
-<button id="rewardModeCancel" class="reward-mode-cancel" onclick="cancelRewardMode()">
-CANCEL FREE DRINK
-</button>
-
+<button id="rewardModeCancel" class="reward-mode-cancel" onclick="cancelRewardMode()">CANCEL FREE DRINK</button>
 </div>
 
 <div id="rewardSelectedBanner" class="reward-selected-banner">
-
 <div class="reward-selected-copy">
 <div id="rewardSelectedTitle" class="reward-selected-title">🎁 FREE DRINK SELECTED</div>
 <div id="rewardSelectedName" class="reward-selected-name"></div>
 </div>
-
-<button id="rewardSelectedRemove" class="reward-selected-remove" onclick="removeRewardSelection()">
-REMOVE
-</button>
-
+<button id="rewardSelectedRemove" class="reward-selected-remove" onclick="removeRewardSelection()">REMOVE</button>
 </div>
 
 <div id="menu"></div>
@@ -1592,32 +1628,19 @@ REMOVE
 </div>
 
 <section class="pickup">
-
 <h2 id="pickupTitle">Pickup time</h2>
-
-<div id="pickupSubtitle" class="pickup-subtitle">
-When should we prepare your order?
-</div>
+<div id="pickupSubtitle" class="pickup-subtitle">When should we prepare your order?</div>
 
 <div class="pickup-modes">
-
-<button id="asapMode" class="pickup-mode active" onclick="setPickupMode('asap')">
-ASAP
-</button>
-
-<button id="exactMode" class="pickup-mode" onclick="setPickupMode('exact')">
-Choose time
-</button>
-
+<button id="asapMode" class="pickup-mode active" onclick="setPickupMode('asap')">ASAP</button>
+<button id="exactMode" class="pickup-mode" onclick="setPickupMode('exact')">Choose time</button>
 </div>
 
 <div id="asapTimes" class="times">
-
 <button class="time selected" onclick="chooseTime(this,10)">10 min</button>
 <button class="time" onclick="chooseTime(this,15)">15 min</button>
 <button class="time" onclick="chooseTime(this,20)">20 min</button>
 <button class="time" onclick="chooseTime(this,30)">30 min</button>
-
 </div>
 
 <div id="exactBox" class="exact-box">
@@ -1625,81 +1648,71 @@ Choose time
 </div>
 
 <div id="pickupInfo" class="pickup-info"></div>
-
 </section>
 
 <div class="payment-note">
 <div id="paymentNoteTitle" class="payment-note-title">☕ Pay at pickup</div>
-<div id="paymentNoteText" class="payment-note-text">
-Order now and pay by card or cash when you collect your drinks.
+<div id="paymentNoteText" class="payment-note-text">Order now and pay by card or cash when you collect your drinks.</div>
+</div>
+
+<section class="location-card">
+<div class="location-top">
+<div class="location-icon">📍</div>
+<div class="location-copy">
+<div id="locationTitle" class="location-title">Find Us</div>
+<div id="locationName" class="location-name">TAKE AWAY · Belgrade</div>
 </div>
 </div>
+
+<div id="locationText" class="location-text">
+Come by for Thai tea, coffee and your TAKE AWAY order.
+</div>
+
+<button id="directionsButton" class="directions-button" onclick="openDirections()">
+GET DIRECTIONS →
+</button>
+</section>
 
 <div id="message" class="message"></div>
 
 </div>
 
 <div id="ordersPage" class="page">
-
 <div class="app-page">
-
 <div class="page-heading">
 <h1 id="ordersHeading">My Orders</h1>
 <p id="ordersSub">Your TAKE AWAY order history</p>
 </div>
-
 <div id="ordersContent"></div>
-
 </div>
 </div>
 
 <div id="rewardsPage" class="page">
-
 <div class="app-page">
-
 <div class="page-heading">
 <h1 id="rewardsHeading">Rewards</h1>
 <p id="rewardsSub">A little thank you for every cup</p>
 </div>
 
 <div class="rewards-card">
-
 <div class="rewards-symbol">✦</div>
-
 <h2 id="rewardsTitle">Your coffee journey</h2>
-
-<p id="rewardsDescription">
-Buy 9 paid drinks and get your 10th free.
-</p>
-
+<p id="rewardsDescription">Buy 9 paid drinks and get your 10th free.</p>
 <div id="rewardReady"></div>
-
 <div id="stamps" class="stamps"></div>
-
-<div id="rewardsCount" style="font:20px Georgia,serif;color:var(--gold)">
-0 / 9
+<div id="rewardsCount" style="font:20px Georgia,serif;color:var(--gold)">0 / 9</div>
+<div id="rewardsNote" class="rewards-note">Rewards are added after payment is confirmed by our barista.</div>
 </div>
-
-<div id="rewardsNote" class="rewards-note">
-Rewards are added after payment is confirmed by our barista.
-</div>
-
-</div>
-
 </div>
 </div>
 
 <div id="profilePage" class="page">
-
 <div class="app-page">
-
 <div class="page-heading">
 <h1 id="profileHeading">Profile</h1>
 <p id="profileSub">Your TAKE AWAY account</p>
 </div>
-
 <div id="profileContent"></div>
-
 </div>
 </div>
 
@@ -1707,20 +1720,14 @@ Rewards are added after payment is confirmed by our barista.
 </div>
 
 <div id="orderBar" class="order-bar hidden">
-
 <div>
 <small id="itemCount">0 items</small>
 <div id="total" class="total">0 RSD</div>
 </div>
-
-<button class="order-button" id="orderButton" onclick="placeOrder()">
-CONTINUE →
-</button>
-
+<button class="order-button" id="orderButton" onclick="placeOrder()">CONTINUE →</button>
 </div>
 
 <nav class="bottom-nav">
-
 <div class="nav-indicator" id="navIndicator"></div>
 
 <button id="nav-menu" class="nav-button active" onclick="showPage('menu')">
@@ -1742,17 +1749,11 @@ CONTINUE →
 <span class="nav-icon">♙</span>
 <span id="navProfileText">Profile</span>
 </button>
-
 </nav>
 
-<!-- PRODUCT MODAL -->
-
 <div id="modalBg" class="modal-bg" onclick="closeModal(event)">
-
 <div class="modal">
-
 <div class="modal-handle"></div>
-
 <h2 id="modalName"></h2>
 <div id="modalPrice" class="modal-price"></div>
 
@@ -1773,54 +1774,33 @@ CONTINUE →
 <div id="quantityLabel" class="quantity-label">Quantity</div>
 
 <div class="quantity-wrap">
-
 <button class="qty-btn" onclick="changeModalQuantity(-1)">−</button>
-
 <span class="qty-number" id="modalQuantity">1</span>
-
 <button class="qty-btn" onclick="changeModalQuantity(1)">+</button>
-
 </div>
 
-<button id="modalAdd" class="modal-add" onclick="confirmAdd()">
-Add to order
-</button>
-
+<button id="modalAdd" class="modal-add" onclick="confirmAdd()">Add to order</button>
 </div>
 </div>
 
-<!-- PAYMENT -->
+<!-- PAY AT PICKUP ONLY -->
 
 <div id="paymentModalBg" class="modal-bg" onclick="closePaymentModal(event)">
-
 <div class="modal payment-modal">
-
 <div class="modal-handle"></div>
 
 <div class="payment-lock">☕</div>
 
-<h2 id="paymentModalTitle">Choose payment</h2>
+<h2 id="paymentModalTitle">Pay at pickup</h2>
 
 <div id="paymentModalCopy" class="payment-modal-copy">
-Order now and pay when you collect your drinks.
+Place your order now and pay when you collect your drinks.
 </div>
 
 <div id="paymentModalTotal" class="payment-total">0 RSD</div>
 
 <div id="paymentRewardInfo" class="payment-reward-info">
 🎁 Your free drink reward is applied.
-</div>
-
-<div class="payment-choice">
-
-<button id="pay-online" onclick="selectPayment('online')">
-💳 Pay online
-</button>
-
-<button id="pay-pickup" class="active" onclick="selectPayment('pickup')">
-☕ Pay at pickup
-</button>
-
 </div>
 
 <div id="paymentDemoPill" class="demo-pill">
@@ -1842,7 +1822,6 @@ CLOSE
 </button>
 
 <div id="paymentMethods" class="payment-methods"></div>
-
 </div>
 </div>
 
@@ -1851,6 +1830,8 @@ CLOSE
 
 const tg=window.Telegram?.WebApp||null;
 
+const MAPS_URL='https://maps.app.goo.gl/GLpyv5FzHLJ4hdBH9?g_st=com.openai.chat.ShareExtension';
+
 try{
   tg?.ready();
   tg?.expand();
@@ -1858,10 +1839,6 @@ try{
 }catch(e){}
 
 const $=id=>document.getElementById(id);
-
-/* =========================
-   HAPTIC FEEDBACK
-========================= */
 
 function haptic(style='light'){
   try{
@@ -1881,17 +1858,10 @@ function hapticError(){
   }catch(e){}
 }
 
-/*
-Light vibration for every interactive tap.
-Inline onclick handlers still work normally.
-*/
 document.addEventListener(
   'pointerdown',
   event=>{
-    const control=event.target.closest(
-      'button,select'
-    );
-
+    const control=event.target.closest('button,select');
     if(control && !control.disabled){
       haptic('light');
     }
@@ -1908,12 +1878,78 @@ String(value??'').replace(/[&<>"']/g,c=>({
   "'":'&#39;'
 }[c]));
 
-/* =========================
-   TRANSLATIONS
-========================= */
+/* ANALYTICS */
+
+function analyticsSource(){
+  try{
+    const params=new URLSearchParams(window.location.search);
+
+    return String(
+      tg?.initDataUnsafe?.start_param ||
+      params.get('tgWebAppStartParam') ||
+      params.get('utm_source') ||
+      ''
+    ).slice(0,100);
+  }catch(e){
+    return '';
+  }
+}
+
+async function trackAppOpen(){
+  const initData=tg?.initData||'';
+
+  if(!initData){
+    return;
+  }
+
+  try{
+    await fetch('/api/analytics/open',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({
+        initData,
+        source:analyticsSource()
+      }),
+      keepalive:true
+    });
+  }catch(e){}
+}
+
+function openDirections(){
+  const initData=tg?.initData||'';
+
+  if(initData){
+    try{
+      fetch('/api/analytics/directions',{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify({
+          initData,
+          source:analyticsSource()
+        }),
+        keepalive:true
+      }).catch(()=>{});
+    }catch(e){}
+  }
+
+  try{
+    if(tg?.openLink){
+      tg.openLink(MAPS_URL);
+    }else{
+      window.open(MAPS_URL,'_blank','noopener,noreferrer');
+    }
+  }catch(e){
+    window.location.href=MAPS_URL;
+  }
+}
+
+/* TRANSLATIONS */
 
 const TEXT={
-
 en:{
   tea:'Thai Tea',
   coffee:'Coffee',
@@ -1981,6 +2017,12 @@ en:{
   freeAdd:'USE FREE DRINK',
   freePayment:'🎁 Your free drink reward is applied.',
   rewardUnavailable:'Your free drink is no longer available. Please refresh Rewards.',
+  locationTitle:'Find Us',
+  locationName:'TAKE AWAY · Belgrade',
+  locationText:'Come by for Thai tea, coffee and your TAKE AWAY order.',
+  directions:'GET DIRECTIONS →',
+  paymentTitle:'Pay at pickup',
+  paymentCopy:'Place your order now and pay when you collect your drinks.',
   greetings:['Good morning','Good afternoon','Good evening'],
   welcome:'Welcome to TAKE AWAY'
 },
@@ -2052,6 +2094,12 @@ sr:{
   freeAdd:'ISKORISTI GRATIS PIĆE',
   freePayment:'🎁 Vaše besplatno piće je primenjeno.',
   rewardUnavailable:'Besplatno piće više nije dostupno. Osvežite Nagrade.',
+  locationTitle:'Pronađite nas',
+  locationName:'TAKE AWAY · Beograd',
+  locationText:'Svratite po tajlandski čaj, kafu i svoju TAKE AWAY porudžbinu.',
+  directions:'PUTANJA →',
+  paymentTitle:'Plaćanje pri preuzimanju',
+  paymentCopy:'Poručite sada i platite kada preuzmete piće.',
   greetings:['Dobro jutro','Dobar dan','Dobro veče'],
   welcome:'Dobro došli u TAKE AWAY'
 },
@@ -2123,10 +2171,15 @@ ru:{
   freeAdd:'ИСПОЛЬЗОВАТЬ БЕСПЛАТНЫЙ НАПИТОК',
   freePayment:'🎁 Бесплатный напиток применён к заказу.',
   rewardUnavailable:'Бесплатный напиток больше недоступен. Обновите раздел Бонусы.',
+  locationTitle:'Как нас найти',
+  locationName:'TAKE AWAY · Белград',
+  locationText:'Заходите за тайским чаем, кофе и вашим заказом TAKE AWAY.',
+  directions:'МАРШРУТ →',
+  paymentTitle:'Оплата при получении',
+  paymentCopy:'Оформите заказ сейчас и оплатите при получении.',
   greetings:['Доброе утро','Добрый день','Добрый вечер'],
   welcome:'Добро пожаловать в TAKE AWAY'
 }
-
 };
 
 const PRODUCT_TEXT={
@@ -2146,47 +2199,25 @@ const PRODUCT_TEXT={
   bumble:{en:['Bumble Coffee','Espresso + orange juice + ice'],sr:['Bumble Coffee','Espresso + sok od pomorandže + led'],ru:['Бамбл кофе','Эспрессо + апельсиновый сок + лёд']}
 };
 
-/* =========================
-   STATE
-========================= */
-
 let language='en';
 let menu=[];
 let cart=[];
 let category='tea';
 let currentPage='menu';
-
 let selectedProduct=null;
 let modalExtra=false;
 let modalBoba=false;
 let modalQuantity=1;
 let modalRewardMode=false;
-
 let pickupMode='asap';
 let pickupMinutes=10;
 let exactPickupDate=null;
-
 let customerOrders=[];
 let customerProfile=null;
 let rewardsData=null;
-
-let paymentMethod='pickup';
 let sendingPickupOrder=false;
-
-/*
-rewardMode:
-customer pressed USE FREE DRINK and is choosing a drink.
-
-rewardCartIndex:
-index of cart line where ONE base drink will be free.
-*/
 let rewardMode=false;
 let rewardCartIndex=null;
-
-
-/* =========================
-   HELPERS
-========================= */
 
 function productText(id){
   return PRODUCT_TEXT[id]?.[language]||
@@ -2195,19 +2226,13 @@ function productText(id){
 
 function saveCart(){
   try{
-    localStorage.setItem(
-      'takeaway_cart_v2',
-      JSON.stringify(cart)
-    );
+    localStorage.setItem('takeaway_cart_v2',JSON.stringify(cart));
   }catch(e){}
 }
 
 function restoreCart(){
   try{
-    const saved=JSON.parse(
-      localStorage.getItem('takeaway_cart_v2')||'[]'
-    );
-
+    const saved=JSON.parse(localStorage.getItem('takeaway_cart_v2')||'[]');
     if(Array.isArray(saved)){
       cart=saved;
     }
@@ -2217,21 +2242,12 @@ function restoreCart(){
 }
 
 function totalCartQuantity(){
-  return cart.reduce(
-    (sum,item)=>sum+Number(item.qty||0),
-    0
-  );
+  return cart.reduce((sum,item)=>sum+Number(item.qty||0),0);
 }
 
 function normalItemPrice(item){
-
-  const product=menu.find(
-    x=>x.id===item.id
-  );
-
-  if(!product){
-    return 0;
-  }
+  const product=menu.find(x=>x.id===item.id);
+  if(!product) return 0;
 
   return (
     Number(product.price)+
@@ -2241,72 +2257,40 @@ function normalItemPrice(item){
 }
 
 function itemPrice(item,index){
-
   const normal=normalItemPrice(item);
 
   if(index!==rewardCartIndex){
     return normal;
   }
 
-  const product=menu.find(
-    x=>x.id===item.id
-  );
+  const product=menu.find(x=>x.id===item.id);
 
   if(!product){
     return normal;
   }
 
-  /*
-  Backend makes ONE base drink free.
-  Extras remain charged.
-  */
-  return Math.max(
-    0,
-    normal-Number(product.price)
-  );
+  return Math.max(0,normal-Number(product.price));
 }
 
 function cartTotal(){
-
-  return cart.reduce(
-    (sum,item,index)=>
-      sum+itemPrice(item,index),
-    0
-  );
+  return cart.reduce((sum,item,index)=>sum+itemPrice(item,index),0);
 }
 
 function hasFreeReward(){
-
-  return Number(
-    rewardsData?.free_drinks||0
-  )>0;
+  return Number(rewardsData?.free_drinks||0)>0;
 }
 
-
-/* =========================
-   LANGUAGE
-========================= */
-
 function changeLanguage(lang){
-
-  if(!TEXT[lang]){
-    return;
-  }
+  if(!TEXT[lang]) return;
 
   language=lang;
 
   try{
-    localStorage.setItem(
-      'takeaway_language',
-      lang
-    );
+    localStorage.setItem('takeaway_language',lang);
   }catch(e){}
 
   document.querySelectorAll('.lang').forEach(x=>{
-    x.classList.toggle(
-      'active',
-      x.id==='lang-'+lang
-    );
+    x.classList.toggle('active',x.id==='lang-'+lang);
   });
 
   const t=TEXT[lang];
@@ -2343,16 +2327,20 @@ function changeLanguage(lang){
     rewardSelectedTitle:t.freeSelected,
     rewardSelectedRemove:t.remove,
     rewardModalLabel:t.freeModal,
-    paymentRewardInfo:t.freePayment
+    paymentRewardInfo:t.freePayment,
+    locationTitle:t.locationTitle,
+    locationName:t.locationName,
+    locationText:t.locationText,
+    directionsButton:t.directions,
+    paymentModalTitle:t.paymentTitle,
+    paymentModalCopy:t.paymentCopy
   };
 
-  Object.entries(labels).forEach(
-    ([id,value])=>{
-      if($(id)){
-        $(id).textContent=value;
-      }
+  Object.entries(labels).forEach(([id,value])=>{
+    if($(id)){
+      $(id).textContent=value;
     }
-  );
+  });
 
   updateGreeting();
   renderMenu();
@@ -2364,83 +2352,35 @@ function changeLanguage(lang){
   updatePickupInfo();
 }
 
-
-/* =========================
-   GREETING
-========================= */
-
 function updateGreeting(){
-
   const hour=new Date().getHours();
+  const part=hour<12?0:hour<18?1:2;
+  const first=tg?.initDataUnsafe?.user?.first_name;
 
-  const part=
-    hour<12
-      ?0
-      :hour<18
-      ?1
-      :2;
-
-  const first=
-    tg?.initDataUnsafe?.user?.first_name;
-
-  $('greetingText').textContent=
-    TEXT[language].greetings[part];
-
-  $('greetingName').textContent=
-    first
-      ?first+' ✦'
-      :TEXT[language].welcome;
+  $('greetingText').textContent=TEXT[language].greetings[part];
+  $('greetingName').textContent=first?first+' ✦':TEXT[language].welcome;
 }
 
-
-/* =========================
-   PAGE NAVIGATION
-========================= */
-
 function showPage(page){
-
   currentPage=page;
 
   ['menu','orders','rewards','profile'].forEach(name=>{
-
-    $(name+'Page').classList.toggle(
-      'active',
-      name===page
-    );
-
-    $('nav-'+name).classList.toggle(
-      'active',
-      name===page
-    );
-
+    $(name+'Page').classList.toggle('active',name===page);
+    $('nav-'+name).classList.toggle('active',name===page);
   });
 
-  const index=[
-    'menu',
-    'orders',
-    'rewards',
-    'profile'
-  ].indexOf(page);
+  const index=['menu','orders','rewards','profile'].indexOf(page);
 
-  $('navIndicator').style.transform=
-    `translateX(${index*100}%)`;
+  $('navIndicator').style.transform=`translateX(${index*100}%)`;
 
   $('orderBar').classList.toggle(
     'hidden',
     page!=='menu'||cart.length===0
   );
 
-  if(page==='orders'){
-    loadOrders();
-  }
-
-  if(page==='profile'){
-    loadProfile();
-  }
-
-  if(page==='rewards'){
-    loadRewards();
-  }
+  if(page==='orders') loadOrders();
+  if(page==='profile') loadProfile();
+  if(page==='rewards') loadRewards();
 
   window.scrollTo({
     top:0,
@@ -2448,60 +2388,35 @@ function showPage(page){
   });
 }
 
-
-/* =========================
-   MENU
-========================= */
-
 async function loadMenu(){
-
   try{
-
-    const response=await fetch(
-      '/api/menu?ts='+Date.now(),
-      {
-        cache:'no-store'
-      }
-    );
+    const response=await fetch('/api/menu?ts='+Date.now(),{
+      cache:'no-store'
+    });
 
     menu=await response.json();
 
     renderMenu();
     updateCart();
-
   }catch(e){
-
-    $('menu').innerHTML=
-      '<div class="empty-state">Could not load menu</div>';
-
+    $('menu').innerHTML='<div class="empty-state">Could not load menu</div>';
   }
 }
 
 function showCategory(cat){
-
   category=cat;
 
   ['tea','coffee','special'].forEach(name=>{
-    $('tab-'+name).classList.toggle(
-      'active',
-      name===cat
-    );
+    $('tab-'+name).classList.toggle('active',name===cat);
   });
 
-  const i=[
-    'tea',
-    'coffee',
-    'special'
-  ].indexOf(cat);
-
-  $('tabIndicator').style.transform=
-    `translateX(${i*100}%)`;
+  const i=['tea','coffee','special'].indexOf(cat);
+  $('tabIndicator').style.transform=`translateX(${i*100}%)`;
 
   renderMenu();
 }
 
 function drinkClass(id){
-
   return ({
     green:'greentea',
     lime:'limetea',
@@ -2511,7 +2426,6 @@ function drinkClass(id){
 }
 
 function drinkVisual(id){
-
   const ice=[
     'icedlatte',
     'americanocream',
@@ -2540,10 +2454,7 @@ function drinkVisual(id){
 }
 
 function renderMenu(){
-
-  const filtered=menu.filter(
-    x=>x.category===category
-  );
+  const filtered=menu.filter(x=>x.category===category);
 
   const heading=
     category==='tea'
@@ -2561,7 +2472,6 @@ function renderMenu(){
 
   $('menu').innerHTML=`
   <section class="section">
-
     <div class="section-header">
       <span class="section-icon">${icon}</span>
       <span class="section-title">${heading}</span>
@@ -2569,9 +2479,7 @@ function renderMenu(){
     </div>
 
     <div class="products">
-
     ${filtered.map(product=>{
-
       const copy=productText(product.id);
 
       const buttonText=rewardMode
@@ -2580,7 +2488,6 @@ function renderMenu(){
 
       return `
       <article class="product ${rewardMode?'reward-mode-product':''}">
-
         ${drinkVisual(product.id)}
 
         <div class="product-name">
@@ -2601,44 +2508,21 @@ function renderMenu(){
         >
           ${buttonText}
         </button>
-
       </article>`;
-
     }).join('')}
-
     </div>
-
   </section>`;
 }
 
-
-/* =========================
-   FREE REWARD MODE
-========================= */
-
 function startRewardMode(){
-
   if(!hasFreeReward()){
-
     hapticError();
-
-    showMessage(
-      TEXT[language].rewardUnavailable,
-      'error'
-    );
-
+    showMessage(TEXT[language].rewardUnavailable,'error');
     loadRewards();
-
     return;
   }
 
   rewardMode=true;
-
-  /*
-  If there was a previous selection,
-  remove only reward assignment.
-  The cart item itself stays.
-  */
   rewardCartIndex=null;
 
   renderRewardMode();
@@ -2656,23 +2540,17 @@ function startRewardMode(){
 }
 
 function cancelRewardMode(){
-
   rewardMode=false;
-
   renderRewardMode();
   renderMenu();
 }
 
 function renderRewardMode(){
-
   const banner=$('rewardModeBanner');
   const selected=$('rewardSelectedBanner');
 
   if(banner){
-    banner.classList.toggle(
-      'show',
-      rewardMode
-    );
+    banner.classList.toggle('show',rewardMode);
   }
 
   const validRewardIndex=
@@ -2680,30 +2558,18 @@ function renderRewardMode(){
     cart[rewardCartIndex];
 
   if(selected){
-
-    selected.classList.toggle(
-      'show',
-      !!validRewardIndex
-    );
-
+    selected.classList.toggle('show',!!validRewardIndex);
   }
 
   if(validRewardIndex){
-
     $('rewardSelectedName').textContent=
-      productText(
-        cart[rewardCartIndex].id
-      )[0];
-
+      productText(cart[rewardCartIndex].id)[0];
   }else{
-
     $('rewardSelectedName').textContent='';
-
   }
 }
 
 function removeRewardSelection(){
-
   rewardCartIndex=null;
   rewardMode=false;
 
@@ -2712,13 +2578,7 @@ function removeRewardSelection(){
   updateCart();
 }
 
-
-/* =========================
-   PRODUCT MODAL
-========================= */
-
 function canExtra(id){
-
   return [
     'espresso',
     'americano',
@@ -2734,151 +2594,76 @@ function canExtra(id){
 }
 
 function openProduct(id){
+  selectedProduct=menu.find(x=>x.id===id);
 
-  selectedProduct=menu.find(
-    x=>x.id===id
-  );
-
-  if(!selectedProduct){
-    return;
-  }
+  if(!selectedProduct) return;
 
   modalExtra=false;
   modalBoba=false;
   modalQuantity=1;
+  modalRewardMode=rewardMode && hasFreeReward();
 
-  /*
-  Remember whether this modal was opened
-  while choosing the free drink.
-  */
-  modalRewardMode=
-    rewardMode && hasFreeReward();
-
-  $('modalName').textContent=
-    productText(id)[0];
-
+  $('modalName').textContent=productText(id)[0];
   $('modalQuantity').textContent='1';
 
-  $('extraOption').style.display=
-    canExtra(id)
-      ?'flex'
-      :'none';
+  $('extraOption').style.display=canExtra(id)?'flex':'none';
+  $('bobaOption').style.display=selectedProduct.boba?'flex':'none';
 
-  $('bobaOption').style.display=
-    selectedProduct.boba
-      ?'flex'
-      :'none';
+  $('extraOption').classList.remove('selected');
+  $('bobaOption').classList.remove('selected');
 
-  $('extraOption').classList.remove(
-    'selected'
-  );
+  $('rewardModalLabel').classList.toggle('show',modalRewardMode);
 
-  $('bobaOption').classList.remove(
-    'selected'
-  );
-
-  $('rewardModalLabel').classList.toggle(
-    'show',
-    modalRewardMode
-  );
-
-  /*
-  One free reward = one free base drink.
-  Quantity is therefore locked to 1 while
-  choosing reward to make UX very clear.
-  */
-  document.querySelectorAll(
-    '.quantity-wrap .qty-btn'
-  ).forEach(button=>{
+  document.querySelectorAll('.quantity-wrap .qty-btn').forEach(button=>{
     button.disabled=modalRewardMode;
   });
 
-  $('quantityLabel').style.display=
-    modalRewardMode
-      ?'none'
-      :'block';
+  $('quantityLabel').style.display=modalRewardMode?'none':'block';
 
-  document.querySelector(
-    '.quantity-wrap'
-  ).style.display=
-    modalRewardMode
-      ?'none'
-      :'flex';
+  document.querySelector('.quantity-wrap').style.display=
+    modalRewardMode?'none':'flex';
 
   updateModalAddButton();
 
-  $('modalBg').classList.add(
-    'open'
-  );
+  $('modalBg').classList.add('open');
 }
 
 function toggleAddon(type){
-
-  if(
-    type==='extra' &&
-    canExtra(selectedProduct.id)
-  ){
-
+  if(type==='extra' && canExtra(selectedProduct.id)){
     modalExtra=!modalExtra;
-
-    $('extraOption').classList.toggle(
-      'selected',
-      modalExtra
-    );
+    $('extraOption').classList.toggle('selected',modalExtra);
   }
 
-  if(
-    type==='boba' &&
-    selectedProduct.boba
-  ){
-
+  if(type==='boba' && selectedProduct.boba){
     modalBoba=!modalBoba;
-
-    $('bobaOption').classList.toggle(
-      'selected',
-      modalBoba
-    );
+    $('bobaOption').classList.toggle('selected',modalBoba);
   }
 
   updateModalAddButton();
 }
 
 function changeModalQuantity(delta){
-
-  if(modalRewardMode){
-    return;
-  }
+  if(modalRewardMode) return;
 
   modalQuantity=Math.max(
     1,
-    Math.min(
-      10,
-      modalQuantity+delta
-    )
+    Math.min(10,modalQuantity+delta)
   );
 
-  $('modalQuantity').textContent=
-    modalQuantity;
-
+  $('modalQuantity').textContent=modalQuantity;
   updateModalAddButton();
 }
 
 function updateModalAddButton(){
+  if(!selectedProduct) return;
 
-  if(!selectedProduct){
-    return;
-  }
-
-  const base=Number(
-    selectedProduct.price
-  );
+  const base=Number(selectedProduct.price);
 
   const extras=
     (modalExtra?150:0)+
     (modalBoba?100:0);
 
   if(modalRewardMode){
-
     $('modalPrice').textContent=
       extras>0
         ?`${TEXT[language].free} + ${extras} RSD extras`
@@ -2889,47 +2674,26 @@ function updateModalAddButton(){
         ?`${TEXT[language].freeAdd} — ${extras} RSD`
         :TEXT[language].freeAdd;
 
-    $('modalAdd').classList.add(
-      'reward-confirm'
-    );
-
+    $('modalAdd').classList.add('reward-confirm');
     return;
   }
 
-  $('modalAdd').classList.remove(
-    'reward-confirm'
-  );
+  $('modalAdd').classList.remove('reward-confirm');
+  $('modalPrice').textContent=base+' RSD';
 
-  $('modalPrice').textContent=
-    base+' RSD';
-
-  const price=(
-    base+extras
-  )*modalQuantity;
+  const price=(base+extras)*modalQuantity;
 
   $('modalAdd').textContent=
     `${TEXT[language].addOrder} — ${price} RSD`;
 }
 
 function confirmAdd(){
+  if(!selectedProduct) return;
 
-  if(!selectedProduct){
-    return;
-  }
-
-  /*
-  FREE DRINK
-  */
   if(modalRewardMode){
-
     if(!hasFreeReward()){
-
       hapticError();
-
-      $('modalBg').classList.remove(
-        'open'
-      );
-
+      $('modalBg').classList.remove('open');
       rewardMode=false;
 
       showMessage(
@@ -2938,28 +2702,15 @@ function confirmAdd(){
       );
 
       loadRewards();
-
       return;
     }
 
     if(totalCartQuantity()+1>30){
-
       hapticError();
-
-      showMessage(
-        TEXT[language].maxOrder,
-        'error'
-      );
-
+      showMessage(TEXT[language].maxOrder,'error');
       return;
     }
 
-    /*
-    Create a dedicated cart line for reward.
-    This makes reward_item_index reliable
-    and avoids accidentally discounting an
-    existing line with multiple drinks.
-    */
     cart.push({
       id:selectedProduct.id,
       qty:1,
@@ -2967,39 +2718,23 @@ function confirmAdd(){
       boba:modalBoba
     });
 
-    rewardCartIndex=
-      cart.length-1;
-
+    rewardCartIndex=cart.length-1;
     rewardMode=false;
     modalRewardMode=false;
 
-    $('modalBg').classList.remove(
-      'open'
-    );
+    $('modalBg').classList.remove('open');
 
     hapticSuccess();
 
     renderRewardMode();
     renderMenu();
     updateCart();
-
     return;
   }
 
-  /*
-  NORMAL DRINK
-  */
-  if(
-    totalCartQuantity()+modalQuantity>30
-  ){
-
+  if(totalCartQuantity()+modalQuantity>30){
     hapticError();
-
-    showMessage(
-      TEXT[language].maxOrder,
-      'error'
-    );
-
+    showMessage(TEXT[language].maxOrder,'error');
     return;
   }
 
@@ -3009,70 +2744,34 @@ function confirmAdd(){
     x.boba===modalBoba
   );
 
-  /*
-  Do not merge a normal drink into the
-  dedicated reward line. Keep reward line
-  separate so backend reward index remains clear.
-  */
-  if(
-    existingIndex>=0 &&
-    existingIndex!==rewardCartIndex
-  ){
-
+  if(existingIndex>=0 && existingIndex!==rewardCartIndex){
     cart[existingIndex].qty=Math.min(
       10,
       cart[existingIndex].qty+modalQuantity
     );
-
   }else{
-
     cart.push({
       id:selectedProduct.id,
       qty:modalQuantity,
       extra_shot:modalExtra,
       boba:modalBoba
     });
-
   }
 
-  $('modalBg').classList.remove(
-    'open'
-  );
-
+  $('modalBg').classList.remove('open');
   updateCart();
 }
 
 function closeModal(event){
-
-  if(
-    !event ||
-    event.target.id==='modalBg'
-  ){
-
-    $('modalBg').classList.remove(
-      'open'
-    );
-
+  if(!event || event.target.id==='modalBg'){
+    $('modalBg').classList.remove('open');
   }
 }
 
-
-/* =========================
-   CART
-========================= */
-
 function updateCart(){
-
   saveCart();
 
-  /*
-  If reward index no longer exists,
-  remove the assignment.
-  */
-  if(
-    rewardCartIndex!==null &&
-    !cart[rewardCartIndex]
-  ){
+  if(rewardCartIndex!==null && !cart[rewardCartIndex]){
     rewardCartIndex=null;
   }
 
@@ -3085,13 +2784,9 @@ function updateCart(){
         :TEXT[language].items
     }`;
 
-  $('total').textContent=
-    cartTotal()+' RSD';
+  $('total').textContent=cartTotal()+' RSD';
 
-  $('cartSection').classList.toggle(
-    'show',
-    cart.length>0
-  );
+  $('cartSection').classList.toggle('show',cart.length>0);
 
   $('orderBar').classList.toggle(
     'hidden',
@@ -3101,34 +2796,19 @@ function updateCart(){
 
   $('cartItems').innerHTML=
     cart.map((item,index)=>{
-
       const extras=[
-        item.extra_shot
-          ?TEXT[language].extra
-          :null,
-
-        item.boba
-          ?TEXT[language].boba
-          :null
+        item.extra_shot?TEXT[language].extra:null,
+        item.boba?TEXT[language].boba:null
       ].filter(Boolean);
 
-      const isReward=
-        index===rewardCartIndex;
-
-      const normalPrice=
-        normalItemPrice(item);
-
-      const finalPrice=
-        itemPrice(item,index);
+      const isReward=index===rewardCartIndex;
+      const normalPrice=normalItemPrice(item);
+      const finalPrice=itemPrice(item,index);
 
       return `
       <div class="cart-item ${isReward?'reward-cart-item':''}">
-
         <div class="cart-item-info">
-
-          <strong>
-            ${escapeHtml(productText(item.id)[0])}
-          </strong>
+          <strong>${escapeHtml(productText(item.id)[0])}</strong>
 
           ${extras.length
             ?`
@@ -3145,32 +2825,25 @@ function updateCart(){
             </div>
             `
             :''}
-
         </div>
 
         <div class="cart-right">
-
           <div class="cart-quantity">
-
             <button
               class="cart-qty-btn"
               onclick="changeCartQuantity(${index},-1)"
             >−</button>
 
-            <span class="cart-qty-number">
-              ${item.qty}
-            </span>
+            <span class="cart-qty-number">${item.qty}</span>
 
             <button
               class="cart-qty-btn"
               onclick="changeCartQuantity(${index},1)"
               ${isReward?'disabled':''}
             >+</button>
-
           </div>
 
           <div class="cart-price">
-
             ${isReward
               ?`
               <span class="old-price">
@@ -3185,234 +2858,129 @@ function updateCart(){
               `
               :`${finalPrice} RSD`
             }
-
           </div>
 
           <button
             class="remove"
             onclick="deleteCartItem(${index})"
           >×</button>
-
         </div>
-
       </div>`;
-
     }).join('');
 
   renderRewardMode();
 }
 
 function changeCartQuantity(index,delta){
+  if(!cart[index]) return;
 
-  if(!cart[index]){
+  if(index===rewardCartIndex && delta>0){
     return;
   }
 
-  /*
-  Reward line represents exactly one
-  free base drink. Don't allow increasing it.
-  */
-  if(
-    index===rewardCartIndex &&
-    delta>0
-  ){
-    return;
-  }
-
-  if(
-    delta>0 &&
-    totalCartQuantity()>=30
-  ){
-
+  if(delta>0 && totalCartQuantity()>=30){
     hapticError();
-
-    showMessage(
-      TEXT[language].maxOrder,
-      'error'
-    );
-
+    showMessage(TEXT[language].maxOrder,'error');
     return;
   }
 
   cart[index].qty+=delta;
 
   if(cart[index].qty<=0){
-
     deleteCartItem(index);
     return;
-
   }
 
-  if(
-    cart[index] &&
-    cart[index].qty>10
-  ){
-
+  if(cart[index] && cart[index].qty>10){
     cart[index].qty=10;
-
   }
 
   updateCart();
 }
 
 function deleteCartItem(index){
+  const deletingReward=index===rewardCartIndex;
 
-  const deletingReward=
-    index===rewardCartIndex;
-
-  cart.splice(
-    index,
-    1
-  );
+  cart.splice(index,1);
 
   if(deletingReward){
-
     rewardCartIndex=null;
-
   }else if(
     rewardCartIndex!==null &&
     index<rewardCartIndex
   ){
-
-    /*
-    Cart indexes shift after removing
-    an earlier item.
-    */
     rewardCartIndex--;
-
   }
 
   updateCart();
 }
 
-
-/* =========================
-   PICKUP
-========================= */
-
 function setPickupMode(mode){
-
   pickupMode=mode;
 
-  $('asapMode').classList.toggle(
-    'active',
-    mode==='asap'
-  );
-
-  $('exactMode').classList.toggle(
-    'active',
-    mode==='exact'
-  );
+  $('asapMode').classList.toggle('active',mode==='asap');
+  $('exactMode').classList.toggle('active',mode==='exact');
 
   $('asapTimes').style.display=
-    mode==='asap'
-      ?'grid'
-      :'none';
+    mode==='asap'?'grid':'none';
 
-  $('exactBox').classList.toggle(
-    'show',
-    mode==='exact'
-  );
+  $('exactBox').classList.toggle('show',mode==='exact');
 
   if(mode==='exact'){
-
     generateExactTimes();
-
   }else{
-
     exactPickupDate=null;
-
     updatePickupInfo();
-
   }
 }
 
 function chooseTime(button,minutes){
-
   pickupMinutes=minutes;
 
-  document.querySelectorAll(
-    '.time'
-  ).forEach(x=>{
-    x.classList.remove(
-      'selected'
-    );
+  document.querySelectorAll('.time').forEach(x=>{
+    x.classList.remove('selected');
   });
 
-  button.classList.add(
-    'selected'
-  );
-
+  button.classList.add('selected');
   updatePickupInfo();
 }
 
 function generateExactTimes(){
-
   const select=$('exactTime');
-
   const now=new Date();
+  const first=new Date(now.getTime()+11*60000);
 
-  const first=new Date(
-    now.getTime()+11*60000
-  );
+  first.setSeconds(0,0);
 
-  first.setSeconds(
-    0,
-    0
-  );
-
-  const remainder=
-    first.getMinutes()%15;
+  const remainder=first.getMinutes()%15;
 
   if(remainder){
-
     first.setMinutes(
-      first.getMinutes()+
-      15-
-      remainder
+      first.getMinutes()+15-remainder
     );
-
   }
 
   const closing=new Date(now);
-
-  closing.setHours(
-    17,
-    0,
-    0,
-    0
-  );
+  closing.setHours(17,0,0,0);
 
   select.innerHTML='';
 
   let current=first;
 
   while(current<closing){
+    const option=document.createElement('option');
 
-    const option=
-      document.createElement(
-        'option'
-      );
-
-    option.value=
-      current.toISOString();
+    option.value=current.toISOString();
 
     option.textContent=
-      String(
-        current.getHours()
-      ).padStart(2,'0')
+      String(current.getHours()).padStart(2,'0')
       +':'+
-      String(
-        current.getMinutes()
-      ).padStart(2,'0');
+      String(current.getMinutes()).padStart(2,'0');
 
-    select.appendChild(
-      option
-    );
+    select.appendChild(option);
 
     current=new Date(
-      current.getTime()+
-      15*60000
+      current.getTime()+15*60000
     );
   }
 
@@ -3425,52 +2993,37 @@ function generateExactTimes(){
 }
 
 function chooseExactTime(){
-
   exactPickupDate=
     $('exactTime').value
-      ?new Date(
-          $('exactTime').value
-        )
+      ?new Date($('exactTime').value)
       :null;
 
   updatePickupInfo();
 }
 
 function updatePickupInfo(){
-
   const t=TEXT[language];
 
   if(pickupMode==='asap'){
-
     $('pickupInfo').textContent=
       `${t.ready} ${pickupMinutes} ${t.minutes}`;
-
   }else{
-
     $('pickupInfo').textContent=
       exactPickupDate
         ?`${t.pickupAt} ${
-            String(
-              exactPickupDate.getHours()
-            ).padStart(2,'0')
+            String(exactPickupDate.getHours()).padStart(2,'0')
           }:${
-            String(
-              exactPickupDate.getMinutes()
-            ).padStart(2,'0')
+            String(exactPickupDate.getMinutes()).padStart(2,'0')
           }`
         :t.noTimes;
-
   }
 }
 
 function pickupISO(){
-
   if(pickupMode==='exact'){
-
     return exactPickupDate
       ?exactPickupDate.toISOString()
       :null;
-
   }
 
   return new Date(
@@ -3480,60 +3033,25 @@ function pickupISO(){
   ).toISOString();
 }
 
-
-/* =========================
-   MESSAGES
-========================= */
-
 function showMessage(message,type){
-
-  $('message').className=
-    'message '+type;
-
-  $('message').textContent=
-    message;
+  $('message').className='message '+type;
+  $('message').textContent=message;
 }
 
-
-/* =========================
-   CHECKOUT
-========================= */
+/* CHECKOUT — PAY AT PICKUP ONLY */
 
 function placeOrder(){
-
   if(!cart.length){
-
     hapticError();
-
-    showMessage(
-      TEXT[language].empty,
-      'error'
-    );
-
+    showMessage(TEXT[language].empty,'error');
     return;
   }
 
   if(!pickupISO()){
-
     hapticError();
-
-    showMessage(
-      TEXT[language].choosePickup,
-      'error'
-    );
-
+    showMessage(TEXT[language].choosePickup,'error');
     return;
   }
-
-  paymentMethod='pickup';
-
-  $('pay-online').classList.remove(
-    'active'
-  );
-
-  $('pay-pickup').classList.add(
-    'active'
-  );
 
   $('paymentSubmitButton').disabled=false;
 
@@ -3552,74 +3070,21 @@ function placeOrder(){
       ?'Platite karticom ili gotovinom prilikom preuzimanja.'
       :'Pay at the café by card or cash.';
 
-  $('paymentModalBg').classList.add(
-    'open'
-  );
-}
-
-function selectPayment(method){
-
-  paymentMethod=method;
-
-  $('pay-online').classList.toggle(
-    'active',
-    method==='online'
-  );
-
-  $('pay-pickup').classList.toggle(
-    'active',
-    method==='pickup'
-  );
-
-  $('paymentSubmitButton').disabled=
-    method!=='pickup';
-
-  if(method==='pickup'){
-
-    $('paymentPendingText').textContent=
-      language==='ru'
-        ?'Оплатите картой или наличными при получении.'
-        :language==='sr'
-        ?'Platite karticom ili gotovinom prilikom preuzimanja.'
-        :'Pay at the café by card or cash.';
-
-  }else{
-
-    $('paymentPendingText').textContent=
-      language==='ru'
-        ?'Онлайн-оплата скоро появится.'
-        :language==='sr'
-        ?'Online plaćanje uskoro stiže.'
-        :'Online payment is coming soon.';
-
-  }
+  $('paymentModalBg').classList.add('open');
 }
 
 function closePaymentModal(event){
-
-  if(
-    !event ||
-    event.target.id==='paymentModalBg'
-  ){
-
-    $('paymentModalBg').classList.remove(
-      'open'
-    );
-
+  if(!event || event.target.id==='paymentModalBg'){
+    $('paymentModalBg').classList.remove('open');
   }
 }
 
 async function submitPickupOrder(){
+  if(sendingPickupOrder) return;
 
-  if(sendingPickupOrder){
-    return;
-  }
-
-  const initData=
-    tg?.initData||'';
+  const initData=tg?.initData||'';
 
   if(!initData){
-
     hapticError();
 
     $('paymentPendingText').textContent=
@@ -3629,14 +3094,10 @@ async function submitPickupOrder(){
   }
 
   sendingPickupOrder=true;
-
   $('paymentSubmitButton').disabled=true;
-
-  $('paymentSubmitButton').textContent=
-    'SENDING ORDER…';
+  $('paymentSubmitButton').textContent='SENDING ORDER…';
 
   try{
-
     const payload={
       initData,
       items:cart,
@@ -3644,44 +3105,25 @@ async function submitPickupOrder(){
       payment_method:'pickup'
     };
 
-    /*
-    THIS IS THE IMPORTANT PART:
-    app.py receives reward_item_index.
-    */
     if(rewardCartIndex!==null){
-
-      payload.reward_item_index=
-        rewardCartIndex;
-
+      payload.reward_item_index=rewardCartIndex;
     }
 
-    const response=await fetch(
-      '/api/order',
-      {
-        method:'POST',
-
-        headers:{
-          'Content-Type':'application/json'
-        },
-
-        body:JSON.stringify(
-          payload
-        )
-      }
-    );
+    const response=await fetch('/api/order',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify(payload)
+    });
 
     const data=await response.json();
 
-    if(
-      !response.ok ||
-      !data.success
-    ){
-
+    if(!response.ok || !data.success){
       throw Error(
         data.error||
         'Could not send order'
       );
-
     }
 
     hapticSuccess();
@@ -3701,45 +3143,29 @@ async function submitPickupOrder(){
       'success'
     );
 
-    /*
-    Refresh rewards immediately because
-    backend has reserved the free drink.
-    */
     await Promise.all([
       loadOrders(),
       loadRewards(),
       loadProfile()
     ]);
 
-    showPage(
-      'orders'
-    );
+    showPage('orders');
 
   }catch(e){
-
     hapticError();
 
-    $('paymentPendingText').textContent=
-      e.message;
+    $('paymentPendingText').textContent=e.message;
 
-    /*
-    If backend says reward is no longer
-    available, refresh rewards.
-    */
     if(
       String(e.message)
       .toLowerCase()
       .includes('free drink')
     ){
-
       await loadRewards();
-
     }
 
   }finally{
-
     sendingPickupOrder=false;
-
     $('paymentSubmitButton').disabled=false;
 
     $('paymentSubmitButton').textContent=
@@ -3748,45 +3174,25 @@ async function submitPickupOrder(){
         :language==='sr'
         ?'PORUČI · PLATI U KAFIĆU'
         :'PLACE ORDER · PAY AT CAFÉ';
-
   }
 }
 
-
-/* =========================
-   ORDERS
-========================= */
-
 async function loadOrders(){
+  const initData=tg?.initData||'';
 
-  const initData=
-    tg?.initData||'';
-
-  if(!initData){
-    return;
-  }
+  if(!initData) return;
 
   try{
+    const response=await fetch('/api/orders',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json'
+      },
+      cache:'no-store',
+      body:JSON.stringify({initData})
+    });
 
-    const response=await fetch(
-      '/api/orders',
-      {
-        method:'POST',
-
-        headers:{
-          'Content-Type':'application/json'
-        },
-
-        cache:'no-store',
-
-        body:JSON.stringify({
-          initData
-        })
-      }
-    );
-
-    const data=
-      await response.json();
+    const data=await response.json();
 
     customerOrders=
       Array.isArray(data.orders)
@@ -3794,17 +3200,13 @@ async function loadOrders(){
         :[];
 
     renderOrders();
-
   }catch(e){
-
     $('ordersContent').innerHTML=
       '<div class="empty-state">Could not load orders</div>';
-
   }
 }
 
 function statusText(status){
-
   const key={
     new:'newStatus',
     preparing:'preparingStatus',
@@ -3813,24 +3215,16 @@ function statusText(status){
     cancelled:'cancelledStatus'
   }[status];
 
-  return TEXT[language][key]||
-    status;
+  return TEXT[language][key]||status;
 }
 
 function renderOrders(){
-
-  const box=$(
-    'ordersContent'
-  );
+  const box=$('ordersContent');
 
   if(!customerOrders.length){
-
     box.innerHTML=`
     <div class="empty-state">
-
-      <div class="empty-icon">
-        ▤
-      </div>
+      <div class="empty-icon">▤</div>
 
       <div class="empty-title">
         ${TEXT[language].noOrders}
@@ -3839,7 +3233,6 @@ function renderOrders(){
       <div>
         ${TEXT[language].noOrdersCopy}
       </div>
-
     </div>`;
 
     return;
@@ -3847,13 +3240,9 @@ function renderOrders(){
 
   box.innerHTML=
     customerOrders.map(order=>`
-
     <div class="order-card">
-
       <div class="order-card-top">
-
         <div>
-
           <div class="order-number">
             Order #${escapeHtml(order.id)}
           </div>
@@ -3863,21 +3252,16 @@ function renderOrders(){
             ·
             ${escapeHtml(order.pickup)}
           </div>
-
         </div>
 
         <div class="status ${escapeHtml(order.status)}">
           ${escapeHtml(statusText(order.status))}
         </div>
-
       </div>
 
       <div class="order-products">
-
       ${(order.items||[]).map(item=>`
-
         <div class="order-product-line">
-
           <span>
             ${escapeHtml(item.qty)}
             ×
@@ -3891,15 +3275,11 @@ function renderOrders(){
           <strong>
             ${escapeHtml(item.line_total)} RSD
           </strong>
-
         </div>
-
       `).join('')}
-
       </div>
 
       <div class="order-card-bottom">
-
         <div class="order-total">
           ${escapeHtml(order.total)} RSD
         </div>
@@ -3915,29 +3295,18 @@ function renderOrders(){
           `
           :''
         }
-
       </div>
-
     </div>
-
     `).join('');
 }
 
 function reorder(id){
+  const order=customerOrders.find(
+    x=>String(x.id)===String(id)
+  );
 
-  const order=
-    customerOrders.find(
-      x=>String(x.id)===String(id)
-    );
+  if(!order) return;
 
-  if(!order){
-    return;
-  }
-
-  /*
-  Reorder is always a normal paid order.
-  A previous reward is not automatically reused.
-  */
   rewardCartIndex=null;
   rewardMode=false;
 
@@ -3952,71 +3321,41 @@ function reorder(id){
   renderRewardMode();
   renderMenu();
 
-  showPage(
-    'menu'
-  );
+  showPage('menu');
 }
 
-
-/* =========================
-   PROFILE
-========================= */
-
 async function loadProfile(){
+  const initData=tg?.initData||'';
 
-  const initData=
-    tg?.initData||'';
-
-  if(!initData){
-    return;
-  }
+  if(!initData) return;
 
   try{
+    const response=await fetch('/api/profile',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json'
+      },
+      cache:'no-store',
+      body:JSON.stringify({initData})
+    });
 
-    const response=await fetch(
-      '/api/profile',
-      {
-        method:'POST',
-
-        headers:{
-          'Content-Type':'application/json'
-        },
-
-        cache:'no-store',
-
-        body:JSON.stringify({
-          initData
-        })
-      }
-    );
-
-    customerProfile=
-      await response.json();
-
+    customerProfile=await response.json();
     renderProfile();
-
   }catch(e){}
 }
 
 function renderProfile(){
-
-  const box=$(
-    'profileContent'
-  );
+  const box=$('profileContent');
 
   if(!customerProfile){
-
     const first=
       tg?.initDataUnsafe?.user?.first_name||
       'TAKE AWAY';
 
     box.innerHTML=`
     <div class="profile-card">
-
       <div class="avatar">
-        ${escapeHtml(
-          first.charAt(0).toUpperCase()
-        )}
+        ${escapeHtml(first.charAt(0).toUpperCase())}
       </div>
 
       <div class="profile-name">
@@ -4026,7 +3365,6 @@ function renderProfile(){
       <div class="member">
         ${TEXT[language].member}
       </div>
-
     </div>`;
 
     return;
@@ -4036,15 +3374,11 @@ function renderProfile(){
 
   const favorite=
     p.favorite?.id
-      ?productText(
-          p.favorite.id
-        )[0]
+      ?productText(p.favorite.id)[0]
       :TEXT[language].noFavorite;
 
   box.innerHTML=`
-
   <div class="profile-card">
-
     <div class="avatar">
       ${escapeHtml(
         (p.first_name||'T')
@@ -4072,13 +3406,10 @@ function renderProfile(){
     <div class="member">
       ${TEXT[language].member}
     </div>
-
   </div>
 
   <div class="stats">
-
     <div class="stat">
-
       <div class="stat-number">
         ${escapeHtml(p.orders||0)}
       </div>
@@ -4086,11 +3417,9 @@ function renderProfile(){
       <div class="stat-label">
         ${TEXT[language].totalOrders}
       </div>
-
     </div>
 
     <div class="stat">
-
       <div class="stat-number">
         ${escapeHtml(p.drinks||0)}
       </div>
@@ -4098,119 +3427,67 @@ function renderProfile(){
       <div class="stat-label">
         ${TEXT[language].drinks}
       </div>
-
     </div>
-
   </div>
 
   <div class="profile-info">
-
     <div class="profile-row">
-
-      <span>
-        ${TEXT[language].favorite}
-      </span>
-
-      <strong>
-        ${escapeHtml(favorite)}
-      </strong>
-
+      <span>${TEXT[language].favorite}</span>
+      <strong>${escapeHtml(favorite)}</strong>
     </div>
 
     <div class="profile-row">
-
-      <span>
-        ${TEXT[language].memberSince}
-      </span>
-
-      <strong>
-        ${escapeHtml(
-          p.first_order||'—'
-        )}
-      </strong>
-
+      <span>${TEXT[language].memberSince}</span>
+      <strong>${escapeHtml(p.first_order||'—')}</strong>
     </div>
-
   </div>`;
 }
 
-
-/* =========================
-   REWARDS
-========================= */
-
 async function loadRewards(){
-
-  const initData=
-    tg?.initData||'';
+  const initData=tg?.initData||'';
 
   if(!initData){
-
     rewardsData=null;
-
     renderRewards();
-
     return;
   }
 
   try{
+    const response=await fetch('/api/rewards',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json'
+      },
+      cache:'no-store',
+      body:JSON.stringify({initData})
+    });
 
-    const response=await fetch(
-      '/api/rewards',
-      {
-        method:'POST',
-
-        headers:{
-          'Content-Type':'application/json'
-        },
-
-        cache:'no-store',
-
-        body:JSON.stringify({
-          initData
-        })
-      }
-    );
-
-    const data=
-      await response.json();
+    const data=await response.json();
 
     if(!response.ok){
-
       throw Error(
         data.error||
         'Could not load rewards'
       );
-
     }
 
     rewardsData=data;
 
-    /*
-    If reward disappeared on server while
-    client still had one selected, remove
-    local reward assignment.
-    */
     if(
-      Number(
-        rewardsData?.free_drinks||0
-      )<1 &&
+      Number(rewardsData?.free_drinks||0)<1 &&
       rewardCartIndex!==null
     ){
-
       rewardCartIndex=null;
       rewardMode=false;
 
       updateCart();
       renderRewardMode();
       renderMenu();
-
     }
 
     renderRewards();
 
   }catch(e){
-
     rewardsData=null;
 
     $('rewardsNote').textContent=
@@ -4218,27 +3495,21 @@ async function loadRewards(){
       'Could not load rewards';
 
     renderRewards();
-
   }
 }
 
 function renderRewards(){
-
   const stamps=Math.max(
     0,
     Math.min(
       9,
-      Number(
-        rewardsData?.stamps||0
-      )
+      Number(rewardsData?.stamps||0)
     )
   );
 
   const freeDrinks=Math.max(
     0,
-    Number(
-      rewardsData?.free_drinks||0
-    )
+    Number(rewardsData?.free_drinks||0)
   );
 
   $('stamps').innerHTML=
@@ -4255,11 +3526,8 @@ function renderRewards(){
     `${stamps} / 9`;
 
   if(freeDrinks>0){
-
     $('rewardReady').innerHTML=`
-
       <div class="reward-ready">
-
         <div class="reward-ready-title">
           🎁 ${TEXT[language].freeReady}
         </div>
@@ -4274,40 +3542,30 @@ function renderRewards(){
         >
           ${TEXT[language].useFree}
         </button>
-
       </div>
     `;
-
   }else{
-
     $('rewardReady').innerHTML='';
-
   }
 
   $('rewardsNote').textContent=
     TEXT[language].rewardNote;
 }
 
-
-/* =========================
-   START
-========================= */
+/* START */
 
 document.addEventListener(
   'DOMContentLoaded',
   async()=>{
-
     restoreCart();
 
     let saved='en';
 
     try{
-
       saved=
         localStorage.getItem(
           'takeaway_language'
         )||'en';
-
     }catch(e){}
 
     changeLanguage(
@@ -4320,20 +3578,20 @@ document.addEventListener(
 
     await loadMenu();
 
-    /*
-    Reward selection is deliberately not
-    persisted in localStorage. Server remains
-    the source of truth for free drinks.
-    */
     rewardCartIndex=null;
     rewardMode=false;
 
     updateCart();
 
+    /*
+    Analytics starts here.
+    One opening of the Mini App = one open event.
+    */
+    trackAppOpen();
+
     loadOrders();
     loadProfile();
     loadRewards();
-
   }
 );
 </script>
