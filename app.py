@@ -15,7 +15,6 @@ from zoneinfo import ZoneInfo
 import requests
 from flask import Flask, request, jsonify, render_template, Response
 
-
 # =========================================================
 # APP / SETTINGS
 # =========================================================
@@ -55,7 +54,6 @@ MIN_PREP_MINUTES = 10
 
 MAX_ITEM_QUANTITY = 10
 MAX_ORDER_QUANTITY = 30
-
 
 # =========================================================
 # MENU
@@ -207,7 +205,6 @@ LEGACY_ITEM_MAP = {
     "icedlatte": ("latte", "iced"),
 }
 
-
 # =========================================================
 # DATABASE
 # =========================================================
@@ -221,7 +218,6 @@ def get_db():
     connection.row_factory = sqlite3.Row
     return connection
 
-
 def table_columns(db, table):
     try:
         rows = db.execute(
@@ -231,7 +227,6 @@ def table_columns(db, table):
     except Exception:
         return set()
 
-
 def ensure_column(db, table, name, definition):
     columns = table_columns(db, table)
 
@@ -239,7 +234,6 @@ def ensure_column(db, table, name, definition):
         db.execute(
             f"ALTER TABLE {table} ADD COLUMN {name} {definition}"
         )
-
 
 def init_db():
     db = get_db()
@@ -376,9 +370,7 @@ def init_db():
     finally:
         db.close()
 
-
 init_db()
-
 
 # =========================================================
 # GENERAL HELPERS
@@ -387,10 +379,8 @@ init_db()
 def now_local():
     return datetime.now(TZ)
 
-
 def now_iso():
     return now_local().isoformat()
-
 
 def parse_datetime(value):
     if not value:
@@ -409,13 +399,11 @@ def parse_datetime(value):
     except Exception:
         return None
 
-
 def safe_int(value, default=0):
     try:
         return int(value)
     except Exception:
         return default
-
 
 def get_order(order_id):
     db = get_db()
@@ -428,20 +416,17 @@ def get_order(order_id):
     finally:
         db.close()
 
-
 def details(row):
     try:
         return json.loads(row["items"] or "[]")
     except Exception:
         return []
 
-
 def qty_in_order(row):
     return sum(
         safe_int(item.get("qty"), 0)
         for item in details(row)
     )
-
 
 # =========================================================
 # TELEGRAM INIT DATA
@@ -517,7 +502,6 @@ def verify_init_data(init_data):
         )
         return None
 
-
 def request_user():
     data = request.get_json(silent=True) or {}
 
@@ -526,7 +510,6 @@ def request_user():
     user = verify_init_data(init_data)
 
     return data, user
-
 
 # =========================================================
 # ANALYTICS
@@ -539,7 +522,6 @@ def clean_source(value):
         return "direct"
 
     return value[:100]
-
 
 def record_app_open(user, source=""):
     if not user:
@@ -635,7 +617,6 @@ def record_app_open(user, source=""):
     finally:
         db.close()
 
-
 def record_directions_click(user, source=""):
     if not user:
         return
@@ -664,7 +645,6 @@ def record_directions_click(user, source=""):
 
     finally:
         db.close()
-
 
 def analytics_data():
     db = get_db()
@@ -877,7 +857,6 @@ def analytics_data():
     finally:
         db.close()
 
-
 # =========================================================
 # ADMIN AUTH
 # =========================================================
@@ -898,7 +877,6 @@ def admin_authorized():
         ADMIN_PASSWORD
     )
 
-
 def admin_login_required():
     return Response(
         "Authentication required",
@@ -908,7 +886,6 @@ def admin_login_required():
                 'Basic realm="TAKE AWAY Analytics"'
         }
     )
-
 
 # =========================================================
 # LOYALTY / REWARDS
@@ -955,7 +932,6 @@ def ensure_loyalty_account(
         (telegram_id,)
     ).fetchone()
 
-
 def get_rewards(telegram_id):
     db = get_db()
 
@@ -976,7 +952,6 @@ def get_rewards(telegram_id):
 
     finally:
         db.close()
-
 
 def consume_reward(
     db,
@@ -1009,7 +984,6 @@ def consume_reward(
 
     return True
 
-
 def restore_reward(
     db,
     telegram_id
@@ -1031,7 +1005,6 @@ def restore_reward(
             telegram_id,
         )
     )
-
 
 def add_loyalty_drinks(
     db,
@@ -1071,7 +1044,6 @@ def add_loyalty_drinks(
             telegram_id,
         )
     )
-
 
 def mark_paid_and_completed(
     order_id
@@ -1151,7 +1123,6 @@ def mark_paid_and_completed(
     finally:
         db.close()
 
-
 # =========================================================
 # ORDER ITEM NORMALIZATION / PRICING
 # =========================================================
@@ -1177,7 +1148,6 @@ def normalize_item_id(
         temperature
     )
 
-
 def normalize_temperature(
     item_id,
     value
@@ -1197,7 +1167,6 @@ def normalize_temperature(
 
     return value
 
-
 def normalize_syrup(
     item_id,
     value
@@ -1213,7 +1182,6 @@ def normalize_syrup(
         return value
 
     return None
-
 
 def calculate_item(
     raw,
@@ -1340,7 +1308,6 @@ def calculate_item(
 
     return item
 
-
 def calculate_order_items(
     raw_items,
     reward_item_index=None
@@ -1417,7 +1384,6 @@ def calculate_order_items(
         reward_index,
     )
 
-
 # =========================================================
 # PICKUP VALIDATION
 # =========================================================
@@ -1492,7 +1458,6 @@ def validate_pickup(
         None
     )
 
-
 # =========================================================
 # ORDER SERIALIZATION
 # =========================================================
@@ -1505,7 +1470,6 @@ def pretty_pickup(value):
 
     return dt.strftime("%H:%M")
 
-
 def pretty_created(value):
     dt = parse_datetime(value)
 
@@ -1515,7 +1479,6 @@ def pretty_created(value):
     return dt.strftime(
         "%d.%m.%Y %H:%M"
     )
-
 
 def serialize_order(row):
     items = details(row)
@@ -1544,7 +1507,6 @@ def serialize_order(row):
         "created_at":
             row["created_at"],
     }
-
 
 # =========================================================
 # BARISTA MESSAGE
@@ -1594,7 +1556,6 @@ def item_option_lines(item):
         )
 
     return lines
-
 
 def barista_text(
     order_id,
@@ -1684,7 +1645,6 @@ def barista_text(
 
     return "\n".join(lines)
 
-
 # =========================================================
 # TELEGRAM HELPERS
 # =========================================================
@@ -1724,7 +1684,6 @@ def telegram_api(
         )
         return None
 
-
 def send_message(
     chat_id,
     text,
@@ -1747,7 +1706,6 @@ def send_message(
         payload
     )
 
-
 def edit_message_markup(
     chat_id,
     message_id,
@@ -1762,7 +1720,6 @@ def edit_message_markup(
                 reply_markup,
         }
     )
-
 
 def admin_keyboard(
     order_id,
@@ -1822,7 +1779,6 @@ def admin_keyboard(
         "inline_keyboard": buttons
     }
 
-
 def customer_status_message(
     order_id,
     status
@@ -1855,7 +1811,6 @@ def customer_status_message(
     return (
         f"Order #{order_id}: {status}"
     )
-
 
 # =========================================================
 # ORDER STATUS
@@ -1915,7 +1870,6 @@ def set_order_status(
 
     finally:
         db.close()
-
 
 def cancel_order(
     order_id
@@ -1987,7 +1941,6 @@ def cancel_order(
     finally:
         db.close()
 
-
 # =========================================================
 # ROUTES
 # =========================================================
@@ -1998,7 +1951,6 @@ def index():
         "index.html"
     )
 
-
 @app.route("/health")
 def health():
     return jsonify({
@@ -2008,11 +1960,9 @@ def health():
         "time": now_iso(),
     })
 
-
 @app.route("/api/menu")
 def api_menu():
     return jsonify(MENU)
-
 
 # =========================================================
 # ANALYTICS ROUTES
@@ -2040,7 +1990,6 @@ def analytics_open():
         "success": True
     })
 
-
 @app.route(
     "/api/analytics/directions",
     methods=["POST"]
@@ -2063,7 +2012,6 @@ def analytics_directions():
         "success": True
     })
 
-
 @app.route(
     "/api/admin/analytics"
 )
@@ -2074,7 +2022,6 @@ def api_admin_analytics():
     return jsonify(
         analytics_data()
     )
-
 
 @app.route(
     "/admin/analytics"
@@ -2333,7 +2280,6 @@ th{{
         mimetype="text/html"
     )
 
-
 # =========================================================
 # REWARDS / ORDERS / PROFILE
 # =========================================================
@@ -2355,7 +2301,6 @@ def api_rewards():
             safe_int(user["id"])
         )
     )
-
 
 @app.route(
     "/api/orders",
@@ -2396,7 +2341,6 @@ def api_orders():
 
     finally:
         db.close()
-
 
 @app.route(
     "/api/profile",
@@ -2526,7 +2470,6 @@ def api_profile():
 
     finally:
         db.close()
-
 
 # =========================================================
 # CREATE ORDER
@@ -2756,7 +2699,6 @@ def create_order():
             reward_used,
     })
 
-
 # =========================================================
 # TELEGRAM CALLBACKS
 # =========================================================
@@ -2776,7 +2718,6 @@ def answer_callback(
             "text": text,
         }
     )
-
 
 def handle_admin_callback(
     callback
@@ -2975,7 +2916,6 @@ def handle_admin_callback(
         "Action unavailable"
     )
 
-
 # =========================================================
 # TELEGRAM BOT MESSAGES
 # =========================================================
@@ -2991,7 +2931,6 @@ def bot_start_text():
         "Payment is made at pickup by card or cash."
     )
 
-
 def web_app_keyboard():
     return {
         "inline_keyboard": [
@@ -3006,7 +2945,6 @@ def web_app_keyboard():
             ]
         ]
     }
-
 
 def handle_bot_message(
     message
@@ -3049,7 +2987,6 @@ def handle_bot_message(
             ),
             web_app_keyboard()
         )
-
 
 # =========================================================
 # WEBHOOK
@@ -3106,7 +3043,6 @@ def webhook():
         "ok": True
     })
 
-
 # =========================================================
 # OPTIONAL WEBHOOK SETUP
 # =========================================================
@@ -3155,7 +3091,6 @@ def setup_webhook():
         "telegram":
             result,
     })
-
 
 # =========================================================
 # RUN
