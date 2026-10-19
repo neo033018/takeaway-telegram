@@ -121,7 +121,14 @@ MENU = [
     {
         "id": "icedlatte",
         "name": "Iced Latte",
-        "price": 380,
+        "price": 370,
+        "category": "coffee",
+        "boba": False
+    },
+    {
+        "id": "icedamericano",
+        "name": "Iced Americano",
+        "price": 270,
         "category": "coffee",
         "boba": False
     },
@@ -174,10 +181,17 @@ COFFEE_IDS = {
     "latte",
     "flatwhite",
     "icedlatte",
+    "icedamericano",
     "americanocream",
     "tonic",
     "bumble",
     "peanutlatte"
+}
+
+SYRUPS = {
+    "vanilla": "Vanilla",
+    "salted_caramel": "Salted Caramel",
+    "strawberry": "Strawberry"
 }
 
 
@@ -230,26 +244,13 @@ def init_db():
         }
 
         extra_columns = {
-            "payment_status":
-                "TEXT DEFAULT 'unpaid'",
-
-            "payment_provider":
-                "TEXT DEFAULT 'pickup'",
-
-            "payment_method":
-                "TEXT DEFAULT 'pickup'",
-
-            "reward_item_index":
-                "INTEGER",
-
-            "reward_reserved":
-                "INTEGER DEFAULT 0",
-
-            "reward_redeemed":
-                "INTEGER DEFAULT 0",
-
-            "reward_earned":
-                "INTEGER DEFAULT 0"
+            "payment_status": "TEXT DEFAULT 'unpaid'",
+            "payment_provider": "TEXT DEFAULT 'pickup'",
+            "payment_method": "TEXT DEFAULT 'pickup'",
+            "reward_item_index": "INTEGER",
+            "reward_reserved": "INTEGER DEFAULT 0",
+            "reward_redeemed": "INTEGER DEFAULT 0",
+            "reward_earned": "INTEGER DEFAULT 0"
         }
 
         for name, definition in extra_columns.items():
@@ -275,10 +276,6 @@ def init_db():
             """
         )
 
-        # -----------------------------------------
-        # ANALYTICS VISITORS
-        # -----------------------------------------
-
         db.execute(
             """
             CREATE TABLE IF NOT EXISTS analytics_visitors (
@@ -296,10 +293,6 @@ def init_db():
             )
             """
         )
-
-        # -----------------------------------------
-        # ANALYTICS EVENTS
-        # -----------------------------------------
 
         db.execute(
             """
@@ -348,7 +341,6 @@ def init_db():
         db.commit()
 
     finally:
-
         db.close()
 
 
@@ -377,7 +369,6 @@ def get_order(order_id):
         return dict(row) if row else None
 
     finally:
-
         db.close()
 
 
@@ -389,14 +380,9 @@ def details(order):
             order.get("details") or "[]"
         )
 
-        return (
-            data
-            if isinstance(data, list)
-            else []
-        )
+        return data if isinstance(data, list) else []
 
     except (ValueError, TypeError):
-
         return []
 
 
@@ -405,15 +391,39 @@ def qty_in_order(order):
     return sum(
         max(
             0,
-            int(
-                item.get(
-                    "qty",
-                    0
-                )
-            )
+            int(item.get("qty", 0))
         )
         for item in details(order)
     )
+
+
+def customer_orders(telegram_id, limit=50):
+
+    db = get_db()
+
+    try:
+
+        rows = db.execute(
+            """
+            SELECT *
+            FROM orders
+            WHERE telegram_id=?
+            ORDER BY id DESC
+            LIMIT ?
+            """,
+            (
+                str(telegram_id),
+                limit
+            )
+        )
+
+        return [
+            dict(row)
+            for row in rows
+        ]
+
+    finally:
+        db.close()
 
 
 # =========================================================
@@ -425,69 +435,28 @@ def clean_source(value):
     if not isinstance(value, str):
         return ""
 
-    value = value.strip()
-
-    return value[:100]
+    return value.strip()[:100]
 
 
-def record_app_open(
-    user,
-    source=""
-):
+def record_app_open(user, source=""):
 
-    if (
-        not isinstance(user, dict)
-        or not user.get("id")
-    ):
+    if not isinstance(user, dict) or not user.get("id"):
         return
 
-    telegram_id = str(
-        user["id"]
-    )
+    telegram_id = str(user["id"])
+    source = clean_source(source)
+    now = datetime.now(TZ).isoformat()
 
-    source = clean_source(
-        source
-    )
-
-    now = datetime.now(
-        TZ
-    ).isoformat()
-
-    first_name = str(
-        user.get(
-            "first_name",
-            ""
-        ) or ""
-    )[:100]
-
-    last_name = str(
-        user.get(
-            "last_name",
-            ""
-        ) or ""
-    )[:100]
-
-    username = str(
-        user.get(
-            "username",
-            ""
-        ) or ""
-    )[:100]
-
-    language_code = str(
-        user.get(
-            "language_code",
-            ""
-        ) or ""
-    )[:30]
+    first_name = str(user.get("first_name", "") or "")[:100]
+    last_name = str(user.get("last_name", "") or "")[:100]
+    username = str(user.get("username", "") or "")[:100]
+    language_code = str(user.get("language_code", "") or "")[:30]
 
     db = get_db()
 
     try:
 
-        db.execute(
-            "BEGIN IMMEDIATE"
-        )
+        db.execute("BEGIN IMMEDIATE")
 
         existing = db.execute(
             """
@@ -546,13 +515,7 @@ def record_app_open(
                     first_source,
                     last_source
                 )
-                VALUES (
-                    ?, ?, ?, ?, ?,
-                    ?, ?,
-                    1,
-                    0,
-                    ?, ?
-                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, 1, 0, ?, ?)
                 """,
                 (
                     telegram_id,
@@ -590,46 +553,26 @@ def record_app_open(
     except Exception:
 
         db.rollback()
-
-        logging.exception(
-            "Analytics open error"
-        )
+        logging.exception("Analytics open error")
 
     finally:
-
         db.close()
 
 
-def record_directions_click(
-    user,
-    source=""
-):
+def record_directions_click(user, source=""):
 
-    if (
-        not isinstance(user, dict)
-        or not user.get("id")
-    ):
+    if not isinstance(user, dict) or not user.get("id"):
         return
 
-    telegram_id = str(
-        user["id"]
-    )
-
-    source = clean_source(
-        source
-    )
-
-    now = datetime.now(
-        TZ
-    ).isoformat()
+    telegram_id = str(user["id"])
+    source = clean_source(source)
+    now = datetime.now(TZ).isoformat()
 
     db = get_db()
 
     try:
 
-        db.execute(
-            "BEGIN IMMEDIATE"
-        )
+        db.execute("BEGIN IMMEDIATE")
 
         existing = db.execute(
             """
@@ -657,40 +600,14 @@ def record_directions_click(
                     first_source,
                     last_source
                 )
-                VALUES (
-                    ?, ?, ?, ?, ?,
-                    ?, ?,
-                    0,
-                    1,
-                    ?, ?
-                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, 0, 1, ?, ?)
                 """,
                 (
                     telegram_id,
-                    str(
-                        user.get(
-                            "first_name",
-                            ""
-                        ) or ""
-                    )[:100],
-                    str(
-                        user.get(
-                            "last_name",
-                            ""
-                        ) or ""
-                    )[:100],
-                    str(
-                        user.get(
-                            "username",
-                            ""
-                        ) or ""
-                    )[:100],
-                    str(
-                        user.get(
-                            "language_code",
-                            ""
-                        ) or ""
-                    )[:30],
+                    str(user.get("first_name", "") or "")[:100],
+                    str(user.get("last_name", "") or "")[:100],
+                    str(user.get("username", "") or "")[:100],
+                    str(user.get("language_code", "") or "")[:30],
                     now,
                     now,
                     source,
@@ -744,13 +661,9 @@ def record_directions_click(
     except Exception:
 
         db.rollback()
-
-        logging.exception(
-            "Analytics directions error"
-        )
+        logging.exception("Analytics directions error")
 
     finally:
-
         db.close()
 
 
@@ -761,18 +674,12 @@ def analytics_data():
     try:
 
         total_visitors = db.execute(
-            """
-            SELECT COUNT(*)
-            FROM analytics_visitors
-            """
+            "SELECT COUNT(*) FROM analytics_visitors"
         ).fetchone()[0]
 
         total_opens = db.execute(
             """
-            SELECT COALESCE(
-                SUM(open_count),
-                0
-            )
+            SELECT COALESCE(SUM(open_count), 0)
             FROM analytics_visitors
             """
         ).fetchone()[0]
@@ -787,28 +694,20 @@ def analytics_data():
 
         directions_clicks = db.execute(
             """
-            SELECT COALESCE(
-                SUM(directions_clicks),
-                0
-            )
+            SELECT COALESCE(SUM(directions_clicks), 0)
             FROM analytics_visitors
             """
         ).fetchone()[0]
 
         unique_customers = db.execute(
             """
-            SELECT COUNT(
-                DISTINCT telegram_id
-            )
+            SELECT COUNT(DISTINCT telegram_id)
             FROM orders
             """
         ).fetchone()[0]
 
         total_orders = db.execute(
-            """
-            SELECT COUNT(*)
-            FROM orders
-            """
+            "SELECT COUNT(*) FROM orders"
         ).fetchone()[0]
 
         completed_orders = db.execute(
@@ -821,40 +720,25 @@ def analytics_data():
 
         completed_revenue = db.execute(
             """
-            SELECT COALESCE(
-                SUM(total),
-                0
-            )
+            SELECT COALESCE(SUM(total), 0)
             FROM orders
             WHERE status='completed'
             """
         ).fetchone()[0]
 
         conversion = (
-            round(
-                unique_customers
-                / total_visitors
-                * 100,
-                1
-            )
+            round(unique_customers / total_visitors * 100, 1)
             if total_visitors
             else 0
         )
 
         returning_rate = (
-            round(
-                returning_visitors
-                / total_visitors
-                * 100,
-                1
-            )
+            round(returning_visitors / total_visitors * 100, 1)
             if total_visitors
             else 0
         )
 
-        today = datetime.now(
-            TZ
-        ).date().isoformat()
+        today = datetime.now(TZ).date().isoformat()
 
         visitors_today = db.execute(
             """
@@ -869,9 +753,8 @@ def analytics_data():
             """
             SELECT COUNT(*)
             FROM analytics_events
-            WHERE
-                event_type='open'
-                AND substr(created, 1, 10)=?
+            WHERE event_type='open'
+            AND substr(created, 1, 10)=?
             """,
             (today,)
         ).fetchone()[0]
@@ -880,9 +763,8 @@ def analytics_data():
             """
             SELECT COUNT(*)
             FROM analytics_events
-            WHERE
-                event_type='directions'
-                AND substr(created, 1, 10)=?
+            WHERE event_type='directions'
+            AND substr(created, 1, 10)=?
             """,
             (today,)
         ).fetchone()[0]
@@ -900,8 +782,7 @@ def analytics_data():
             """
             SELECT
                 CASE
-                    WHEN first_source IS NULL
-                         OR first_source=''
+                    WHEN first_source IS NULL OR first_source=''
                     THEN 'direct'
                     ELSE first_source
                 END AS source,
@@ -909,8 +790,7 @@ def analytics_data():
             FROM analytics_visitors
             GROUP BY
                 CASE
-                    WHEN first_source IS NULL
-                         OR first_source=''
+                    WHEN first_source IS NULL OR first_source=''
                     THEN 'direct'
                     ELSE first_source
                 END
@@ -955,49 +835,27 @@ def analytics_data():
         for row in completed_rows:
 
             try:
-
-                items = json.loads(
-                    row["details"]
-                    or "[]"
-                )
-
+                items = json.loads(row["details"] or "[]")
             except Exception:
-
                 items = []
 
-            if not isinstance(
-                items,
-                list
-            ):
+            if not isinstance(items, list):
                 continue
 
             for item in items:
 
-                item_id = item.get(
-                    "id"
-                )
+                item_id = item.get("id")
 
                 if item_id not in MENU_BY_ID:
                     continue
 
                 try:
-
-                    quantity = int(
-                        item.get(
-                            "qty",
-                            0
-                        )
-                    )
-
+                    quantity = int(item.get("qty", 0))
                 except Exception:
-
                     quantity = 0
 
                 drink_counts[item_id] = (
-                    drink_counts.get(
-                        item_id,
-                        0
-                    )
+                    drink_counts.get(item_id, 0)
                     + quantity
                 )
 
@@ -1005,79 +863,36 @@ def analytics_data():
             [
                 {
                     "id": item_id,
-                    "name":
-                        MENU_BY_ID[
-                            item_id
-                        ]["name"],
+                    "name": MENU_BY_ID[item_id]["name"],
                     "quantity": quantity
                 }
-                for item_id, quantity
-                in drink_counts.items()
+                for item_id, quantity in drink_counts.items()
             ],
-            key=lambda item:
-                item["quantity"],
+            key=lambda item: item["quantity"],
             reverse=True
         )[:10]
 
         return {
-            "total_visitors":
-                total_visitors,
-
-            "total_opens":
-                total_opens,
-
-            "returning_visitors":
-                returning_visitors,
-
-            "returning_rate":
-                returning_rate,
-
-            "unique_customers":
-                unique_customers,
-
-            "total_orders":
-                total_orders,
-
-            "completed_orders":
-                completed_orders,
-
-            "completed_revenue":
-                completed_revenue,
-
-            "conversion":
-                conversion,
-
-            "directions_clicks":
-                directions_clicks,
-
-            "visitors_today":
-                visitors_today,
-
-            "opens_today":
-                opens_today,
-
-            "orders_today":
-                orders_today,
-
-            "directions_today":
-                directions_today,
-
-            "sources": [
-                dict(row)
-                for row in source_rows
-            ],
-
-            "recent_visitors": [
-                dict(row)
-                for row in recent_rows
-            ],
-
-            "top_drinks":
-                top_drinks
+            "total_visitors": total_visitors,
+            "total_opens": total_opens,
+            "returning_visitors": returning_visitors,
+            "returning_rate": returning_rate,
+            "unique_customers": unique_customers,
+            "total_orders": total_orders,
+            "completed_orders": completed_orders,
+            "completed_revenue": completed_revenue,
+            "conversion": conversion,
+            "directions_clicks": directions_clicks,
+            "visitors_today": visitors_today,
+            "opens_today": opens_today,
+            "orders_today": orders_today,
+            "directions_today": directions_today,
+            "sources": [dict(row) for row in source_rows],
+            "recent_visitors": [dict(row) for row in recent_rows],
+            "top_drinks": top_drinks
         }
 
     finally:
-
         db.close()
 
 
@@ -1095,10 +910,7 @@ def admin_authorized():
     if not auth:
         return False
 
-    supplied_password = (
-        auth.password
-        or ""
-    )
+    supplied_password = auth.password or ""
 
     return secrets.compare_digest(
         supplied_password,
@@ -1124,9 +936,7 @@ def admin_login_required():
 
 def loyalty(db, telegram_id):
 
-    telegram_id = str(
-        telegram_id
-    )
+    telegram_id = str(telegram_id)
 
     db.execute(
         """
@@ -1155,54 +965,28 @@ def loyalty_data(telegram_id):
 
     try:
 
-        account = loyalty(
-            db,
-            telegram_id
-        )
-
+        account = loyalty(db, telegram_id)
         db.commit()
 
         return {
-            "stamps":
-                account["stamps"],
-
-            "free_drinks":
-                account["free_drinks"],
-
-            "earned_total":
-                account["earned_total"],
-
-            "redeemed_total":
-                account["redeemed_total"],
-
-            "target":
-                9
+            "stamps": account["stamps"],
+            "free_drinks": account["free_drinks"],
+            "earned_total": account["earned_total"],
+            "redeemed_total": account["redeemed_total"],
+            "target": 9
         }
 
     finally:
-
         db.close()
 
 
 def mark_paid_and_completed(order_id):
 
-    """
-    Final payment confirmation.
-
-    Rewards:
-    - every PAID normal drink gives 1 stamp
-    - 9 stamps = 1 free drink
-    - a free reward drink does NOT earn a stamp
-    - reward can only be processed once
-    """
-
     db = get_db()
 
     try:
 
-        db.execute(
-            "BEGIN IMMEDIATE"
-        )
+        db.execute("BEGIN IMMEDIATE")
 
         row = db.execute(
             """
@@ -1214,33 +998,18 @@ def mark_paid_and_completed(order_id):
         ).fetchone()
 
         if not row:
-
             db.rollback()
-
-            return (
-                False,
-                "Order not found."
-            )
+            return False, "Order not found."
 
         order = dict(row)
 
         if order["status"] != "ready":
-
             db.rollback()
-
-            return (
-                False,
-                "Order is not ready or already completed."
-            )
+            return False, "Order is not ready or already completed."
 
         if order["payment_status"] == "paid":
-
             db.rollback()
-
-            return (
-                False,
-                "Order already paid."
-            )
+            return False, "Order already paid."
 
         account = loyalty(
             db,
@@ -1248,25 +1017,15 @@ def mark_paid_and_completed(order_id):
         )
 
         reward_used = int(
-            order.get(
-                "reward_reserved"
-            ) or 0
+            order.get("reward_reserved") or 0
         )
 
-        earned_qty = (
-            qty_in_order(order)
-            - reward_used
-        )
+        earned_qty = qty_in_order(order) - reward_used
 
         if earned_qty < 0:
             earned_qty = 0
 
-        stamps = (
-            int(
-                account["stamps"]
-            )
-            + earned_qty
-        )
+        stamps = int(account["stamps"]) + earned_qty
 
         gained_free_drinks, remaining_stamps = divmod(
             stamps,
@@ -1281,9 +1040,7 @@ def mark_paid_and_completed(order_id):
                 payment_status='paid',
                 reward_earned=?,
                 reward_redeemed=?
-            WHERE
-                id=?
-                AND status='ready'
+            WHERE id=? AND status='ready'
             """,
             (
                 earned_qty,
@@ -1307,11 +1064,7 @@ def mark_paid_and_completed(order_id):
                 gained_free_drinks,
                 earned_qty,
                 reward_used,
-                str(
-                    order[
-                        "telegram_id"
-                    ]
-                )
+                str(order["telegram_id"])
             )
         )
 
@@ -1319,19 +1072,15 @@ def mark_paid_and_completed(order_id):
 
         return (
             True,
-            (
-                f"Paid! +{earned_qty} stamps, "
-                f"+{gained_free_drinks} free drinks."
-            )
+            f"Paid! +{earned_qty} stamps, "
+            f"+{gained_free_drinks} free drinks."
         )
 
     except Exception:
-
         db.rollback()
         raise
 
     finally:
-
         db.close()
 
 
@@ -1339,11 +1088,7 @@ def mark_paid_and_completed(order_id):
 # STATUS
 # =========================================================
 
-def change_status(
-    order_id,
-    expected,
-    new
-):
+def change_status(order_id, expected, new):
 
     db = get_db()
 
@@ -1353,8 +1098,7 @@ def change_status(
             """
             UPDATE orders
             SET status=?
-            WHERE id=?
-            AND status=?
+            WHERE id=? AND status=?
             """,
             (
                 new,
@@ -1365,13 +1109,9 @@ def change_status(
 
         db.commit()
 
-        return (
-            cursor.rowcount
-            == 1
-        )
+        return cursor.rowcount == 1
 
     finally:
-
         db.close()
 
 
@@ -1381,9 +1121,7 @@ def cancel_order(order_id):
 
     try:
 
-        db.execute(
-            "BEGIN IMMEDIATE"
-        )
+        db.execute("BEGIN IMMEDIATE")
 
         row = db.execute(
             """
@@ -1396,25 +1134,20 @@ def cancel_order(order_id):
         ).fetchone()
 
         if not row:
-
             db.rollback()
             return False
 
         order = dict(row)
 
         reserved = int(
-            order.get(
-                "reward_reserved"
-            ) or 0
+            order.get("reward_reserved") or 0
         )
 
         if reserved:
 
             loyalty(
                 db,
-                order[
-                    "telegram_id"
-                ]
+                order["telegram_id"]
             )
 
             db.execute(
@@ -1425,11 +1158,7 @@ def cancel_order(order_id):
                 """,
                 (
                     reserved,
-                    str(
-                        order[
-                            "telegram_id"
-                        ]
-                    )
+                    str(order["telegram_id"])
                 )
             )
 
@@ -1445,51 +1174,13 @@ def cancel_order(order_id):
         )
 
         db.commit()
-
         return True
 
     except Exception:
-
         db.rollback()
         raise
 
     finally:
-
-        db.close()
-
-
-def customer_orders(
-    telegram_id,
-    limit=50
-):
-
-    db = get_db()
-
-    try:
-
-        rows = db.execute(
-            """
-            SELECT *
-            FROM orders
-            WHERE telegram_id=?
-            ORDER BY id DESC
-            LIMIT ?
-            """,
-            (
-                str(
-                    telegram_id
-                ),
-                limit
-            )
-        )
-
-        return [
-            dict(row)
-            for row in rows
-        ]
-
-    finally:
-
         db.close()
 
 
@@ -1524,10 +1215,7 @@ def tg(method, payload):
 
     except Exception:
 
-        logging.exception(
-            "Telegram API error"
-        )
-
+        logging.exception("Telegram API error")
         return None
 
 
@@ -1537,12 +1225,9 @@ def order_keyboard():
         "inline_keyboard": [
             [
                 {
-                    "text":
-                        "☕ ORDER / PORUČI",
-
+                    "text": "☕ ORDER / PORUČI",
                     "web_app": {
-                        "url":
-                            URL
+                        "url": URL
                     }
                 }
             ]
@@ -1561,20 +1246,14 @@ def barista_keyboard(order):
             "inline_keyboard": [
                 [
                     {
-                        "text":
-                            "✅ ACCEPT ORDER",
-
-                        "callback_data":
-                            f"accept:{order_id}"
+                        "text": "✅ ACCEPT ORDER",
+                        "callback_data": f"accept:{order_id}"
                     }
                 ],
                 [
                     {
-                        "text":
-                            "❌ CANCEL",
-
-                        "callback_data":
-                            f"cancel:{order_id}"
+                        "text": "❌ CANCEL",
+                        "callback_data": f"cancel:{order_id}"
                     }
                 ]
             ]
@@ -1586,20 +1265,14 @@ def barista_keyboard(order):
             "inline_keyboard": [
                 [
                     {
-                        "text":
-                            "☕ ORDER READY",
-
-                        "callback_data":
-                            f"ready:{order_id}"
+                        "text": "☕ ORDER READY",
+                        "callback_data": f"ready:{order_id}"
                     }
                 ],
                 [
                     {
-                        "text":
-                            "❌ CANCEL",
-
-                        "callback_data":
-                            f"cancel:{order_id}"
+                        "text": "❌ CANCEL",
+                        "callback_data": f"cancel:{order_id}"
                     }
                 ]
             ]
@@ -1611,11 +1284,8 @@ def barista_keyboard(order):
             "inline_keyboard": [
                 [
                     {
-                        "text":
-                            "💵 PAID & PICKED UP",
-
-                        "callback_data":
-                            f"picked:{order_id}"
+                        "text": "💵 PAID & PICKED UP",
+                        "callback_data": f"picked:{order_id}"
                     }
                 ]
             ]
@@ -1625,112 +1295,48 @@ def barista_keyboard(order):
 
 
 # =========================================================
-# DATE / ORDER SERIALIZATION
+# DATE / SERIALIZATION
 # =========================================================
 
 def time_text(value):
 
     try:
 
-        dt = datetime.fromisoformat(
-            value
-        )
+        dt = datetime.fromisoformat(value)
 
         if dt.tzinfo:
+            dt = dt.astimezone(TZ)
 
-            dt = dt.astimezone(
-                TZ
-            )
-
-        return dt.strftime(
-            "%H:%M"
-        )
+        return dt.strftime("%H:%M")
 
     except Exception:
-
-        return str(
-            value or ""
-        )
+        return str(value or "")
 
 
 def date_text(value):
 
     try:
-
-        return datetime.fromisoformat(
-            value
-        ).strftime(
-            "%d.%m.%Y"
-        )
-
+        return datetime.fromisoformat(value).strftime("%d.%m.%Y")
     except Exception:
-
         return ""
 
 
 def serialize_order(order):
 
     return {
-        "id":
-            order["id"],
-
-        "pickup":
-            time_text(
-                order["pickup"]
-            ),
-
-        "pickup_iso":
-            order["pickup"],
-
-        "created":
-            date_text(
-                order["created"]
-            ),
-
-        "created_iso":
-            order["created"],
-
-        "total":
-            order["total"],
-
-        "status":
-            order["status"],
-
-        "payment_method":
-            order.get(
-                "payment_method"
-            )
-            or "pickup",
-
-        "payment_status":
-            order.get(
-                "payment_status"
-            )
-            or "unpaid",
-
-        "reward_redeemed":
-            int(
-                order.get(
-                    "reward_redeemed"
-                ) or 0
-            ),
-
-        "reward_reserved":
-            int(
-                order.get(
-                    "reward_reserved"
-                ) or 0
-            ),
-
-        "reward_earned":
-            int(
-                order.get(
-                    "reward_earned"
-                ) or 0
-            ),
-
-        "items":
-            details(order)
+        "id": order["id"],
+        "pickup": time_text(order["pickup"]),
+        "pickup_iso": order["pickup"],
+        "created": date_text(order["created"]),
+        "created_iso": order["created"],
+        "total": order["total"],
+        "status": order["status"],
+        "payment_method": order.get("payment_method") or "pickup",
+        "payment_status": order.get("payment_status") or "unpaid",
+        "reward_redeemed": int(order.get("reward_redeemed") or 0),
+        "reward_reserved": int(order.get("reward_reserved") or 0),
+        "reward_earned": int(order.get("reward_earned") or 0),
+        "items": details(order)
     }
 
 
@@ -1741,20 +1347,11 @@ def serialize_order(order):
 def barista_text(order):
 
     labels = {
-        "new":
-            "🔔 NEW ORDER",
-
-        "preparing":
-            "🟡 PREPARING",
-
-        "ready":
-            "🟢 READY",
-
-        "completed":
-            "✅ COMPLETED",
-
-        "cancelled":
-            "❌ CANCELLED"
+        "new": "🔔 NEW ORDER",
+        "preparing": "🟡 PREPARING",
+        "ready": "🟢 READY",
+        "completed": "✅ COMPLETED",
+        "cancelled": "❌ CANCELLED"
     }
 
     lines = []
@@ -1763,65 +1360,49 @@ def barista_text(order):
 
         addons = []
 
-        if item.get(
-            "extra_shot"
-        ):
-            addons.append(
-                "extra shot"
-            )
+        if item.get("extra_shot"):
+            addons.append("extra shot")
 
-        if item.get(
-            "boba"
-        ):
+        if item.get("boba"):
+            addons.append("boba")
+
+        if item.get("syrup_name"):
             addons.append(
-                "boba"
+                "FREE " + item["syrup_name"] + " syrup"
             )
 
         free = (
             " 🎁 FREE REWARD"
-            if item.get(
-                "reward_free"
-            )
+            if item.get("reward_free")
             else ""
         )
 
         addon_text = (
-            " + "
-            + ", ".join(addons)
+            " + " + ", ".join(addons)
             if addons
             else ""
         )
 
         lines.append(
-            (
-                f"{item.get('qty', 1)}x "
-                f"{item.get('name', 'Drink')}"
-                f"{free}"
-                f"{addon_text}"
-                f" — "
-                f"{item.get('line_total', 0)} RSD"
-            )
+            f"{item.get('qty', 1)}x "
+            f"{item.get('name', 'Drink')}"
+            f"{free}"
+            f"{addon_text}"
+            f" — "
+            f"{item.get('line_total', 0)} RSD"
         )
 
-    paid = (
-        order.get(
-            "payment_status"
-        )
-        == "paid"
-    )
+    paid = order.get("payment_status") == "paid"
 
     payment_text = (
         "💚 PAID"
         if paid
-        else
-        "💵 UNPAID — PAY AT PICKUP"
+        else "💵 UNPAID — PAY AT PICKUP"
     )
 
     reward_text = ""
 
-    if order.get(
-        "reward_reserved"
-    ):
+    if order.get("reward_reserved"):
 
         reward_text = (
             "\n🎁 Reward drink reserved: "
@@ -1852,10 +1433,7 @@ def verify(init_data):
 
     if (
         not TOKEN
-        or not isinstance(
-            init_data,
-            str
-        )
+        or not isinstance(init_data, str)
         or not init_data
         or len(init_data) > 8192
     ):
@@ -1880,10 +1458,7 @@ def verify(init_data):
 
         check_string = "\n".join(
             f"{key}={value}"
-            for key, value
-            in sorted(
-                data.items()
-            )
+            for key, value in sorted(data.items())
         )
 
         secret_key = hmac.new(
@@ -1905,63 +1480,35 @@ def verify(init_data):
             return None
 
         age = (
-            int(
-                time.time()
-            )
-            - int(
-                data.get(
-                    "auth_date",
-                    "0"
-                )
-            )
+            int(time.time())
+            - int(data.get("auth_date", "0"))
         )
 
-        if (
-            age > 86400
-            or age < -300
-        ):
+        if age > 86400 or age < -300:
             return None
 
         user = json.loads(
-            data.get(
-                "user",
-                "{}"
-            )
+            data.get("user", "{}")
         )
 
-        if (
-            isinstance(
-                user,
-                dict
-            )
-            and user.get("id")
-        ):
+        if isinstance(user, dict) and user.get("id"):
             return user
 
         return None
 
     except Exception:
-
         return None
 
 
 def verified_json():
 
-    data = request.get_json(
-        silent=True
-    )
+    data = request.get_json(silent=True)
 
-    if not isinstance(
-        data,
-        dict
-    ):
+    if not isinstance(data, dict):
         return None, {}
 
     user = verify(
-        data.get(
-            "initData",
-            ""
-        )
+        data.get("initData", "")
     )
 
     return user, data
@@ -1983,43 +1530,22 @@ def home():
 def health():
 
     return jsonify({
-        "ok":
-            True,
-
-        "bot_token":
-            bool(TOKEN),
-
-        "order_chat":
-            bool(ADMIN),
-
-        "app_url":
-            URL,
-
-        "menu_items":
-            len(MENU),
-
-        "payment_mode":
-            "pickup",
-
-        "rewards":
-            True,
-
-        "analytics":
-            True,
-
-        "admin_password":
-            bool(
-                ADMIN_PASSWORD
-            )
+        "ok": True,
+        "bot_token": bool(TOKEN),
+        "order_chat": bool(ADMIN),
+        "app_url": URL,
+        "menu_items": len(MENU),
+        "payment_mode": "pickup",
+        "rewards": True,
+        "analytics": True,
+        "admin_password": bool(ADMIN_PASSWORD)
     })
 
 
 @app.route("/api/menu")
 def menu():
 
-    return jsonify(
-        MENU
-    )
+    return jsonify(MENU)
 
 
 # =========================================================
@@ -2043,15 +1569,11 @@ def analytics_open():
 
     record_app_open(
         user,
-        data.get(
-            "source",
-            ""
-        )
+        data.get("source", "")
     )
 
     return jsonify({
-        "success":
-            True
+        "success": True
     })
 
 
@@ -2072,35 +1594,27 @@ def analytics_directions():
 
     record_directions_click(
         user,
-        data.get(
-            "source",
-            ""
-        )
+        data.get("source", "")
     )
 
     return jsonify({
-        "success":
-            True
+        "success": True
     })
 
 
 # =========================================================
-# ADMIN ANALYTICS DASHBOARD
+# ADMIN ANALYTICS
 # =========================================================
 
-@app.route(
-    "/admin/analytics"
-)
+@app.route("/admin/analytics")
 def admin_analytics():
 
     if not admin_authorized():
-
         return admin_login_required()
 
     data = analytics_data()
 
     def safe(value):
-
         return html.escape(
             str(
                 value
@@ -2111,10 +1625,7 @@ def admin_analytics():
 
     source_rows = ""
 
-    for row in data[
-        "sources"
-    ]:
-
+    for row in data["sources"]:
         source_rows += f"""
         <tr>
             <td>{safe(row["source"])}</td>
@@ -2123,21 +1634,13 @@ def admin_analytics():
         """
 
     if not source_rows:
-
         source_rows = """
-        <tr>
-            <td colspan="2">
-                No traffic data yet
-            </td>
-        </tr>
+        <tr><td colspan="2">No traffic data yet</td></tr>
         """
 
     drink_rows = ""
 
-    for row in data[
-        "top_drinks"
-    ]:
-
+    for row in data["top_drinks"]:
         drink_rows += f"""
         <tr>
             <td>{safe(row["name"])}</td>
@@ -2146,31 +1649,20 @@ def admin_analytics():
         """
 
     if not drink_rows:
-
         drink_rows = """
-        <tr>
-            <td colspan="2">
-                No completed orders yet
-            </td>
-        </tr>
+        <tr><td colspan="2">No completed orders yet</td></tr>
         """
 
     visitor_rows = ""
 
-    for row in data[
-        "recent_visitors"
-    ]:
+    for row in data["recent_visitors"]:
 
         name = " ".join(
             filter(
                 None,
                 [
-                    row[
-                        "first_name"
-                    ],
-                    row[
-                        "last_name"
-                    ]
+                    row["first_name"],
+                    row["last_name"]
                 ]
             )
         ).strip()
@@ -2179,99 +1671,47 @@ def admin_analytics():
             name = "Telegram user"
 
         username = (
-            "@"
-            + row["username"]
+            "@" + row["username"]
             if row["username"]
             else "—"
         )
 
-        source = (
-            row["first_source"]
-            or "direct"
-        )
-
-        first_seen = (
-            row["first_seen"]
-            or ""
-        )
-
-        last_seen = (
-            row["last_seen"]
-            or ""
-        )
+        source = row["first_source"] or "direct"
+        first_seen = row["first_seen"] or ""
+        last_seen = row["last_seen"] or ""
 
         visitor_rows += f"""
         <tr>
             <td>
-                <strong>
-                    {safe(name)}
-                </strong>
+                <strong>{safe(name)}</strong>
                 <br>
-                <small>
-                    {safe(username)}
-                </small>
+                <small>{safe(username)}</small>
             </td>
-
-            <td>
-                {safe(source)}
-            </td>
-
-            <td>
-                {safe(row["open_count"])}
-            </td>
-
-            <td>
-                {safe(row["order_count"])}
-            </td>
-
-            <td>
-                {safe(row["directions_clicks"])}
-            </td>
-
-            <td>
-                {safe(first_seen[:16].replace("T", " "))}
-            </td>
-
-            <td>
-                {safe(last_seen[:16].replace("T", " "))}
-            </td>
+            <td>{safe(source)}</td>
+            <td>{safe(row["open_count"])}</td>
+            <td>{safe(row["order_count"])}</td>
+            <td>{safe(row["directions_clicks"])}</td>
+            <td>{safe(first_seen[:16].replace("T", " "))}</td>
+            <td>{safe(last_seen[:16].replace("T", " "))}</td>
         </tr>
         """
 
     if not visitor_rows:
-
         visitor_rows = """
-        <tr>
-            <td colspan="7">
-                No visitors yet
-            </td>
-        </tr>
+        <tr><td colspan="7">No visitors yet</td></tr>
         """
 
     page = f"""
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#043923">
 
-<meta
-    name="viewport"
-    content="width=device-width,initial-scale=1"
->
-
-<meta
-    name="theme-color"
-    content="#043923"
->
-
-<title>
-TAKE AWAY Analytics
-</title>
+<title>TAKE AWAY Analytics</title>
 
 <style>
-
 :root {{
     --green:#043923;
     --dark:#032c1b;
@@ -2287,24 +1727,11 @@ TAKE AWAY Analytics
 body {{
     margin:0;
     min-height:100vh;
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Arial,
-        sans-serif;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
     color:white;
     background:
-        radial-gradient(
-            circle at 100% 0%,
-            #116342 0%,
-            transparent 30%
-        ),
-        linear-gradient(
-            180deg,
-            #063d27,
-            #032c1b
-        );
+        radial-gradient(circle at 100% 0%,#116342 0%,transparent 30%),
+        linear-gradient(180deg,#063d27,#032c1b);
 }}
 
 .shell {{
@@ -2332,32 +1759,17 @@ body {{
 
 .cards {{
     display:grid;
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(175px,1fr)
-        );
+    grid-template-columns:repeat(auto-fit,minmax(175px,1fr));
     gap:11px;
 }}
 
 .card {{
     min-height:120px;
     padding:18px;
-    border:
-        1px solid
-        rgba(255,255,255,.18);
+    border:1px solid rgba(255,255,255,.18);
     border-radius:20px;
-    background:
-        linear-gradient(
-            145deg,
-            rgba(255,255,255,.15),
-            rgba(255,255,255,.04)
-        );
-    box-shadow:
-        inset 0 1px 0
-        rgba(255,255,255,.15),
-        0 12px 30px
-        rgba(0,0,0,.12);
+    background:linear-gradient(145deg,rgba(255,255,255,.15),rgba(255,255,255,.04));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 12px 30px rgba(0,0,0,.12);
 }}
 
 .card-label {{
@@ -2379,12 +1791,9 @@ body {{
 .today {{
     margin-top:18px;
     padding:17px;
-    border:
-        1px solid
-        rgba(214,179,106,.4);
+    border:1px solid rgba(214,179,106,.4);
     border-radius:18px;
-    background:
-        rgba(214,179,106,.1);
+    background:rgba(214,179,106,.1);
     line-height:1.8;
     font-size:13px;
 }}
@@ -2404,12 +1813,9 @@ body {{
 
 .table-wrap {{
     overflow:auto;
-    border:
-        1px solid
-        rgba(255,255,255,.15);
+    border:1px solid rgba(255,255,255,.15);
     border-radius:18px;
-    background:
-        rgba(255,255,255,.05);
+    background:rgba(255,255,255,.05);
 }}
 
 table {{
@@ -2425,12 +1831,9 @@ th {{
     text-transform:uppercase;
 }}
 
-th,
-td {{
+th,td {{
     padding:13px 14px;
-    border-bottom:
-        1px solid
-        rgba(255,255,255,.09);
+    border-bottom:1px solid rgba(255,255,255,.09);
     text-align:left;
 }}
 
@@ -2450,7 +1853,6 @@ small {{
 }}
 
 @media(max-width:600px) {{
-
     .shell {{
         padding-top:22px;
     }}
@@ -2460,8 +1862,7 @@ small {{
     }}
 
     .cards {{
-        grid-template-columns:
-            repeat(2,1fr);
+        grid-template-columns:repeat(2,1fr);
     }}
 
     .card {{
@@ -2472,280 +1873,144 @@ small {{
     .card-number {{
         font-size:27px;
     }}
-
 }}
-
 </style>
-
 </head>
 
 <body>
 
 <div class="shell">
 
-    <div class="brand">
-
-        <h1>
-            TAKE AWAY
-        </h1>
-
-        <p>
-            CUSTOMER ANALYTICS
-        </p>
-
-    </div>
-
-    <div class="cards">
-
-        <div class="card">
-            <div class="card-label">
-                UNIQUE VISITORS
-            </div>
-            <div class="card-number">
-                {data["total_visitors"]}
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-label">
-                APP OPENS
-            </div>
-            <div class="card-number">
-                {data["total_opens"]}
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-label">
-                RETURNING VISITORS
-            </div>
-            <div class="card-number">
-                {data["returning_visitors"]}
-            </div>
-            <small>
-                {data["returning_rate"]}%
-            </small>
-        </div>
-
-        <div class="card">
-            <div class="card-label">
-                CUSTOMERS WHO ORDERED
-            </div>
-            <div class="card-number">
-                {data["unique_customers"]}
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-label">
-                CONVERSION
-            </div>
-            <div class="card-number gold">
-                {data["conversion"]}%
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-label">
-                TOTAL ORDERS
-            </div>
-            <div class="card-number">
-                {data["total_orders"]}
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-label">
-                COMPLETED ORDERS
-            </div>
-            <div class="card-number">
-                {data["completed_orders"]}
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-label">
-                GET DIRECTIONS
-            </div>
-            <div class="card-number">
-                {data["directions_clicks"]}
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-label">
-                COMPLETED REVENUE
-            </div>
-            <div class="card-number">
-                {data["completed_revenue"]} RSD
-            </div>
-        </div>
-
-    </div>
-
-    <div class="today">
-
-        <strong>
-            TODAY
-        </strong>
-
-        &nbsp; · &nbsp;
-
-        Visitors:
-        {data["visitors_today"]}
-
-        &nbsp; · &nbsp;
-
-        Opens:
-        {data["opens_today"]}
-
-        &nbsp; · &nbsp;
-
-        Orders:
-        {data["orders_today"]}
-
-        &nbsp; · &nbsp;
-
-        Directions:
-        {data["directions_today"]}
-
-    </div>
-
-    <section class="section">
-
-        <h2>
-            Traffic Sources
-        </h2>
-
-        <div class="table-wrap">
-
-            <table>
-
-                <thead>
-
-                    <tr>
-                        <th>
-                            Source
-                        </th>
-                        <th>
-                            Visitors
-                        </th>
-                    </tr>
-
-                </thead>
-
-                <tbody>
-                    {source_rows}
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </section>
-
-    <section class="section">
-
-        <h2>
-            Popular Drinks
-        </h2>
-
-        <div class="table-wrap">
-
-            <table>
-
-                <thead>
-
-                    <tr>
-                        <th>
-                            Drink
-                        </th>
-                        <th>
-                            Completed quantity
-                        </th>
-                    </tr>
-
-                </thead>
-
-                <tbody>
-                    {drink_rows}
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </section>
-
-    <section class="section">
-
-        <h2>
-            Recent Visitors
-        </h2>
-
-        <div class="table-wrap">
-
-            <table>
-
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            Customer
-                        </th>
-
-                        <th>
-                            Source
-                        </th>
-
-                        <th>
-                            Opens
-                        </th>
-
-                        <th>
-                            Orders
-                        </th>
-
-                        <th>
-                            Directions
-                        </th>
-
-                        <th>
-                            First seen
-                        </th>
-
-                        <th>
-                            Last seen
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-                    {visitor_rows}
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </section>
-
-    <div class="note">
-
-        Analytics starts collecting Mini App
-        visitor data after this version is deployed.
-        Visitors from the old version cannot be
-        reconstructed automatically.
-
-    </div>
+<div class="brand">
+<h1>TAKE AWAY</h1>
+<p>CUSTOMER ANALYTICS</p>
+</div>
+
+<div class="cards">
+
+<div class="card">
+<div class="card-label">UNIQUE VISITORS</div>
+<div class="card-number">{data["total_visitors"]}</div>
+</div>
+
+<div class="card">
+<div class="card-label">APP OPENS</div>
+<div class="card-number">{data["total_opens"]}</div>
+</div>
+
+<div class="card">
+<div class="card-label">RETURNING VISITORS</div>
+<div class="card-number">{data["returning_visitors"]}</div>
+<small>{data["returning_rate"]}%</small>
+</div>
+
+<div class="card">
+<div class="card-label">CUSTOMERS WHO ORDERED</div>
+<div class="card-number">{data["unique_customers"]}</div>
+</div>
+
+<div class="card">
+<div class="card-label">CONVERSION</div>
+<div class="card-number gold">{data["conversion"]}%</div>
+</div>
+
+<div class="card">
+<div class="card-label">TOTAL ORDERS</div>
+<div class="card-number">{data["total_orders"]}</div>
+</div>
+
+<div class="card">
+<div class="card-label">COMPLETED ORDERS</div>
+<div class="card-number">{data["completed_orders"]}</div>
+</div>
+
+<div class="card">
+<div class="card-label">GET DIRECTIONS</div>
+<div class="card-number">{data["directions_clicks"]}</div>
+</div>
+
+<div class="card">
+<div class="card-label">COMPLETED REVENUE</div>
+<div class="card-number">{data["completed_revenue"]} RSD</div>
+</div>
 
 </div>
 
-</body>
+<div class="today">
+<strong>TODAY</strong>
+&nbsp; · &nbsp;
+Visitors: {data["visitors_today"]}
+&nbsp; · &nbsp;
+Opens: {data["opens_today"]}
+&nbsp; · &nbsp;
+Orders: {data["orders_today"]}
+&nbsp; · &nbsp;
+Directions: {data["directions_today"]}
+</div>
 
+<section class="section">
+<h2>Traffic Sources</h2>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Visitors</th>
+</tr>
+</thead>
+<tbody>
+{source_rows}
+</tbody>
+</table>
+</div>
+</section>
+
+<section class="section">
+<h2>Popular Drinks</h2>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Drink</th>
+<th>Completed quantity</th>
+</tr>
+</thead>
+<tbody>
+{drink_rows}
+</tbody>
+</table>
+</div>
+</section>
+
+<section class="section">
+<h2>Recent Visitors</h2>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Customer</th>
+<th>Source</th>
+<th>Opens</th>
+<th>Orders</th>
+<th>Directions</th>
+<th>First seen</th>
+<th>Last seen</th>
+</tr>
+</thead>
+<tbody>
+{visitor_rows}
+</tbody>
+</table>
+</div>
+</section>
+
+<div class="note">
+Analytics starts collecting Mini App visitor data after this version is deployed.
+Visitors from the old version cannot be reconstructed automatically.
+</div>
+
+</div>
+</body>
 </html>
 """
 
@@ -2775,9 +2040,7 @@ def rewards():
         }), 401
 
     return jsonify(
-        loyalty_data(
-            user["id"]
-        )
+        loyalty_data(user["id"])
     )
 
 
@@ -2813,6 +2076,189 @@ def orders_endpoint():
 
 
 # =========================================================
+# CUSTOMER CANCEL ORDER
+# =========================================================
+
+@app.route(
+    "/api/order/cancel",
+    methods=["POST"]
+)
+def customer_cancel_order():
+
+    user, data = verified_json()
+
+    if not user:
+
+        return jsonify({
+            "error":
+                "Telegram session could not be verified."
+        }), 401
+
+    try:
+        order_id = int(
+            data.get("order_id")
+        )
+    except (TypeError, ValueError):
+
+        return jsonify({
+            "error":
+                "Invalid order."
+        }), 400
+
+    telegram_id = str(
+        user["id"]
+    )
+
+    db = get_db()
+
+    try:
+
+        db.execute(
+            "BEGIN IMMEDIATE"
+        )
+
+        row = db.execute(
+            """
+            SELECT *
+            FROM orders
+            WHERE id=?
+            AND telegram_id=?
+            """,
+            (
+                order_id,
+                telegram_id
+            )
+        ).fetchone()
+
+        if not row:
+
+            db.rollback()
+
+            return jsonify({
+                "error":
+                    "Order not found."
+            }), 404
+
+        order = dict(row)
+
+        # Customer may cancel ONLY before barista accepts.
+        if order["status"] != "new":
+
+            db.rollback()
+
+            return jsonify({
+                "error":
+                    "This order can no longer be cancelled."
+            }), 409
+
+        reserved = int(
+            order.get("reward_reserved") or 0
+        )
+
+        if reserved:
+
+            loyalty(
+                db,
+                telegram_id
+            )
+
+            db.execute(
+                """
+                UPDATE loyalty_accounts
+                SET free_drinks=free_drinks+?
+                WHERE telegram_id=?
+                """,
+                (
+                    reserved,
+                    telegram_id
+                )
+            )
+
+        cursor = db.execute(
+            """
+            UPDATE orders
+            SET
+                status='cancelled',
+                reward_reserved=0
+            WHERE id=?
+            AND telegram_id=?
+            AND status='new'
+            """,
+            (
+                order_id,
+                telegram_id
+            )
+        )
+
+        if cursor.rowcount != 1:
+
+            db.rollback()
+
+            return jsonify({
+                "error":
+                    "This order can no longer be cancelled."
+            }), 409
+
+        db.commit()
+
+    except Exception:
+
+        db.rollback()
+        raise
+
+    finally:
+        db.close()
+
+    updated = get_order(
+        order_id
+    )
+
+    if ADMIN:
+
+        tg(
+            "sendMessage",
+            {
+                "chat_id":
+                    ADMIN,
+
+                "text":
+                    (
+                        "❌ CUSTOMER CANCELLED ORDER\n\n"
+                        f"🧾 Order #{order_id}\n"
+                        f"👤 {updated['customer']}\n"
+                        f"🕐 Pickup: {time_text(updated['pickup'])}"
+                    )
+            }
+        )
+
+    tg(
+        "sendMessage",
+        {
+            "chat_id":
+                telegram_id,
+
+            "text":
+                (
+                    "❌ TAKE AWAY — ORDER CANCELLED\n\n"
+                    f"🧾 #{order_id}\n"
+                    "Your order has been cancelled."
+                )
+        }
+    )
+
+    return jsonify({
+        "success":
+            True,
+
+        "order_id":
+            order_id,
+
+        "status":
+            "cancelled"
+    })
+
+
+# =========================================================
 # PROFILE API
 # =========================================================
 
@@ -2839,8 +2285,7 @@ def profile():
     completed = [
         order
         for order in orders
-        if order["status"]
-        == "completed"
+        if order["status"] == "completed"
     ]
 
     counts = {}
@@ -2849,30 +2294,17 @@ def profile():
 
         for item in details(order):
 
-            item_id = item.get(
-                "id"
-            )
+            item_id = item.get("id")
 
             if item_id:
 
                 counts[item_id] = (
-                    counts.get(
-                        item_id,
-                        0
-                    )
-                    + int(
-                        item.get(
-                            "qty",
-                            0
-                        )
-                    )
+                    counts.get(item_id, 0)
+                    + int(item.get("qty", 0))
                 )
 
     favorite_id = (
-        max(
-            counts,
-            key=counts.get
-        )
+        max(counts, key=counts.get)
         if counts
         else None
     )
@@ -2881,14 +2313,8 @@ def profile():
         filter(
             None,
             [
-                user.get(
-                    "first_name",
-                    ""
-                ),
-                user.get(
-                    "last_name",
-                    ""
-                )
+                user.get("first_name", ""),
+                user.get("last_name", "")
             ]
         )
     ).strip()
@@ -2898,67 +2324,25 @@ def profile():
     if favorite_id in MENU_BY_ID:
 
         favorite = {
-            "id":
-                favorite_id,
-
-            "name":
-                MENU_BY_ID[
-                    favorite_id
-                ]["name"]
+            "id": favorite_id,
+            "name": MENU_BY_ID[favorite_id]["name"]
         }
 
     return jsonify({
-
-        "telegram_id":
-            str(
-                user["id"]
-            ),
-
-        "name":
-            name
-            or "TAKE AWAY Member",
-
-        "first_name":
-            user.get(
-                "first_name",
-                ""
-            ),
-
-        "username":
-            user.get(
-                "username",
-                ""
-            ),
-
-        "orders":
-            len(orders),
-
-        "completed_orders":
-            len(completed),
-
-        "drinks":
-            sum(
-                counts.values()
-            ),
-
-        "favorite":
-            favorite,
-
-        "first_order":
-            (
-                date_text(
-                    orders[-1][
-                        "created"
-                    ]
-                )
-                if orders
-                else ""
-            ),
-
-        "rewards":
-            loyalty_data(
-                user["id"]
-            )
+        "telegram_id": str(user["id"]),
+        "name": name or "TAKE AWAY Member",
+        "first_name": user.get("first_name", ""),
+        "username": user.get("username", ""),
+        "orders": len(orders),
+        "completed_orders": len(completed),
+        "drinks": sum(counts.values()),
+        "favorite": favorite,
+        "first_order": (
+            date_text(orders[-1]["created"])
+            if orders
+            else ""
+        ),
+        "rewards": loyalty_data(user["id"])
     })
 
 
@@ -2981,25 +2365,17 @@ def create_order():
                 "Open TAKE AWAY from the Telegram bot ORDER button."
         }), 401
 
-    if data.get(
-        "payment_method",
-        "pickup"
-    ) != "pickup":
+    if data.get("payment_method", "pickup") != "pickup":
 
         return jsonify({
             "error":
                 "Online payment is coming soon. Choose Pay at pickup."
         }), 503
 
-    items = data.get(
-        "items"
-    )
+    items = data.get("items")
 
     if (
-        not isinstance(
-            items,
-            list
-        )
+        not isinstance(items, list)
         or not items
         or len(items) > 20
     ):
@@ -3009,18 +2385,11 @@ def create_order():
                 "Add at least one drink."
         }), 400
 
-    # -----------------------------------------
-    # PICKUP TIME
-    # -----------------------------------------
-
     try:
 
         pickup = datetime.fromisoformat(
             str(
-                data.get(
-                    "pickup",
-                    ""
-                )
+                data.get("pickup", "")
             ).replace(
                 "Z",
                 "+00:00"
@@ -3028,36 +2397,23 @@ def create_order():
         )
 
         if pickup.tzinfo is None:
-
-            pickup = pickup.replace(
-                tzinfo=TZ
-            )
-
+            pickup = pickup.replace(tzinfo=TZ)
         else:
+            pickup = pickup.astimezone(TZ)
 
-            pickup = pickup.astimezone(
-                TZ
-            )
-
-    except (
-        ValueError,
-        TypeError
-    ):
+    except (ValueError, TypeError):
 
         return jsonify({
             "error":
                 "Invalid pickup time."
         }), 400
 
-    now = datetime.now(
-        TZ
-    )
+    now = datetime.now(TZ)
 
     minimum_pickup = (
         now
         + timedelta(
-            minutes=
-                MIN_PREP_MINUTES,
+            minutes=MIN_PREP_MINUTES,
             seconds=-30
         )
     )
@@ -3070,8 +2426,7 @@ def create_order():
         }), 400
 
     if (
-        pickup.date()
-        != now.date()
+        pickup.date() != now.date()
         or not (
             OPEN_HOUR
             <= pickup.hour
@@ -3084,10 +2439,6 @@ def create_order():
                 "Pickup is available today between 07:00 and 17:00."
         }), 400
 
-    # -----------------------------------------
-    # REWARD SELECTION
-    # -----------------------------------------
-
     reward_index = data.get(
         "reward_item_index",
         None
@@ -3096,18 +2447,10 @@ def create_order():
     if reward_index is not None:
 
         if (
-            isinstance(
-                reward_index,
-                bool
-            )
-            or not isinstance(
-                reward_index,
-                int
-            )
+            isinstance(reward_index, bool)
+            or not isinstance(reward_index, int)
             or reward_index < 0
-            or reward_index >= len(
-                items
-            )
+            or reward_index >= len(items)
         ):
 
             return jsonify({
@@ -3115,27 +2458,15 @@ def create_order():
                     "Invalid reward selection."
             }), 400
 
-    # -----------------------------------------
-    # VALIDATE CART
-    # -----------------------------------------
-
     clean = []
     total = 0
     count = 0
 
-    for index, item in enumerate(
-        items
-    ):
+    for index, item in enumerate(items):
 
         if (
-            not isinstance(
-                item,
-                dict
-            )
-            or item.get(
-                "id"
-            )
-            not in MENU_BY_ID
+            not isinstance(item, dict)
+            or item.get("id") not in MENU_BY_ID
         ):
 
             return jsonify({
@@ -3153,14 +2484,8 @@ def create_order():
         )
 
         if (
-            isinstance(
-                qty,
-                bool
-            )
-            or not isinstance(
-                qty,
-                int
-            )
+            isinstance(qty, bool)
+            or not isinstance(qty, int)
             or not (
                 1
                 <= qty
@@ -3183,19 +2508,44 @@ def create_order():
             }), 400
 
         extra_shot = (
-            item.get(
-                "extra_shot"
-            ) is True
-            and product["id"]
-            in COFFEE_IDS
+            item.get("extra_shot") is True
+            and product["id"] in COFFEE_IDS
         )
 
         boba = (
-            item.get(
-                "boba"
-            ) is True
+            item.get("boba") is True
             and product["boba"]
         )
+
+        # -----------------------------------------
+        # FREE SYRUP
+        # No "no syrup" value is required.
+        # Missing/empty syrup simply means no syrup.
+        # -----------------------------------------
+
+        syrup = item.get("syrup")
+
+        if syrup in (None, ""):
+
+            syrup = None
+
+        elif syrup not in SYRUPS:
+
+            return jsonify({
+                "error":
+                    "Invalid syrup."
+            }), 400
+
+        # Syrup is only available for coffee drinks.
+        if (
+            syrup is not None
+            and product["id"] not in COFFEE_IDS
+        ):
+
+            return jsonify({
+                "error":
+                    "Syrup is only available for coffee drinks."
+            }), 400
 
         unit_price = (
             product["price"]
@@ -3212,20 +2562,16 @@ def create_order():
         )
 
         is_reward = (
-            reward_index
-            == index
+            reward_index == index
         )
 
         line_total = (
-            unit_price
-            * qty
+            unit_price * qty
         )
 
         if is_reward:
 
-            line_total -= (
-                product["price"]
-            )
+            line_total -= product["price"]
 
         total += line_total
 
@@ -3245,6 +2591,15 @@ def create_order():
             "boba":
                 boba,
 
+            "syrup":
+                syrup,
+
+            "syrup_name":
+                SYRUPS.get(
+                    syrup,
+                    ""
+                ),
+
             "unit_price":
                 unit_price,
 
@@ -3263,44 +2618,24 @@ def create_order():
         filter(
             None,
             [
-                user.get(
-                    "first_name",
-                    ""
-                ),
-                user.get(
-                    "last_name",
-                    ""
-                )
+                user.get("first_name", ""),
+                user.get("last_name", "")
             ]
         )
     ).strip()
 
     if not customer:
 
-        if user.get(
-            "username"
-        ):
-
-            customer = (
-                "@"
-                + user["username"]
-            )
-
+        if user.get("username"):
+            customer = "@" + user["username"]
         else:
-
             customer = telegram_id
-
-    # -----------------------------------------
-    # SAVE ORDER + RESERVE REWARD
-    # -----------------------------------------
 
     db = get_db()
 
     try:
 
-        db.execute(
-            "BEGIN IMMEDIATE"
-        )
+        db.execute("BEGIN IMMEDIATE")
 
         account = loyalty(
             db,
@@ -3311,14 +2646,7 @@ def create_order():
 
         if reward_index is not None:
 
-            if (
-                int(
-                    account[
-                        "free_drinks"
-                    ]
-                )
-                < 1
-            ):
+            if int(account["free_drinks"]) < 1:
 
                 db.rollback()
 
@@ -3333,9 +2661,7 @@ def create_order():
                 SET free_drinks=free_drinks-1
                 WHERE telegram_id=?
                 """,
-                (
-                    telegram_id,
-                )
+                (telegram_id,)
             )
 
             reward_reserved = 1
@@ -3382,24 +2708,16 @@ def create_order():
             )
         )
 
-        order_id = (
-            cursor.lastrowid
-        )
+        order_id = cursor.lastrowid
 
         db.commit()
 
     except Exception:
-
         db.rollback()
         raise
 
     finally:
-
         db.close()
-
-    # -----------------------------------------
-    # BARISTA NOTIFICATION
-    # -----------------------------------------
 
     order = get_order(
         order_id
@@ -3414,22 +2732,16 @@ def create_order():
                     ADMIN,
 
                 "text":
-                    barista_text(
-                        order
-                    ),
+                    barista_text(order),
 
                 "reply_markup":
-                    barista_keyboard(
-                        order
-                    )
+                    barista_keyboard(order)
             }
         )
 
         if (
             not result
-            or not result.get(
-                "ok"
-            )
+            or not result.get("ok")
         ):
 
             logging.error(
@@ -3443,10 +2755,6 @@ def create_order():
             "ORDER_CHAT_ID missing; order %s saved",
             order_id
         )
-
-    # -----------------------------------------
-    # CUSTOMER CONFIRMATION
-    # -----------------------------------------
 
     customer_message = (
         "✅ TAKE AWAY — ORDER RECEIVED\n\n"
@@ -3484,9 +2792,7 @@ def create_order():
             total,
 
         "pickup":
-            time_text(
-                order["pickup"]
-            ),
+            time_text(order["pickup"]),
 
         "payment_method":
             "pickup",
@@ -3505,27 +2811,14 @@ def create_order():
 
 def handle_callback(callback):
 
-    callback_id = callback.get(
-        "id"
-    )
-
-    message = (
-        callback.get(
-            "message"
-        )
-        or {}
-    )
+    callback_id = callback.get("id")
+    message = callback.get("message") or {}
 
     chat_id = str(
         (
-            message.get(
-                "chat"
-            )
+            message.get("chat")
             or {}
-        ).get(
-            "id",
-            ""
-        )
+        ).get("id", "")
     )
 
     def answer(text):
@@ -3543,25 +2836,15 @@ def handle_callback(callback):
                 }
             )
 
-    if (
-        not ADMIN
-        or chat_id
-        != str(ADMIN)
-    ):
+    if not ADMIN or chat_id != str(ADMIN):
 
-        answer(
-            "Not allowed."
-        )
-
+        answer("Not allowed.")
         return
 
     try:
 
         action, raw_order_id = str(
-            callback.get(
-                "data",
-                ""
-            )
+            callback.get("data", "")
         ).split(
             ":",
             1
@@ -3571,15 +2854,9 @@ def handle_callback(callback):
             raw_order_id
         )
 
-    except (
-        ValueError,
-        TypeError
-    ):
+    except (ValueError, TypeError):
 
-        answer(
-            "Invalid action."
-        )
-
+        answer("Invalid action.")
         return
 
     order = get_order(
@@ -3588,15 +2865,8 @@ def handle_callback(callback):
 
     if not order:
 
-        answer(
-            "Order not found."
-        )
-
+        answer("Order not found.")
         return
-
-    # -----------------------------------------
-    # ACCEPT
-    # -----------------------------------------
 
     if action == "accept":
 
@@ -3606,19 +2876,13 @@ def handle_callback(callback):
             "preparing"
         )
 
-        response = (
-            "Order accepted."
-        )
+        response = "Order accepted."
 
         customer_note = (
             "✅ TAKE AWAY — ORDER ACCEPTED\n\n"
             f"🧾 #{order_id}\n"
             "We are preparing your drinks. ☕"
         )
-
-    # -----------------------------------------
-    # READY
-    # -----------------------------------------
 
     elif action == "ready":
 
@@ -3628,9 +2892,7 @@ def handle_callback(callback):
             "ready"
         )
 
-        response = (
-            "Customer notified."
-        )
+        response = "Customer notified."
 
         customer_note = (
             "☕ TAKE AWAY — YOUR ORDER IS READY!\n\n"
@@ -3638,16 +2900,10 @@ def handle_callback(callback):
             "💵 Please pay at pickup."
         )
 
-    # -----------------------------------------
-    # PAID + PICKED UP
-    # -----------------------------------------
-
     elif action == "picked":
 
-        changed, response = (
-            mark_paid_and_completed(
-                order_id
-            )
+        changed, response = mark_paid_and_completed(
+            order_id
         )
 
         customer_note = (
@@ -3657,19 +2913,13 @@ def handle_callback(callback):
             "Your Rewards have been updated. ✦"
         )
 
-    # -----------------------------------------
-    # CANCEL
-    # -----------------------------------------
-
     elif action == "cancel":
 
         changed = cancel_order(
             order_id
         )
 
-        response = (
-            "Order cancelled."
-        )
+        response = "Order cancelled."
 
         customer_note = (
             "❌ TAKE AWAY — ORDER CANCELLED\n\n"
@@ -3679,25 +2929,15 @@ def handle_callback(callback):
 
     else:
 
-        answer(
-            "Unknown action."
-        )
-
+        answer("Unknown action.")
         return
 
     if not changed:
 
         if action == "picked":
-
-            answer(
-                response
-            )
-
+            answer(response)
         else:
-
-            answer(
-                "Order already updated."
-            )
+            answer("Order already updated.")
 
         return
 
@@ -3710,14 +2950,10 @@ def handle_callback(callback):
             chat_id,
 
         "message_id":
-            message.get(
-                "message_id"
-            ),
+            message.get("message_id"),
 
         "text":
-            barista_text(
-                updated
-            )
+            barista_text(updated)
     }
 
     keyboard = barista_keyboard(
@@ -3725,10 +2961,7 @@ def handle_callback(callback):
     )
 
     if keyboard:
-
-        payload[
-            "reply_markup"
-        ] = keyboard
+        payload["reply_markup"] = keyboard
 
     tg(
         "editMessageText",
@@ -3739,18 +2972,14 @@ def handle_callback(callback):
         "sendMessage",
         {
             "chat_id":
-                updated[
-                    "telegram_id"
-                ],
+                updated["telegram_id"],
 
             "text":
                 customer_note
         }
     )
 
-    answer(
-        response
-    )
+    answer(response)
 
 
 # =========================================================
@@ -3778,22 +3007,12 @@ def bot_webhook():
             return "", 403
 
     update = (
-        request.get_json(
-            silent=True
-        )
+        request.get_json(silent=True)
         or {}
     )
 
-    if not isinstance(
-        update,
-        dict
-    ):
-
+    if not isinstance(update, dict):
         return "", 200
-
-    # -----------------------------------------
-    # CALLBACK
-    # -----------------------------------------
 
     callback = update.get(
         "callback_query"
@@ -3815,39 +3034,16 @@ def bot_webhook():
 
         return "", 200
 
-    # -----------------------------------------
-    # NORMAL MESSAGE
-    # -----------------------------------------
+    message = update.get("message") or {}
+    chat = message.get("chat") or {}
 
-    message = (
-        update.get(
-            "message"
-        )
-        or {}
-    )
-
-    chat = (
-        message.get(
-            "chat"
-        )
-        or {}
-    )
-
-    if chat.get(
-        "type"
-    ) != "private":
-
+    if chat.get("type") != "private":
         return "", 200
 
-    chat_id = chat.get(
-        "id"
-    )
+    chat_id = chat.get("id")
 
     command = str(
-        message.get(
-            "text",
-            ""
-        )
+        message.get("text", "")
     ).strip()
 
     command = (
