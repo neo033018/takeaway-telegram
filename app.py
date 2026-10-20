@@ -15,21 +15,29 @@ from zoneinfo import ZoneInfo
 import requests
 from flask import Flask, request, jsonify, render_template, Response
 
+
 # =========================================================
 # APP / SETTINGS
 # =========================================================
 
 app = Flask(__name__)
-logging.basicConfig(level=logging.INFO)
 
-TOKEN = os.environ.get("BOT_TOKEN", "")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s"
+)
+
+TOKEN = os.environ.get("BOT_TOKEN", "").strip()
 
 URL = os.environ.get(
     "APP_URL",
     "https://takeaway-telegram.onrender.com"
 ).rstrip("/")
 
-ADMIN = os.environ.get("ORDER_CHAT_ID", "")
+ADMIN = os.environ.get(
+    "ORDER_CHAT_ID",
+    ""
+).strip()
 
 DB = os.environ.get(
     "DATABASE_PATH",
@@ -39,7 +47,7 @@ DB = os.environ.get(
 WEBHOOK_SECRET = os.environ.get(
     "WEBHOOK_SECRET",
     ""
-)
+).strip()
 
 ADMIN_PASSWORD = os.environ.get(
     "ADMIN_PASSWORD",
@@ -54,6 +62,7 @@ MIN_PREP_MINUTES = 10
 
 MAX_ITEM_QUANTITY = 10
 MAX_ORDER_QUANTITY = 30
+
 
 # =========================================================
 # MENU
@@ -83,7 +92,6 @@ MENU = [
         "category": "tea",
         "boba": False,
     },
-
     {
         "id": "espresso",
         "name": "Espresso",
@@ -130,7 +138,6 @@ MENU = [
         "category": "coffee",
         "boba": False,
     },
-
     {
         "id": "tonic",
         "name": "Tonic Coffee",
@@ -161,7 +168,10 @@ MENU = [
     },
 ]
 
-MENU_BY_ID = {item["id"]: item for item in MENU}
+MENU_BY_ID = {
+    item["id"]: item
+    for item in MENU
+}
 
 COFFEE_IDS = {
     "espresso",
@@ -201,9 +211,16 @@ TEMPERATURE_IDS = {
 }
 
 LEGACY_ITEM_MAP = {
-    "icedamericano": ("americano", "iced"),
-    "icedlatte": ("latte", "iced"),
+    "icedamericano": (
+        "americano",
+        "iced"
+    ),
+    "icedlatte": (
+        "latte",
+        "iced"
+    ),
 }
+
 
 # =========================================================
 # DATABASE
@@ -215,25 +232,49 @@ def get_db():
         timeout=20,
         check_same_thread=False,
     )
+
     connection.row_factory = sqlite3.Row
+
     return connection
 
-def table_columns(db, table):
+
+def table_columns(
+    db,
+    table
+):
     try:
         rows = db.execute(
             f"PRAGMA table_info({table})"
         ).fetchall()
-        return {row["name"] for row in rows}
+
+        return {
+            row["name"]
+            for row in rows
+        }
+
     except Exception:
         return set()
 
-def ensure_column(db, table, name, definition):
-    columns = table_columns(db, table)
+
+def ensure_column(
+    db,
+    table,
+    name,
+    definition
+):
+    columns = table_columns(
+        db,
+        table
+    )
 
     if name not in columns:
         db.execute(
-            f"ALTER TABLE {table} ADD COLUMN {name} {definition}"
+            f"""
+            ALTER TABLE {table}
+            ADD COLUMN {name} {definition}
+            """
         )
+
 
 def init_db():
     db = get_db()
@@ -370,7 +411,9 @@ def init_db():
     finally:
         db.close()
 
+
 init_db()
+
 
 # =========================================================
 # GENERAL HELPERS
@@ -379,8 +422,10 @@ init_db()
 def now_local():
     return datetime.now(TZ)
 
+
 def now_iso():
     return now_local().isoformat()
+
 
 def parse_datetime(value):
     if not value:
@@ -388,52 +433,89 @@ def parse_datetime(value):
 
     try:
         dt = datetime.fromisoformat(
-            str(value).replace("Z", "+00:00")
+            str(value).replace(
+                "Z",
+                "+00:00"
+            )
         )
 
         if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=TZ)
+            dt = dt.replace(
+                tzinfo=TZ
+            )
 
-        return dt.astimezone(TZ)
+        return dt.astimezone(
+            TZ
+        )
 
     except Exception:
         return None
 
-def safe_int(value, default=0):
+
+def safe_int(
+    value,
+    default=0
+):
     try:
         return int(value)
+
     except Exception:
         return default
 
-def get_order(order_id):
+
+def get_order(
+    order_id
+):
     db = get_db()
 
     try:
         return db.execute(
-            "SELECT * FROM orders WHERE id = ?",
-            (order_id,)
+            """
+            SELECT *
+            FROM orders
+            WHERE id = ?
+            """,
+            (
+                order_id,
+            )
         ).fetchone()
+
     finally:
         db.close()
 
+
 def details(row):
     try:
-        return json.loads(row["items"] or "[]")
+        return json.loads(
+            row["items"]
+            or "[]"
+        )
+
     except Exception:
         return []
 
+
 def qty_in_order(row):
     return sum(
-        safe_int(item.get("qty"), 0)
+        safe_int(
+            item.get("qty"),
+            0
+        )
         for item in details(row)
     )
+
 
 # =========================================================
 # TELEGRAM INIT DATA
 # =========================================================
 
-def verify_init_data(init_data):
-    if not TOKEN or not init_data:
+def verify_init_data(
+    init_data
+):
+    if not TOKEN:
+        return None
+
+    if not init_data:
         return None
 
     try:
@@ -444,26 +526,36 @@ def verify_init_data(init_data):
             )
         )
 
-        received_hash = parsed.pop("hash", None)
+        received_hash = parsed.pop(
+            "hash",
+            None
+        )
 
         if not received_hash:
             return None
 
         auth_date = safe_int(
-            parsed.get("auth_date"),
+            parsed.get(
+                "auth_date"
+            ),
             0
         )
 
         if not auth_date:
             return None
 
-        # Allow 24 hours. Telegram Mini App can remain open for a while.
-        if abs(int(time.time()) - auth_date) > 86400:
+        if abs(
+            int(time.time())
+            - auth_date
+        ) > 86400:
             return None
 
         data_check_string = "\n".join(
             f"{key}={parsed[key]}"
-            for key in sorted(parsed.keys())
+            for key
+            in sorted(
+                parsed.keys()
+            )
         )
 
         secret_key = hmac.new(
@@ -484,12 +576,16 @@ def verify_init_data(init_data):
         ):
             return None
 
-        user_raw = parsed.get("user")
+        user_raw = parsed.get(
+            "user"
+        )
 
         if not user_raw:
             return None
 
-        user = json.loads(user_raw)
+        user = json.loads(
+            user_raw
+        )
 
         if not user.get("id"):
             return None
@@ -500,35 +596,63 @@ def verify_init_data(init_data):
         logging.exception(
             "Telegram initData verification failed"
         )
+
         return None
 
+
 def request_user():
-    data = request.get_json(silent=True) or {}
+    data = (
+        request.get_json(
+            silent=True
+        )
+        or {}
+    )
 
-    init_data = data.get("initData", "")
+    init_data = data.get(
+        "initData",
+        ""
+    )
 
-    user = verify_init_data(init_data)
+    user = verify_init_data(
+        init_data
+    )
 
-    return data, user
+    return (
+        data,
+        user
+    )
+
 
 # =========================================================
 # ANALYTICS
 # =========================================================
 
 def clean_source(value):
-    value = str(value or "").strip()
+    value = str(
+        value
+        or ""
+    ).strip()
 
     if not value:
         return "direct"
 
     return value[:100]
 
-def record_app_open(user, source=""):
+
+def record_app_open(
+    user,
+    source=""
+):
     if not user:
         return
 
-    telegram_id = safe_int(user.get("id"))
-    source = clean_source(source)
+    telegram_id = safe_int(
+        user.get("id")
+    )
+
+    source = clean_source(
+        source
+    )
 
     db = get_db()
 
@@ -539,7 +663,9 @@ def record_app_open(user, source=""):
             FROM analytics_visitors
             WHERE telegram_id = ?
             """,
-            (telegram_id,)
+            (
+                telegram_id,
+            )
         ).fetchone()
 
         current = now_iso()
@@ -554,21 +680,29 @@ def record_app_open(user, source=""):
                     last_seen = ?,
                     opens = opens + 1,
                     source = CASE
-                        WHEN ? != 'direct' THEN ?
+                        WHEN ? != 'direct'
+                        THEN ?
                         ELSE source
                     END
                 WHERE telegram_id = ?
                 """,
                 (
-                    user.get("username"),
-                    user.get("first_name"),
-                    user.get("last_name"),
+                    user.get(
+                        "username"
+                    ),
+                    user.get(
+                        "first_name"
+                    ),
+                    user.get(
+                        "last_name"
+                    ),
                     current,
                     source,
                     source,
                     telegram_id,
                 )
             )
+
         else:
             db.execute(
                 """
@@ -582,13 +716,21 @@ def record_app_open(user, source=""):
                     opens,
                     source
                 )
-                VALUES (?, ?, ?, ?, ?, ?, 1, ?)
+                VALUES (
+                    ?, ?, ?, ?, ?, ?, 1, ?
+                )
                 """,
                 (
                     telegram_id,
-                    user.get("username"),
-                    user.get("first_name"),
-                    user.get("last_name"),
+                    user.get(
+                        "username"
+                    ),
+                    user.get(
+                        "first_name"
+                    ),
+                    user.get(
+                        "last_name"
+                    ),
                     current,
                     current,
                     source,
@@ -603,7 +745,9 @@ def record_app_open(user, source=""):
                 source,
                 created_at
             )
-            VALUES (?, 'open', ?, ?)
+            VALUES (
+                ?, 'open', ?, ?
+            )
             """,
             (
                 telegram_id,
@@ -617,7 +761,11 @@ def record_app_open(user, source=""):
     finally:
         db.close()
 
-def record_directions_click(user, source=""):
+
+def record_directions_click(
+    user,
+    source=""
+):
     if not user:
         return
 
@@ -632,11 +780,17 @@ def record_directions_click(user, source=""):
                 source,
                 created_at
             )
-            VALUES (?, 'directions', ?, ?)
+            VALUES (
+                ?, 'directions', ?, ?
+            )
             """,
             (
-                safe_int(user.get("id")),
-                clean_source(source),
+                safe_int(
+                    user.get("id")
+                ),
+                clean_source(
+                    source
+                ),
                 now_iso(),
             )
         )
@@ -646,11 +800,16 @@ def record_directions_click(user, source=""):
     finally:
         db.close()
 
+
 def analytics_data():
     db = get_db()
 
     try:
-        today = now_local().date().isoformat()
+        today = (
+            now_local()
+            .date()
+            .isoformat()
+        )
 
         visitors = db.execute(
             """
@@ -661,7 +820,10 @@ def analytics_data():
 
         opens = db.execute(
             """
-            SELECT COALESCE(SUM(opens), 0) AS c
+            SELECT COALESCE(
+                SUM(opens),
+                0
+            ) AS c
             FROM analytics_visitors
             """
         ).fetchone()["c"]
@@ -676,7 +838,9 @@ def analytics_data():
 
         unique_customers = db.execute(
             """
-            SELECT COUNT(DISTINCT telegram_id) AS c
+            SELECT COUNT(
+                DISTINCT telegram_id
+            ) AS c
             FROM orders
             """
         ).fetchone()["c"]
@@ -706,7 +870,10 @@ def analytics_data():
 
         completed_revenue = db.execute(
             """
-            SELECT COALESCE(SUM(total), 0) AS c
+            SELECT COALESCE(
+                SUM(total),
+                0
+            ) AS c
             FROM orders
             WHERE status = 'completed'
             """
@@ -716,37 +883,71 @@ def analytics_data():
             """
             SELECT COUNT(*) AS c
             FROM orders
-            WHERE substr(created_at, 1, 10) = ?
+            WHERE substr(
+                created_at,
+                1,
+                10
+            ) = ?
             """,
-            (today,)
+            (
+                today,
+            )
         ).fetchone()["c"]
 
         today_revenue = db.execute(
             """
-            SELECT COALESCE(SUM(total), 0) AS c
+            SELECT COALESCE(
+                SUM(total),
+                0
+            ) AS c
             FROM orders
-            WHERE substr(created_at, 1, 10) = ?
+            WHERE substr(
+                created_at,
+                1,
+                10
+            ) = ?
             AND status = 'completed'
             """,
-            (today,)
+            (
+                today,
+            )
         ).fetchone()["c"]
 
         today_visitors = db.execute(
             """
             SELECT COUNT(*) AS c
             FROM analytics_visitors
-            WHERE substr(last_seen, 1, 10) = ?
+            WHERE substr(
+                last_seen,
+                1,
+                10
+            ) = ?
             """,
-            (today,)
+            (
+                today,
+            )
         ).fetchone()["c"]
 
         source_rows = db.execute(
             """
             SELECT
-                COALESCE(NULLIF(source, ''), 'direct') AS source,
+                COALESCE(
+                    NULLIF(
+                        source,
+                        ''
+                    ),
+                    'direct'
+                ) AS source,
                 COUNT(*) AS c
             FROM analytics_visitors
-            GROUP BY COALESCE(NULLIF(source, ''), 'direct')
+            GROUP BY
+                COALESCE(
+                    NULLIF(
+                        source,
+                        ''
+                    ),
+                    'direct'
+                )
             ORDER BY c DESC
             LIMIT 20
             """
@@ -781,12 +982,19 @@ def analytics_data():
 
         for row in completed_rows:
             try:
-                items = json.loads(row["items"] or "[]")
+                items = json.loads(
+                    row["items"]
+                    or "[]"
+                )
+
             except Exception:
                 items = []
 
             for item in items:
-                item_id = str(item.get("id") or "")
+                item_id = str(
+                    item.get("id")
+                    or ""
+                )
 
                 if item_id == "icedlatte":
                     item_id = "latte"
@@ -794,14 +1002,24 @@ def analytics_data():
                 if item_id == "icedamericano":
                     item_id = "americano"
 
-                product = MENU_BY_ID.get(item_id)
+                product = MENU_BY_ID.get(
+                    item_id
+                )
 
                 if not product:
                     continue
 
-                popular[product["name"]] = (
-                    popular.get(product["name"], 0)
-                    + safe_int(item.get("qty"), 0)
+                popular[
+                    product["name"]
+                ] = (
+                    popular.get(
+                        product["name"],
+                        0
+                    )
+                    + safe_int(
+                        item.get("qty"),
+                        0
+                    )
                 )
 
         popular_drinks = sorted(
@@ -810,15 +1028,20 @@ def analytics_data():
                     "name": name,
                     "quantity": quantity,
                 }
-                for name, quantity in popular.items()
+                for name, quantity
+                in popular.items()
             ),
-            key=lambda x: x["quantity"],
+            key=lambda x: x[
+                "quantity"
+            ],
             reverse=True
         )[:10]
 
         conversion = (
             round(
-                unique_customers / visitors * 100,
+                unique_customers
+                / visitors
+                * 100,
                 1
             )
             if visitors
@@ -826,36 +1049,54 @@ def analytics_data():
         )
 
         return {
-            "visitors": visitors,
-            "opens": opens,
-            "returning_visitors": returning,
-            "unique_customers": unique_customers,
-            "conversion": conversion,
-            "orders": orders,
-            "completed": completed,
-            "directions": directions,
-            "revenue": completed_revenue,
+            "visitors":
+                visitors,
+            "opens":
+                opens,
+            "returning_visitors":
+                returning,
+            "unique_customers":
+                unique_customers,
+            "conversion":
+                conversion,
+            "orders":
+                orders,
+            "completed":
+                completed,
+            "directions":
+                directions,
+            "revenue":
+                completed_revenue,
             "today": {
-                "visitors": today_visitors,
-                "orders": today_orders,
-                "revenue": today_revenue,
+                "visitors":
+                    today_visitors,
+                "orders":
+                    today_orders,
+                "revenue":
+                    today_revenue,
             },
             "sources": [
                 {
-                    "source": row["source"],
-                    "count": row["c"],
+                    "source":
+                        row["source"],
+                    "count":
+                        row["c"],
                 }
-                for row in source_rows
+                for row
+                in source_rows
             ],
-            "popular_drinks": popular_drinks,
+            "popular_drinks":
+                popular_drinks,
             "recent_visitors": [
                 dict(row)
-                for row in recent_rows
+                for row
+                in recent_rows
             ],
         }
 
     finally:
         db.close()
+
 
 # =========================================================
 # ADMIN AUTH
@@ -870,12 +1111,16 @@ def admin_authorized():
     if not auth:
         return False
 
-    supplied_password = auth.password or ""
+    supplied_password = (
+        auth.password
+        or ""
+    )
 
     return secrets.compare_digest(
         supplied_password,
         ADMIN_PASSWORD
     )
+
 
 def admin_login_required():
     return Response(
@@ -886,6 +1131,7 @@ def admin_login_required():
                 'Basic realm="TAKE AWAY Analytics"'
         }
     )
+
 
 # =========================================================
 # LOYALTY / REWARDS
@@ -901,7 +1147,9 @@ def ensure_loyalty_account(
         FROM loyalty_accounts
         WHERE telegram_id = ?
         """,
-        (telegram_id,)
+        (
+            telegram_id,
+        )
     ).fetchone()
 
     if row:
@@ -915,7 +1163,9 @@ def ensure_loyalty_account(
             free_drinks,
             updated_at
         )
-        VALUES (?, 0, 0, ?)
+        VALUES (
+            ?, 0, 0, ?
+        )
         """,
         (
             telegram_id,
@@ -929,10 +1179,15 @@ def ensure_loyalty_account(
         FROM loyalty_accounts
         WHERE telegram_id = ?
         """,
-        (telegram_id,)
+        (
+            telegram_id,
+        )
     ).fetchone()
 
-def get_rewards(telegram_id):
+
+def get_rewards(
+    telegram_id
+):
     db = get_db()
 
     try:
@@ -944,14 +1199,19 @@ def get_rewards(telegram_id):
         db.commit()
 
         return {
-            "stamps": safe_int(row["stamps"]),
-            "free_drinks": safe_int(
-                row["free_drinks"]
-            ),
+            "stamps":
+                safe_int(
+                    row["stamps"]
+                ),
+            "free_drinks":
+                safe_int(
+                    row["free_drinks"]
+                ),
         }
 
     finally:
         db.close()
+
 
 def consume_reward(
     db,
@@ -984,6 +1244,7 @@ def consume_reward(
 
     return True
 
+
 def restore_reward(
     db,
     telegram_id
@@ -1006,6 +1267,7 @@ def restore_reward(
         )
     )
 
+
 def add_loyalty_drinks(
     db,
     telegram_id,
@@ -1019,15 +1281,26 @@ def add_loyalty_drinks(
         telegram_id
     )
 
-    stamps = safe_int(row["stamps"])
+    stamps = safe_int(
+        row["stamps"]
+    )
+
     free_drinks = safe_int(
         row["free_drinks"]
     )
 
-    total = stamps + quantity
+    total = (
+        stamps
+        + quantity
+    )
 
-    new_free = total // 9
-    new_stamps = total % 9
+    new_free = (
+        total // 9
+    )
+
+    new_stamps = (
+        total % 9
+    )
 
     db.execute(
         """
@@ -1039,11 +1312,13 @@ def add_loyalty_drinks(
         """,
         (
             new_stamps,
-            free_drinks + new_free,
+            free_drinks
+            + new_free,
             now_iso(),
             telegram_id,
         )
     )
+
 
 def mark_paid_and_completed(
     order_id
@@ -1057,22 +1332,30 @@ def mark_paid_and_completed(
             FROM orders
             WHERE id = ?
             """,
-            (order_id,)
+            (
+                order_id,
+            )
         ).fetchone()
 
         if not order:
             return False
 
-        if order["status"] == "cancelled":
+        if order["status"] in {
+            "cancelled",
+            "completed",
+        }:
             return False
 
         telegram_id = safe_int(
             order["telegram_id"]
         )
 
-        already_processed = safe_int(
-            order["reward_processed"]
-        ) == 1
+        already_processed = (
+            safe_int(
+                order["reward_processed"]
+            )
+            == 1
+        )
 
         db.execute(
             """
@@ -1091,13 +1374,17 @@ def mark_paid_and_completed(
         if not already_processed:
             paid_quantity = 0
 
-            for item in details(order):
+            for item in details(
+                order
+            ):
                 qty = safe_int(
                     item.get("qty"),
                     0
                 )
 
-                if item.get("reward_free"):
+                if item.get(
+                    "reward_free"
+                ):
                     continue
 
                 paid_quantity += qty
@@ -1114,14 +1401,18 @@ def mark_paid_and_completed(
                 SET reward_processed = 1
                 WHERE id = ?
                 """,
-                (order_id,)
+                (
+                    order_id,
+                )
             )
 
         db.commit()
+
         return True
 
     finally:
         db.close()
+
 
 # =========================================================
 # ORDER ITEM NORMALIZATION / PRICING
@@ -1131,11 +1422,16 @@ def normalize_item_id(
     raw_id,
     temperature=None
 ):
-    raw_id = str(raw_id or "").strip()
+    raw_id = str(
+        raw_id
+        or ""
+    ).strip()
 
     if raw_id in LEGACY_ITEM_MAP:
         new_id, forced_temperature = (
-            LEGACY_ITEM_MAP[raw_id]
+            LEGACY_ITEM_MAP[
+                raw_id
+            ]
         )
 
         return (
@@ -1148,6 +1444,7 @@ def normalize_item_id(
         temperature
     )
 
+
 def normalize_temperature(
     item_id,
     value
@@ -1156,7 +1453,8 @@ def normalize_temperature(
         return None
 
     value = str(
-        value or "hot"
+        value
+        or "hot"
     ).lower().strip()
 
     if value not in {
@@ -1167,6 +1465,7 @@ def normalize_temperature(
 
     return value
 
+
 def normalize_syrup(
     item_id,
     value
@@ -1175,7 +1474,8 @@ def normalize_syrup(
         return None
 
     value = str(
-        value or ""
+        value
+        or ""
     ).lower().strip()
 
     if value in SYRUPS:
@@ -1183,11 +1483,14 @@ def normalize_syrup(
 
     return None
 
+
 def calculate_item(
     raw,
     reward_free=False
 ):
-    raw_id = raw.get("id")
+    raw_id = raw.get(
+        "id"
+    )
 
     raw_temperature = raw.get(
         "temperature"
@@ -1200,7 +1503,9 @@ def calculate_item(
         )
     )
 
-    product = MENU_BY_ID.get(item_id)
+    product = MENU_BY_ID.get(
+        item_id
+    )
 
     if not product:
         raise ValueError(
@@ -1208,7 +1513,9 @@ def calculate_item(
         )
 
     qty = safe_int(
-        raw.get("qty"),
+        raw.get(
+            "qty"
+        ),
         1
     )
 
@@ -1218,20 +1525,27 @@ def calculate_item(
     if qty > MAX_ITEM_QUANTITY:
         qty = MAX_ITEM_QUANTITY
 
-    temperature = normalize_temperature(
-        item_id,
-        forced_temperature
-        or raw_temperature
+    temperature = (
+        normalize_temperature(
+            item_id,
+            forced_temperature
+            or raw_temperature
+        )
     )
 
     extra_shot = bool(
-        raw.get("extra_shot")
+        raw.get(
+            "extra_shot"
+        )
     )
 
-    boba = bool(
-        raw.get("boba")
-    ) and bool(
-        product.get("boba")
+    boba = (
+        bool(
+            raw.get("boba")
+        )
+        and bool(
+            product.get("boba")
+        )
     )
 
     syrup = normalize_syrup(
@@ -1243,7 +1557,8 @@ def calculate_item(
 
     if (
         temperature == "iced"
-        and item_id in {
+        and item_id
+        in {
             "americano",
             "latte",
         }
@@ -1274,8 +1589,6 @@ def calculate_item(
     )
 
     if reward_free:
-        # Reward covers the normal/base drink.
-        # Paid extras remain paid.
         unit_total = (
             iced_surcharge
             + extra_price
@@ -1283,30 +1596,44 @@ def calculate_item(
         )
 
         qty = 1
+
     else:
-        unit_total = unit_price
+        unit_total = (
+            unit_price
+        )
 
     line_total = (
-        unit_total * qty
+        unit_total
+        * qty
     )
 
-    item = {
-        "id": item_id,
-        "name": product["name"],
-        "qty": qty,
-        "base_price": base_price,
-        "unit_price": unit_price,
-        "line_total": line_total,
-        "extra_shot": extra_shot,
-        "boba": boba,
-        "syrup": syrup,
-        "temperature": temperature,
-        "reward_free": bool(
-            reward_free
-        ),
+    return {
+        "id":
+            item_id,
+        "name":
+            product["name"],
+        "qty":
+            qty,
+        "base_price":
+            base_price,
+        "unit_price":
+            unit_price,
+        "line_total":
+            line_total,
+        "extra_shot":
+            extra_shot,
+        "boba":
+            boba,
+        "syrup":
+            syrup,
+        "temperature":
+            temperature,
+        "reward_free":
+            bool(
+                reward_free
+            ),
     }
 
-    return item
 
 def calculate_order_items(
     raw_items,
@@ -1335,6 +1662,7 @@ def calculate_order_items(
             reward_index = int(
                 reward_item_index
             )
+
         except Exception:
             reward_index = None
 
@@ -1351,7 +1679,8 @@ def calculate_order_items(
 
         reward_free = (
             reward_index is not None
-            and index == reward_index
+            and index
+            == reward_index
         )
 
         item = calculate_item(
@@ -1371,11 +1700,16 @@ def calculate_order_items(
                 "Maximum 30 drinks per order."
             )
 
-        normalized.append(item)
+        normalized.append(
+            item
+        )
 
     total = sum(
-        safe_int(item["line_total"])
-        for item in normalized
+        safe_int(
+            item["line_total"]
+        )
+        for item
+        in normalized
     )
 
     return (
@@ -1384,6 +1718,7 @@ def calculate_order_items(
         reward_index,
     )
 
+
 # =========================================================
 # PICKUP VALIDATION
 # =========================================================
@@ -1391,7 +1726,9 @@ def calculate_order_items(
 def validate_pickup(
     value
 ):
-    pickup = parse_datetime(value)
+    pickup = parse_datetime(
+        value
+    )
 
     if not pickup:
         return (
@@ -1417,7 +1754,6 @@ def validate_pickup(
         )
     )
 
-    # Small tolerance for network / UI delay.
     if pickup < (
         earliest
         - timedelta(
@@ -1458,61 +1794,91 @@ def validate_pickup(
         None
     )
 
+
 # =========================================================
 # ORDER SERIALIZATION
 # =========================================================
 
-def pretty_pickup(value):
-    dt = parse_datetime(value)
+def pretty_pickup(
+    value
+):
+    dt = parse_datetime(
+        value
+    )
 
     if not dt:
-        return str(value or "")
+        return str(
+            value
+            or ""
+        )
 
-    return dt.strftime("%H:%M")
+    return dt.strftime(
+        "%H:%M"
+    )
 
-def pretty_created(value):
-    dt = parse_datetime(value)
+
+def pretty_created(
+    value
+):
+    dt = parse_datetime(
+        value
+    )
 
     if not dt:
-        return str(value or "")
+        return str(
+            value
+            or ""
+        )
 
     return dt.strftime(
         "%d.%m.%Y %H:%M"
     )
 
-def serialize_order(row):
-    items = details(row)
 
+def serialize_order(
+    row
+):
     return {
-        "id": row["id"],
-        "items": items,
-        "total": safe_int(
-            row["total"]
-        ),
-        "pickup": pretty_pickup(
-            row["pickup"]
-        ),
-        "pickup_iso": row["pickup"],
-        "status": row["status"],
+        "id":
+            row["id"],
+        "items":
+            details(row),
+        "total":
+            safe_int(
+                row["total"]
+            ),
+        "pickup":
+            pretty_pickup(
+                row["pickup"]
+            ),
+        "pickup_iso":
+            row["pickup"],
+        "status":
+            row["status"],
         "payment_method":
             row["payment_method"],
         "payment_status":
             row["payment_status"],
-        "reward_used": bool(
-            row["reward_used"]
-        ),
-        "created": pretty_created(
-            row["created_at"]
-        ),
+        "reward_used":
+            bool(
+                row["reward_used"]
+            ),
+        "created":
+            pretty_created(
+                row["created_at"]
+            ),
         "created_at":
             row["created_at"],
     }
+
 
 # =========================================================
 # BARISTA MESSAGE
 # =========================================================
 
-def item_option_lines(item):
+def item_option_lines(
+    item
+):
     lines = []
 
     temperature = item.get(
@@ -1520,10 +1886,14 @@ def item_option_lines(item):
     )
 
     if temperature == "hot":
-        lines.append("☕ HOT")
+        lines.append(
+            "☕ HOT"
+        )
 
     elif temperature == "iced":
-        lines.append("🧊 ICED")
+        lines.append(
+            "🧊 ICED"
+        )
 
         if item.get("id") in {
             "americano",
@@ -1533,29 +1903,38 @@ def item_option_lines(item):
                 "   +20 RSD iced"
             )
 
-    if item.get("extra_shot"):
+    if item.get(
+        "extra_shot"
+    ):
         lines.append(
             "➕ Extra shot +150 RSD"
         )
 
-    if item.get("boba"):
+    if item.get(
+        "boba"
+    ):
         lines.append(
             "🧋 Boba +100 RSD"
         )
 
-    syrup = item.get("syrup")
+    syrup = item.get(
+        "syrup"
+    )
 
     if syrup in SYRUPS:
         lines.append(
             f"🍯 Syrup: {SYRUPS[syrup]} · FREE"
         )
 
-    if item.get("reward_free"):
+    if item.get(
+        "reward_free"
+    ):
         lines.append(
             "🎁 FREE DRINK REWARD"
         )
 
     return lines
+
 
 def barista_text(
     order_id,
@@ -1566,12 +1945,16 @@ def barista_text(
     payment_method="pickup"
 ):
     first_name = (
-        user.get("first_name")
+        user.get(
+            "first_name"
+        )
         or "Customer"
     )
 
     last_name = (
-        user.get("last_name")
+        user.get(
+            "last_name"
+        )
         or ""
     )
 
@@ -1595,16 +1978,20 @@ def barista_text(
             f"📱 @{html.escape(username)}"
         )
 
-    lines.extend([
-        f"🕒 Pickup: <b>{html.escape(pretty_pickup(pickup))}</b>",
-        "💳 Payment: <b>PAY AT PICKUP</b>",
-        "",
-        "<b>DRINKS</b>",
-    ])
+    lines.extend(
+        [
+            f"🕒 Pickup: <b>{html.escape(pretty_pickup(pickup))}</b>",
+            "💳 Payment: <b>PAY AT PICKUP</b>",
+            "",
+            "<b>DRINKS</b>",
+        ]
+    )
 
     for item in items:
         qty = safe_int(
-            item.get("qty"),
+            item.get(
+                "qty"
+            ),
             1
         )
 
@@ -1617,13 +2004,18 @@ def barista_text(
         )
 
         line_total = safe_int(
-            item.get("line_total")
+            item.get(
+                "line_total"
+            )
         )
 
-        if item.get("reward_free"):
+        if item.get(
+            "reward_free"
+        ):
             lines.append(
                 f"🎁 <b>{qty} × {name}</b> — {line_total} RSD"
             )
+
         else:
             lines.append(
                 f"• <b>{qty} × {name}</b> — {line_total} RSD"
@@ -1633,28 +2025,44 @@ def barista_text(
             item
         ):
             lines.append(
-                html.escape(option)
+                html.escape(
+                    option
+                )
             )
 
-    lines.extend([
-        "",
-        f"💰 <b>TOTAL: {total} RSD</b>",
-        "",
-        "Payment at café by card or cash.",
-    ])
+    lines.extend(
+        [
+            "",
+            f"💰 <b>TOTAL: {total} RSD</b>",
+            "",
+            "Payment at café by card or cash.",
+        ]
+    )
 
-    return "\n".join(lines)
+    return "\n".join(
+        lines
+    )
+
 
 # =========================================================
-# TELEGRAM HELPERS
+# TELEGRAM API
 # =========================================================
 
 def telegram_api(
     method,
-    payload=None
+    payload=None,
+    timeout=20
 ):
     if not TOKEN:
-        return None
+        logging.error(
+            "BOT_TOKEN is missing."
+        )
+
+        return {
+            "ok": False,
+            "description":
+                "BOT_TOKEN is missing"
+        }
 
     endpoint = (
         f"https://api.telegram.org/"
@@ -1665,46 +2073,97 @@ def telegram_api(
         response = requests.post(
             endpoint,
             json=payload or {},
-            timeout=15,
+            timeout=timeout,
         )
+
+        try:
+            result = response.json()
+
+        except Exception:
+            result = {
+                "ok": False,
+                "description":
+                    response.text
+            }
 
         if not response.ok:
             logging.error(
-                "Telegram API %s failed: %s",
+                "Telegram API %s HTTP %s: %s",
                 method,
+                response.status_code,
                 response.text,
             )
-            return None
 
-        return response.json()
+            return result
+
+        if not result.get(
+            "ok"
+        ):
+            logging.error(
+                "Telegram API %s error: %s",
+                method,
+                result,
+            )
+
+        return result
 
     except Exception:
         logging.exception(
-            "Telegram API request failed"
+            "Telegram API request failed: %s",
+            method
         )
-        return None
+
+        return {
+            "ok": False,
+            "description":
+                "Telegram request exception"
+        }
+
 
 def send_message(
     chat_id,
     text,
     reply_markup=None
 ):
+    if not chat_id:
+        logging.error(
+            "send_message called without chat_id"
+        )
+
+        return None
+
     payload = {
-        "chat_id": chat_id,
-        "text": text,
-        "parse_mode": "HTML",
-        "disable_web_page_preview": True,
+        "chat_id":
+            chat_id,
+        "text":
+            text,
+        "parse_mode":
+            "HTML",
+        "disable_web_page_preview":
+            True,
     }
 
     if reply_markup:
-        payload["reply_markup"] = (
-            reply_markup
-        )
+        payload[
+            "reply_markup"
+        ] = reply_markup
 
-    return telegram_api(
+    result = telegram_api(
         "sendMessage",
         payload
     )
+
+    if not result or not result.get(
+        "ok"
+    ):
+        logging.error(
+            "Could not send Telegram message to %s: %s",
+            chat_id,
+            result,
+        )
+
+    return result
+
 
 def edit_message_markup(
     chat_id,
@@ -1714,12 +2173,42 @@ def edit_message_markup(
     return telegram_api(
         "editMessageReplyMarkup",
         {
-            "chat_id": chat_id,
-            "message_id": message_id,
+            "chat_id":
+                chat_id,
+            "message_id":
+                message_id,
             "reply_markup":
                 reply_markup,
         }
     )
+
+
+def answer_callback(
+    callback_id,
+    text="",
+    show_alert=False
+):
+    if not callback_id:
+        return None
+
+    return telegram_api(
+        "answerCallbackQuery",
+        {
+            "callback_query_id":
+                callback_id,
+            "text":
+                text,
+            "show_alert":
+                bool(
+                    show_alert
+                ),
+        }
+    )
+
+
+# =========================================================
+# ADMIN KEYBOARD
+# =========================================================
 
 def admin_keyboard(
     order_id,
@@ -1729,14 +2218,16 @@ def admin_keyboard(
         buttons = [
             [
                 {
-                    "text": "✅ ACCEPT",
+                    "text":
+                        "✅ ACCEPT",
                     "callback_data":
                         f"accept:{order_id}",
                 }
             ],
             [
                 {
-                    "text": "❌ CANCEL",
+                    "text":
+                        "❌ CANCEL",
                     "callback_data":
                         f"cancel:{order_id}",
                 }
@@ -1747,14 +2238,16 @@ def admin_keyboard(
         buttons = [
             [
                 {
-                    "text": "☕ READY",
+                    "text":
+                        "☕ READY",
                     "callback_data":
                         f"ready:{order_id}",
                 }
             ],
             [
                 {
-                    "text": "❌ CANCEL",
+                    "text":
+                        "❌ CANCEL",
                     "callback_data":
                         f"cancel:{order_id}",
                 }
@@ -1765,19 +2258,30 @@ def admin_keyboard(
         buttons = [
             [
                 {
-                    "text": "💳 PAID / PICKED UP",
+                    "text":
+                        "💳 PAID / PICKED UP",
                     "callback_data":
                         f"complete:{order_id}",
                 }
-            ]
+            ],
+            [
+                {
+                    "text":
+                        "❌ CANCEL",
+                    "callback_data":
+                        f"cancel:{order_id}",
+                }
+            ],
         ]
 
     else:
         buttons = []
 
     return {
-        "inline_keyboard": buttons
+        "inline_keyboard":
+            buttons
     }
+
 
 def customer_status_message(
     order_id,
@@ -1809,8 +2313,10 @@ def customer_status_message(
         )
 
     return (
-        f"Order #{order_id}: {status}"
+        f"Order #{order_id}: "
+        f"{status}"
     )
+
 
 # =========================================================
 # ORDER STATUS
@@ -1818,7 +2324,8 @@ def customer_status_message(
 
 def set_order_status(
     order_id,
-    new_status
+    new_status,
+    allowed_from=None
 ):
     db = get_db()
 
@@ -1829,18 +2336,29 @@ def set_order_status(
             FROM orders
             WHERE id = ?
             """,
-            (order_id,)
+            (
+                order_id,
+            )
         ).fetchone()
 
         if not order:
             return None
 
-        old_status = order["status"]
+        old_status = order[
+            "status"
+        ]
 
-        if old_status == "completed":
+        if old_status in {
+            "completed",
+            "cancelled",
+        }:
             return order
 
-        if old_status == "cancelled":
+        if (
+            allowed_from
+            and old_status
+            not in allowed_from
+        ):
             return order
 
         db.execute(
@@ -1865,11 +2383,14 @@ def set_order_status(
             FROM orders
             WHERE id = ?
             """,
-            (order_id,)
+            (
+                order_id,
+            )
         ).fetchone()
 
     finally:
         db.close()
+
 
 def cancel_order(
     order_id
@@ -1883,7 +2404,9 @@ def cancel_order(
             FROM orders
             WHERE id = ?
             """,
-            (order_id,)
+            (
+                order_id,
+            )
         ).fetchone()
 
         if not order:
@@ -1895,13 +2418,20 @@ def cancel_order(
         }:
             return order
 
-        if safe_int(
-            order["reward_used"]
-        ) == 1:
+        if (
+            safe_int(
+                order[
+                    "reward_used"
+                ]
+            )
+            == 1
+        ):
             restore_reward(
                 db,
                 safe_int(
-                    order["telegram_id"]
+                    order[
+                        "telegram_id"
+                    ]
                 )
             )
 
@@ -1911,7 +2441,9 @@ def cancel_order(
                 SET reward_used = 0
                 WHERE id = ?
                 """,
-                (order_id,)
+                (
+                    order_id,
+                )
             )
 
         db.execute(
@@ -1935,14 +2467,17 @@ def cancel_order(
             FROM orders
             WHERE id = ?
             """,
-            (order_id,)
+            (
+                order_id,
+            )
         ).fetchone()
 
     finally:
         db.close()
 
+
 # =========================================================
-# ROUTES
+# MAIN ROUTES
 # =========================================================
 
 @app.route("/")
@@ -1951,18 +2486,35 @@ def index():
         "index.html"
     )
 
+
 @app.route("/health")
 def health():
-    return jsonify({
-        "ok": True,
-        "service": "TAKE AWAY",
-        "payment_mode": "pickup",
-        "time": now_iso(),
-    })
+    return jsonify(
+        {
+            "ok":
+                True,
+            "service":
+                "TAKE AWAY",
+            "payment_mode":
+                "pickup",
+            "bot_configured":
+                bool(TOKEN),
+            "admin_configured":
+                bool(ADMIN),
+            "app_url":
+                URL,
+            "time":
+                now_iso(),
+        }
+    )
+
 
 @app.route("/api/menu")
 def api_menu():
-    return jsonify(MENU)
+    return jsonify(
+        MENU
+    )
+
 
 # =========================================================
 # ANALYTICS ROUTES
@@ -1976,19 +2528,30 @@ def analytics_open():
     data, user = request_user()
 
     if not user:
-        return jsonify({
-            "success": False,
-            "error": "Invalid Telegram session",
-        }), 401
+        return jsonify(
+            {
+                "success":
+                    False,
+                "error":
+                    "Invalid Telegram session",
+            }
+        ), 401
 
     record_app_open(
         user,
-        data.get("source", "")
+        data.get(
+            "source",
+            ""
+        )
     )
 
-    return jsonify({
-        "success": True
-    })
+    return jsonify(
+        {
+            "success":
+                True
+        }
+    )
+
 
 @app.route(
     "/api/analytics/directions",
@@ -1998,19 +2561,30 @@ def analytics_directions():
     data, user = request_user()
 
     if not user:
-        return jsonify({
-            "success": False,
-            "error": "Invalid Telegram session",
-        }), 401
+        return jsonify(
+            {
+                "success":
+                    False,
+                "error":
+                    "Invalid Telegram session",
+            }
+        ), 401
 
     record_directions_click(
         user,
-        data.get("source", "")
+        data.get(
+            "source",
+            ""
+        )
     )
 
-    return jsonify({
-        "success": True
-    })
+    return jsonify(
+        {
+            "success":
+                True
+        }
+    )
+
 
 @app.route(
     "/api/admin/analytics"
@@ -2022,6 +2596,7 @@ def api_admin_analytics():
     return jsonify(
         analytics_data()
     )
+
 
 @app.route(
     "/admin/analytics"
@@ -2040,26 +2615,33 @@ def admin_analytics():
                 <td>{html.escape(str(item[1]))}</td>
             </tr>
             """
-            for item in items
+            for item
+            in items
         )
 
-    sources = rows([
-        (
-            source["source"],
-            source["count"],
-        )
-        for source in data["sources"]
-    ])
-
-    popular = rows([
-        (
-            drink["name"],
-            drink["quantity"],
-        )
-        for drink in data[
-            "popular_drinks"
+    sources = rows(
+        [
+            (
+                source["source"],
+                source["count"],
+            )
+            for source
+            in data["sources"]
         ]
-    ])
+    )
+
+    popular = rows(
+        [
+            (
+                drink["name"],
+                drink["quantity"],
+            )
+            for drink
+            in data[
+                "popular_drinks"
+            ]
+        ]
+    )
 
     recent = "".join(
         f"""
@@ -2071,7 +2653,8 @@ def admin_analytics():
             <td>{html.escape(str(v.get("last_seen") or ""))}</td>
         </tr>
         """
-        for v in data[
+        for v
+        in data[
             "recent_visitors"
         ]
     )
@@ -2224,6 +2807,7 @@ th{{
 
 <section>
 <h2>Traffic sources</h2>
+
 <table>
 <thead>
 <tr>
@@ -2231,6 +2815,7 @@ th{{
 <th>Visitors</th>
 </tr>
 </thead>
+
 <tbody>
 {sources or '<tr><td colspan="2">No data yet</td></tr>'}
 </tbody>
@@ -2239,6 +2824,7 @@ th{{
 
 <section>
 <h2>Popular drinks</h2>
+
 <table>
 <thead>
 <tr>
@@ -2246,6 +2832,7 @@ th{{
 <th>Quantity</th>
 </tr>
 </thead>
+
 <tbody>
 {popular or '<tr><td colspan="2">No completed orders yet</td></tr>'}
 </tbody>
@@ -2254,6 +2841,7 @@ th{{
 
 <section>
 <h2>Recent visitors</h2>
+
 <table>
 <thead>
 <tr>
@@ -2264,6 +2852,7 @@ th{{
 <th>Last seen</th>
 </tr>
 </thead>
+
 <tbody>
 {recent or '<tr><td colspan="5">No visitors yet</td></tr>'}
 </tbody>
@@ -2280,6 +2869,7 @@ th{{
         mimetype="text/html"
     )
 
+
 # =========================================================
 # REWARDS / ORDERS / PROFILE
 # =========================================================
@@ -2292,15 +2882,21 @@ def api_rewards():
     data, user = request_user()
 
     if not user:
-        return jsonify({
-            "error": "Invalid Telegram session"
-        }), 401
+        return jsonify(
+            {
+                "error":
+                    "Invalid Telegram session"
+            }
+        ), 401
 
     return jsonify(
         get_rewards(
-            safe_int(user["id"])
+            safe_int(
+                user["id"]
+            )
         )
     )
+
 
 @app.route(
     "/api/orders",
@@ -2310,9 +2906,12 @@ def api_orders():
     data, user = request_user()
 
     if not user:
-        return jsonify({
-            "error": "Invalid Telegram session"
-        }), 401
+        return jsonify(
+            {
+                "error":
+                    "Invalid Telegram session"
+            }
+        ), 401
 
     telegram_id = safe_int(
         user["id"]
@@ -2329,18 +2928,26 @@ def api_orders():
             ORDER BY id DESC
             LIMIT 50
             """,
-            (telegram_id,)
+            (
+                telegram_id,
+            )
         ).fetchall()
 
-        return jsonify({
-            "orders": [
-                serialize_order(row)
-                for row in rows
-            ]
-        })
+        return jsonify(
+            {
+                "orders": [
+                    serialize_order(
+                        row
+                    )
+                    for row
+                    in rows
+                ]
+            }
+        )
 
     finally:
         db.close()
+
 
 @app.route(
     "/api/profile",
@@ -2350,9 +2957,12 @@ def api_profile():
     data, user = request_user()
 
     if not user:
-        return jsonify({
-            "error": "Invalid Telegram session"
-        }), 401
+        return jsonify(
+            {
+                "error":
+                    "Invalid Telegram session"
+            }
+        ), 401
 
     telegram_id = safe_int(
         user["id"]
@@ -2368,26 +2978,36 @@ def api_profile():
             WHERE telegram_id = ?
             ORDER BY id ASC
             """,
-            (telegram_id,)
+            (
+                telegram_id,
+            )
         ).fetchall()
 
         completed_rows = [
             row
-            for row in rows
-            if row["status"] == "completed"
+            for row
+            in rows
+            if row["status"]
+            == "completed"
         ]
 
         drink_count = sum(
-            qty_in_order(row)
-            for row in completed_rows
+            qty_in_order(
+                row
+            )
+            for row
+            in completed_rows
         )
 
         favorites = {}
 
         for row in completed_rows:
-            for item in details(row):
+            for item in details(
+                row
+            ):
                 item_id = str(
-                    item.get("id") or ""
+                    item.get("id")
+                    or ""
                 )
 
                 if item_id == "icedlatte":
@@ -2399,7 +3019,9 @@ def api_profile():
                 if item_id not in MENU_BY_ID:
                     continue
 
-                favorites[item_id] = (
+                favorites[
+                    item_id
+                ] = (
                     favorites.get(
                         item_id,
                         0
@@ -2419,26 +3041,35 @@ def api_profile():
             )
 
             favorite = {
-                "id": favorite_id,
+                "id":
+                    favorite_id,
                 "quantity":
-                    favorites[favorite_id],
+                    favorites[
+                        favorite_id
+                    ],
             }
 
         first_order = (
             pretty_created(
-                rows[0]["created_at"]
+                rows[0][
+                    "created_at"
+                ]
             ).split(" ")[0]
             if rows
             else None
         )
 
         first_name = (
-            user.get("first_name")
+            user.get(
+                "first_name"
+            )
             or ""
         )
 
         last_name = (
-            user.get("last_name")
+            user.get(
+                "last_name"
+            )
             or ""
         )
 
@@ -2446,30 +3077,35 @@ def api_profile():
             f"{first_name} {last_name}"
         ).strip()
 
-        return jsonify({
-            "telegram_id":
-                telegram_id,
-            "first_name":
-                first_name,
-            "last_name":
-                last_name,
-            "name":
-                full_name
-                or "TAKE AWAY Member",
-            "username":
-                user.get("username"),
-            "orders":
-                len(rows),
-            "drinks":
-                drink_count,
-            "favorite":
-                favorite,
-            "first_order":
-                first_order,
-        })
+        return jsonify(
+            {
+                "telegram_id":
+                    telegram_id,
+                "first_name":
+                    first_name,
+                "last_name":
+                    last_name,
+                "name":
+                    full_name
+                    or "TAKE AWAY Member",
+                "username":
+                    user.get(
+                        "username"
+                    ),
+                "orders":
+                    len(rows),
+                "drinks":
+                    drink_count,
+                "favorite":
+                    favorite,
+                "first_order":
+                    first_order,
+            }
+        )
 
     finally:
         db.close()
+
 
 # =========================================================
 # CREATE ORDER
@@ -2483,11 +3119,14 @@ def create_order():
     data, user = request_user()
 
     if not user:
-        return jsonify({
-            "success": False,
-            "error":
-                "Please open TAKE AWAY inside Telegram."
-        }), 401
+        return jsonify(
+            {
+                "success":
+                    False,
+                "error":
+                    "Please open TAKE AWAY inside Telegram."
+            }
+        ), 401
 
     payment_method = str(
         data.get(
@@ -2497,77 +3136,103 @@ def create_order():
     ).strip().lower()
 
     if payment_method != "pickup":
-        return jsonify({
-            "success": False,
-            "error":
-                "Online payment is coming soon. Choose Pay at pickup."
-        }), 503
+        return jsonify(
+            {
+                "success":
+                    False,
+                "error":
+                    "Online payment is coming soon. Choose Pay at pickup."
+            }
+        ), 503
 
-    raw_items = data.get(
-        "items"
-    ) or []
+    raw_items = (
+        data.get(
+            "items"
+        )
+        or []
+    )
 
     reward_item_index = data.get(
         "reward_item_index"
     )
 
     try:
-        items, total, reward_index = (
-            calculate_order_items(
-                raw_items,
-                reward_item_index
-            )
+        (
+            items,
+            total,
+            reward_index,
+        ) = calculate_order_items(
+            raw_items,
+            reward_item_index
         )
 
     except ValueError as exc:
-        return jsonify({
-            "success": False,
-            "error": str(exc),
-        }), 400
+        return jsonify(
+            {
+                "success":
+                    False,
+                "error":
+                    str(exc),
+            }
+        ), 400
 
     reward_used = (
-        reward_index is not None
+        reward_index
+        is not None
     )
 
     if reward_used:
         if (
             reward_index < 0
-            or reward_index >= len(items)
+            or reward_index
+            >= len(items)
         ):
-            return jsonify({
-                "success": False,
-                "error":
-                    "Invalid free drink selection."
-            }), 400
+            return jsonify(
+                {
+                    "success":
+                        False,
+                    "error":
+                        "Invalid free drink selection."
+                }
+            ), 400
 
         if not items[
             reward_index
-        ].get("reward_free"):
-            return jsonify({
-                "success": False,
-                "error":
-                    "Invalid free drink selection."
-            }), 400
+        ].get(
+            "reward_free"
+        ):
+            return jsonify(
+                {
+                    "success":
+                        False,
+                    "error":
+                        "Invalid free drink selection."
+                }
+            ), 400
 
     pickup, pickup_error = (
         validate_pickup(
-            data.get("pickup")
+            data.get(
+                "pickup"
+            )
         )
     )
 
     if pickup_error:
-        return jsonify({
-            "success": False,
-            "error": pickup_error,
-        }), 400
+        return jsonify(
+            {
+                "success":
+                    False,
+                "error":
+                    pickup_error,
+            }
+        ), 400
 
     telegram_id = safe_int(
         user["id"]
     )
 
     db = get_db()
-
-    reward_consumed = False
 
     try:
         if reward_used:
@@ -2581,11 +3246,14 @@ def create_order():
             if not reward_consumed:
                 db.rollback()
 
-                return jsonify({
-                    "success": False,
-                    "error":
-                        "Your free drink is no longer available. Please refresh Rewards."
-                }), 409
+                return jsonify(
+                    {
+                        "success":
+                            False,
+                        "error":
+                            "Your free drink is no longer available. Please refresh Rewards."
+                    }
+                ), 409
 
         current = now_iso()
 
@@ -2618,9 +3286,15 @@ def create_order():
             """,
             (
                 telegram_id,
-                user.get("username"),
-                user.get("first_name"),
-                user.get("last_name"),
+                user.get(
+                    "username"
+                ),
+                user.get(
+                    "first_name"
+                ),
+                user.get(
+                    "last_name"
+                ),
                 json.dumps(
                     items,
                     ensure_ascii=False
@@ -2629,31 +3303,39 @@ def create_order():
                 pickup.isoformat(),
                 current,
                 current,
-                1 if reward_used else 0,
+                1
+                if reward_used
+                else 0,
                 reward_index,
             )
         )
 
-        order_id = cursor.lastrowid
+        order_id = (
+            cursor.lastrowid
+        )
 
         db.commit()
 
     except Exception:
         db.rollback()
+
         logging.exception(
             "Could not create order"
         )
 
-        return jsonify({
-            "success": False,
-            "error":
-                "Could not create order. Please try again."
-        }), 500
+        return jsonify(
+            {
+                "success":
+                    False,
+                "error":
+                    "Could not create order. Please try again."
+            }
+        ), 500
 
     finally:
         db.close()
 
-    # Send order to barista/admin Telegram.
+    # Send order to admin/barista.
     if ADMIN:
         message = barista_text(
             order_id,
@@ -2664,7 +3346,7 @@ def create_order():
             payment_method,
         )
 
-        send_message(
+        admin_result = send_message(
             ADMIN,
             message,
             admin_keyboard(
@@ -2673,7 +3355,19 @@ def create_order():
             )
         )
 
-    # Customer confirmation.
+        logging.info(
+            "Admin notification for order #%s: %s",
+            order_id,
+            admin_result,
+        )
+
+    else:
+        logging.error(
+            "ORDER_CHAT_ID is missing. Order #%s cannot be sent to barista.",
+            order_id,
+        )
+
+    # Send confirmation to customer.
     send_message(
         telegram_id,
         (
@@ -2685,39 +3379,29 @@ def create_order():
         )
     )
 
-    return jsonify({
-        "success": True,
-        "order_id": order_id,
-        "total": total,
-        "pickup":
-            pickup.isoformat(),
-        "payment_method":
-            "pickup",
-        "payment_status":
-            "pending",
-        "reward_used":
-            reward_used,
-    })
-
-# =========================================================
-# TELEGRAM CALLBACKS
-# =========================================================
-
-def answer_callback(
-    callback_id,
-    text=""
-):
-    if not callback_id:
-        return
-
-    telegram_api(
-        "answerCallbackQuery",
+    return jsonify(
         {
-            "callback_query_id":
-                callback_id,
-            "text": text,
+            "success":
+                True,
+            "order_id":
+                order_id,
+            "total":
+                total,
+            "pickup":
+                pickup.isoformat(),
+            "payment_method":
+                "pickup",
+            "payment_status":
+                "pending",
+            "reward_used":
+                reward_used,
         }
     )
+
+
+# =========================================================
+# ADMIN CALLBACK HANDLER
+# =========================================================
 
 def handle_admin_callback(
     callback
@@ -2727,17 +3411,25 @@ def handle_admin_callback(
     )
 
     data = str(
-        callback.get("data")
+        callback.get(
+            "data"
+        )
         or ""
+    ).strip()
+
+    message = (
+        callback.get(
+            "message"
+        )
+        or {}
     )
 
-    message = callback.get(
-        "message"
-    ) or {}
-
-    chat = message.get(
-        "chat"
-    ) or {}
+    chat = (
+        message.get(
+            "chat"
+        )
+        or {}
+    )
 
     chat_id = chat.get(
         "id"
@@ -2746,6 +3438,29 @@ def handle_admin_callback(
     message_id = message.get(
         "message_id"
     )
+
+    logging.info(
+        "Callback received: data=%s chat_id=%s message_id=%s",
+        data,
+        chat_id,
+        message_id,
+    )
+
+    # Security: callbacks must come from configured admin chat.
+    if ADMIN:
+        if str(chat_id) != str(ADMIN):
+            logging.warning(
+                "Rejected callback from non-admin chat: %s",
+                chat_id,
+            )
+
+            answer_callback(
+                callback_id,
+                "Not authorized",
+                True
+            )
+
+            return
 
     try:
         action, raw_order_id = (
@@ -2762,8 +3477,24 @@ def handle_admin_callback(
     except Exception:
         answer_callback(
             callback_id,
-            "Invalid action"
+            "Invalid action",
+            True
         )
+
+        return
+
+    if action not in {
+        "accept",
+        "ready",
+        "complete",
+        "cancel",
+    }:
+        answer_callback(
+            callback_id,
+            "Unknown action",
+            True
+        )
+
         return
 
     order = get_order(
@@ -2773,156 +3504,283 @@ def handle_admin_callback(
     if not order:
         answer_callback(
             callback_id,
-            "Order not found"
+            "Order not found",
+            True
         )
+
         return
 
     telegram_id = safe_int(
-        order["telegram_id"]
+        order[
+            "telegram_id"
+        ]
     )
 
+    current_status = order[
+        "status"
+    ]
+
+    # -----------------------------------------
+    # ACCEPT
+    # -----------------------------------------
+
     if action == "accept":
+        if current_status != "new":
+            answer_callback(
+                callback_id,
+                f"Order is already {current_status}",
+                True
+            )
+
+            return
+
         updated = set_order_status(
             order_id,
-            "preparing"
+            "preparing",
+            allowed_from={
+                "new"
+            }
         )
 
-        if updated:
-            send_message(
-                telegram_id,
-                customer_status_message(
+        if not updated:
+            answer_callback(
+                callback_id,
+                "Could not accept order",
+                True
+            )
+
+            return
+
+        send_message(
+            telegram_id,
+            customer_status_message(
+                order_id,
+                "preparing"
+            )
+        )
+
+        if (
+            chat_id
+            and message_id
+        ):
+            edit_message_markup(
+                chat_id,
+                message_id,
+                admin_keyboard(
                     order_id,
                     "preparing"
                 )
             )
 
-            if (
-                chat_id
-                and message_id
-            ):
-                edit_message_markup(
-                    chat_id,
-                    message_id,
-                    admin_keyboard(
-                        order_id,
-                        "preparing"
-                    )
-                )
-
-            answer_callback(
-                callback_id,
-                "Order accepted"
-            )
-            return
-
-    elif action == "ready":
-        updated = set_order_status(
-            order_id,
-            "ready"
+        answer_callback(
+            callback_id,
+            "✅ Order accepted"
         )
 
-        if updated:
-            send_message(
-                telegram_id,
-                customer_status_message(
+        logging.info(
+            "Order #%s accepted",
+            order_id
+        )
+
+        return
+
+    # -----------------------------------------
+    # READY
+    # -----------------------------------------
+
+    if action == "ready":
+        if current_status != "preparing":
+            answer_callback(
+                callback_id,
+                f"Order is {current_status}",
+                True
+            )
+
+            return
+
+        updated = set_order_status(
+            order_id,
+            "ready",
+            allowed_from={
+                "preparing"
+            }
+        )
+
+        if not updated:
+            answer_callback(
+                callback_id,
+                "Could not mark ready",
+                True
+            )
+
+            return
+
+        send_message(
+            telegram_id,
+            customer_status_message(
+                order_id,
+                "ready"
+            )
+        )
+
+        if (
+            chat_id
+            and message_id
+        ):
+            edit_message_markup(
+                chat_id,
+                message_id,
+                admin_keyboard(
                     order_id,
                     "ready"
                 )
             )
 
-            if (
-                chat_id
-                and message_id
-            ):
-                edit_message_markup(
-                    chat_id,
-                    message_id,
-                    admin_keyboard(
-                        order_id,
-                        "ready"
-                    )
-                )
+        answer_callback(
+            callback_id,
+            "☕ Order ready"
+        )
 
-            answer_callback(
-                callback_id,
-                "Order ready"
-            )
-            return
-
-    elif action == "complete":
-        if mark_paid_and_completed(
+        logging.info(
+            "Order #%s ready",
             order_id
-        ):
-            send_message(
-                telegram_id,
-                customer_status_message(
-                    order_id,
-                    "completed"
-                )
-            )
+        )
 
-            if (
-                chat_id
-                and message_id
-            ):
-                edit_message_markup(
-                    chat_id,
-                    message_id,
-                    {
-                        "inline_keyboard": []
-                    }
-                )
+        return
 
+    # -----------------------------------------
+    # COMPLETE
+    # -----------------------------------------
+
+    if action == "complete":
+        if current_status != "ready":
             answer_callback(
                 callback_id,
-                "Completed"
+                f"Order is {current_status}",
+                True
             )
+
             return
 
-    elif action == "cancel":
+        success = (
+            mark_paid_and_completed(
+                order_id
+            )
+        )
+
+        if not success:
+            answer_callback(
+                callback_id,
+                "Could not complete order",
+                True
+            )
+
+            return
+
+        send_message(
+            telegram_id,
+            customer_status_message(
+                order_id,
+                "completed"
+            )
+        )
+
+        if (
+            chat_id
+            and message_id
+        ):
+            edit_message_markup(
+                chat_id,
+                message_id,
+                {
+                    "inline_keyboard":
+                        []
+                }
+            )
+
+        answer_callback(
+            callback_id,
+            "💚 Completed"
+        )
+
+        logging.info(
+            "Order #%s completed",
+            order_id
+        )
+
+        return
+
+    # -----------------------------------------
+    # CANCEL
+    # -----------------------------------------
+
+    if action == "cancel":
+        if current_status in {
+            "completed",
+            "cancelled",
+        }:
+            answer_callback(
+                callback_id,
+                f"Order is already {current_status}",
+                True
+            )
+
+            return
+
         updated = cancel_order(
             order_id
         )
 
-        if updated:
-            send_message(
-                telegram_id,
-                customer_status_message(
-                    order_id,
-                    "cancelled"
-                )
-            )
-
-            if (
-                chat_id
-                and message_id
-            ):
-                edit_message_markup(
-                    chat_id,
-                    message_id,
-                    {
-                        "inline_keyboard": []
-                    }
-                )
-
+        if not updated:
             answer_callback(
                 callback_id,
-                "Cancelled"
+                "Could not cancel order",
+                True
             )
+
             return
 
-    answer_callback(
-        callback_id,
-        "Action unavailable"
-    )
+        send_message(
+            telegram_id,
+            customer_status_message(
+                order_id,
+                "cancelled"
+            )
+        )
+
+        if (
+            chat_id
+            and message_id
+        ):
+            edit_message_markup(
+                chat_id,
+                message_id,
+                {
+                    "inline_keyboard":
+                        []
+                }
+            )
+
+        answer_callback(
+            callback_id,
+            "❌ Order cancelled"
+        )
+
+        logging.info(
+            "Order #%s cancelled",
+            order_id
+        )
+
+        return
+
 
 # =========================================================
-# TELEGRAM BOT MESSAGES
+# BOT MESSAGES
 # =========================================================
 
 def bot_start_text():
     return (
-        "☕ <b>TAKE AWAY · THAI TEA & COFFEE</b>\n\n"
+        "☕ <b>TAKE AWAY · THAI TEA &amp; COFFEE</b>\n\n"
         "Order your drinks directly inside Telegram.\n\n"
         "🧋 Thai Tea\n"
         "☕ Coffee\n"
@@ -2930,6 +3788,7 @@ def bot_start_text():
         "🎁 Rewards\n\n"
         "Payment is made at pickup by card or cash."
     )
+
 
 def web_app_keyboard():
     return {
@@ -2939,44 +3798,86 @@ def web_app_keyboard():
                     "text":
                         "☕ OPEN TAKE AWAY",
                     "web_app": {
-                        "url": URL
+                        "url":
+                            URL
                     },
                 }
             ]
         ]
     }
 
+
 def handle_bot_message(
     message
 ):
-    chat = message.get(
-        "chat"
-    ) or {}
+    chat = (
+        message.get(
+            "chat"
+        )
+        or {}
+    )
 
     chat_id = chat.get(
         "id"
     )
 
     text = str(
-        message.get("text")
+        message.get(
+            "text"
+        )
         or ""
     ).strip()
 
     if not chat_id:
+        logging.warning(
+            "Received message without chat_id"
+        )
+
         return
 
-    if (
-        text.startswith("/start")
-        or text.startswith("/menu")
-    ):
-        send_message(
+    logging.info(
+        "Telegram message received: chat_id=%s text=%s",
+        chat_id,
+        text,
+    )
+
+    # Telegram commands may arrive as:
+    # /start
+    # /start payload
+    # /start@YourBot
+    command = ""
+
+    if text.startswith("/"):
+        command = (
+            text.split(
+                None,
+                1
+            )[0]
+            .split(
+                "@",
+                1
+            )[0]
+            .lower()
+        )
+
+    if command in {
+        "/start",
+        "/menu",
+    }:
+        result = send_message(
             chat_id,
             bot_start_text(),
             web_app_keyboard()
         )
+
+        logging.info(
+            "Start/menu response: %s",
+            result
+        )
+
         return
 
-    if text.startswith("/help"):
+    if command == "/help":
         send_message(
             chat_id,
             (
@@ -2988,8 +3889,11 @@ def handle_bot_message(
             web_app_keyboard()
         )
 
+        return
+
+
 # =========================================================
-# WEBHOOK
+# TELEGRAM WEBHOOK
 # =========================================================
 
 @app.route(
@@ -2997,54 +3901,157 @@ def handle_bot_message(
     methods=["POST"]
 )
 def webhook():
+    # Verify Telegram secret if configured.
     if WEBHOOK_SECRET:
-        supplied = request.headers.get(
-            "X-Telegram-Bot-Api-Secret-Token",
-            ""
+        supplied = (
+            request.headers.get(
+                "X-Telegram-Bot-Api-Secret-Token",
+                ""
+            )
+            or ""
         )
 
         if not secrets.compare_digest(
             supplied,
             WEBHOOK_SECRET
         ):
-            return jsonify({
-                "ok": False
-            }), 403
-
-    update = request.get_json(
-        silent=True
-    ) or {}
-
-    try:
-        if update.get(
-            "callback_query"
-        ):
-            handle_admin_callback(
-                update[
-                    "callback_query"
-                ]
+            logging.warning(
+                "Webhook rejected: invalid secret token"
             )
 
-        elif update.get(
+            return jsonify(
+                {
+                    "ok":
+                        False,
+                    "error":
+                        "Invalid webhook secret"
+                }
+            ), 403
+
+    update = (
+        request.get_json(
+            silent=True
+        )
+        or {}
+    )
+
+    update_id = update.get(
+        "update_id"
+    )
+
+    logging.info(
+        "Telegram webhook update received: update_id=%s keys=%s",
+        update_id,
+        list(
+            update.keys()
+        ),
+    )
+
+    try:
+        callback = update.get(
+            "callback_query"
+        )
+
+        message = update.get(
             "message"
-        ):
+        )
+
+        if callback:
+            logging.info(
+                "Processing callback query: %s",
+                callback.get(
+                    "data"
+                )
+            )
+
+            handle_admin_callback(
+                callback
+            )
+
+        elif message:
+            logging.info(
+                "Processing Telegram message"
+            )
+
             handle_bot_message(
-                update[
-                    "message"
-                ]
+                message
+            )
+
+        else:
+            logging.info(
+                "Ignoring unsupported Telegram update: %s",
+                update_id
             )
 
     except Exception:
         logging.exception(
-            "Webhook processing failed"
+            "Webhook processing failed for update_id=%s",
+            update_id
         )
 
-    return jsonify({
-        "ok": True
-    })
+    # Telegram requires a successful response.
+    return jsonify(
+        {
+            "ok":
+                True
+        }
+    ), 200
+
 
 # =========================================================
-# OPTIONAL WEBHOOK SETUP
+# WEBHOOK STATUS
+# =========================================================
+
+@app.route(
+    "/webhook-status",
+    methods=["GET"]
+)
+def webhook_status():
+    if not TOKEN:
+        return jsonify(
+            {
+                "success":
+                    False,
+                "error":
+                    "BOT_TOKEN is not configured"
+            }
+        ), 500
+
+    result = telegram_api(
+        "getWebhookInfo"
+    )
+
+    me = telegram_api(
+        "getMe"
+    )
+
+    return jsonify(
+        {
+            "success":
+                bool(
+                    result
+                    and result.get(
+                        "ok"
+                    )
+                ),
+            "expected_webhook":
+                f"{URL}/webhook",
+            "bot":
+                me,
+            "webhook":
+                result,
+            "admin_chat_id_configured":
+                bool(ADMIN),
+            "webhook_secret_configured":
+                bool(
+                    WEBHOOK_SECRET
+                ),
+        }
+    )
+
+
+# =========================================================
+# WEBHOOK SETUP
 # =========================================================
 
 @app.route(
@@ -3053,22 +4060,71 @@ def webhook():
 )
 def setup_webhook():
     if not TOKEN:
-        return jsonify({
-            "success": False,
-            "error":
-                "BOT_TOKEN is not configured"
-        }), 500
+        return jsonify(
+            {
+                "success":
+                    False,
+                "error":
+                    "BOT_TOKEN is not configured"
+            }
+        ), 500
 
     webhook_url = (
         f"{URL}/webhook"
     )
 
+    # First verify that the bot token is valid.
+    bot_info = telegram_api(
+        "getMe"
+    )
+
+    if not (
+        bot_info
+        and bot_info.get(
+            "ok"
+        )
+    ):
+        return jsonify(
+            {
+                "success":
+                    False,
+                "error":
+                    "BOT_TOKEN is invalid or Telegram could not be reached.",
+                "telegram":
+                    bot_info,
+            }
+        ), 500
+
+    # Remove any previous webhook first.
+    delete_result = telegram_api(
+        "deleteWebhook",
+        {
+            "drop_pending_updates":
+                True
+        }
+    )
+
+    logging.info(
+        "Old webhook removed: %s",
+        delete_result
+    )
+
+    # Small pause so Telegram can clear the previous webhook.
+    time.sleep(
+        1
+    )
+
     payload = {
-        "url": webhook_url,
+        "url":
+            webhook_url,
         "allowed_updates": [
             "message",
             "callback_query",
         ],
+        "drop_pending_updates":
+            True,
+        "max_connections":
+            40,
     }
 
     if WEBHOOK_SECRET:
@@ -3076,21 +4132,124 @@ def setup_webhook():
             "secret_token"
         ] = WEBHOOK_SECRET
 
-    result = telegram_api(
+    set_result = telegram_api(
         "setWebhook",
         payload
     )
 
-    return jsonify({
-        "success": bool(
-            result
-            and result.get("ok")
-        ),
-        "webhook":
-            webhook_url,
-        "telegram":
-            result,
-    })
+    time.sleep(
+        1
+    )
+
+    info_result = telegram_api(
+        "getWebhookInfo"
+    )
+
+    success = bool(
+        set_result
+        and set_result.get(
+            "ok"
+        )
+    )
+
+    logging.info(
+        "Webhook setup result: %s",
+        set_result
+    )
+
+    logging.info(
+        "Webhook info after setup: %s",
+        info_result
+    )
+
+    return jsonify(
+        {
+            "success":
+                success,
+            "bot":
+                bot_info.get(
+                    "result"
+                ),
+            "webhook":
+                webhook_url,
+            "delete_old_webhook":
+                delete_result,
+            "set_webhook":
+                set_result,
+            "webhook_info":
+                info_result,
+            "admin_chat_id_configured":
+                bool(ADMIN),
+            "webhook_secret_configured":
+                bool(
+                    WEBHOOK_SECRET
+                ),
+            "next_step":
+                "Send /start to the bot, then create a test order and press ACCEPT."
+        }
+    )
+
+
+# =========================================================
+# TELEGRAM TEST
+# =========================================================
+
+@app.route(
+    "/telegram-test",
+    methods=["GET"]
+)
+def telegram_test():
+    if not TOKEN:
+        return jsonify(
+            {
+                "success":
+                    False,
+                "error":
+                    "BOT_TOKEN missing"
+            }
+        ), 500
+
+    bot_info = telegram_api(
+        "getMe"
+    )
+
+    webhook_info = telegram_api(
+        "getWebhookInfo"
+    )
+
+    admin_test = None
+
+    if ADMIN:
+        admin_test = send_message(
+            ADMIN,
+            (
+                "🧪 <b>TAKE AWAY BOT TEST</b>\n\n"
+                "Telegram connection is working."
+            )
+        )
+
+    return jsonify(
+        {
+            "success":
+                bool(
+                    bot_info
+                    and bot_info.get(
+                        "ok"
+                    )
+                ),
+            "bot":
+                bot_info,
+            "webhook":
+                webhook_info,
+            "admin_test":
+                admin_test,
+            "app_url":
+                URL,
+            "admin_chat_id_configured":
+                bool(ADMIN),
+        }
+    )
+
 
 # =========================================================
 # RUN
