@@ -3779,32 +3779,38 @@ def handle_admin_callback(
 # =========================================================
 
 def bot_start_text():
+
     return (
+
         "☕ <b>WELCOME TO TAKE AWAY</b>\n"
+
         "<i>Thai Tea & Coffee · Belgrade</i>\n\n"
-        "A little taste of Thailand in the heart of Belgrade. 🇹🇭\n"
-        "Authentic Thai tea, specialty coffee and signature drinks — made fresh for you.\n\n"
-        "Order ahead, skip the wait, and pick it up when it's ready.\n\n"
+
+        "A little taste of Thailand in the heart of Belgrade. 🇹🇭\n\n"
+
         "🫖 Authentic Thai Tea\n"
+
         "☕ Specialty Coffee\n"
-        "✦ Signature Drinks\n"
-        "🎁 Every 10th drink is on us\n\n"
-        "📍 Savski trg 1a, Belgrade\n"
-        "💳 Pay at pickup · Online payment coming soon\n\n"
-        "<b>Tap below to order ↓</b>\n\n"
+
+        "✦ Signature Drinks\n\n"
+
+        "📍 Savski trg 1a\n\n"
+
+        "<b>Order ahead & skip the wait ↓</b>\n\n"
+
         "━━━━━━━━━━━━━━\n\n"
-        "🇷🇸 <b>DOBRO DOŠLI U TAKE AWAY</b>\n"
-        "<i>Thai Tea & Coffee · Beograd</i>\n\n"
-        "Ukus Tajlanda u srcu Beograda. 🇹🇭\n"
-        "Autentični tajlandski čaj, specialty kafa i signature napici — sveže pripremljeni za vas.\n\n"
-        "Poručite unapred, bez čekanja — preuzmite kada bude spremno.\n\n"
-        "🫖 Autentični tajlandski čaj\n"
+
+        "🇷🇸 <b>DOBRO DOŠLI U TAKE AWAY</b>\n\n"
+
+        "Ukus Tajlanda u srcu Beograda. 🇹🇭\n\n"
+
+        "🫖 Tajlandski čaj\n"
+
         "☕ Specialty kafa\n"
-        "✦ Signature napici\n"
-        "🎁 Svako 10. piće je na naš račun\n\n"
-        "📍 Savski trg 1a, Beograd\n"
-        "💳 Plaćanje pri preuzimanju · Online plaćanje uskoro\n\n"
-        "<b>Pritisnite dugme ispod za porudžbinu ↓</b>"
+
+        "✦ Signature napici\n\n"
+
+        "<b>Poruči unapred, bez čekanja ↓</b>"
     )
 
 
