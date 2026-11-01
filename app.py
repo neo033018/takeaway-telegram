@@ -1,413 +1,2373 @@
-import os, json, time, hmac, hashlib, sqlite3, logging, secrets, html
+import os
+import json
+import time
+import hmac
+import hashlib
+import sqlite3
+import logging
+import secrets
+import html
+
 from datetime import datetime, timedelta
 from urllib.parse import parse_qsl
 from zoneinfo import ZoneInfo
+
 import requests
 from flask import Flask, request, jsonify, render_template, Response
 
-app=Flask(__name__)
-logging.basicConfig(level=logging.INFO)
-TOKEN=os.getenv('BOT_TOKEN','').strip()
-URL=os.getenv('APP_URL','https://takeaway-telegram.onrender.com').rstrip('/')
-ADMIN=os.getenv('ORDER_CHAT_ID','').strip()
-DB=os.getenv('DATABASE_PATH','orders.db')
-WEBHOOK_SECRET=os.getenv('WEBHOOK_SECRET','').strip()
-ADMIN_PASSWORD=os.getenv('ADMIN_PASSWORD','')
-TZ=ZoneInfo('Europe/Belgrade')
-OPEN_HOUR=7; CLOSE_HOUR=17; MIN_PREP_MINUTES=10
-MAX_ITEM_QUANTITY=10; MAX_ORDER_QUANTITY=30
-MENU=[
- dict(id='thai',name='Classic Thai Milk Tea',price=450,category='tea',boba=True,temperature=True),
- dict(id='green',name='Thai Green Milk Tea',price=450,category='tea',boba=True,temperature=True),
- dict(id='espresso',name='Espresso',price=200,category='coffee'),
- dict(id='americano',name='Americano',price=250,category='coffee',temperature=True,iced_surcharge=20),
- dict(id='cappuccino',name='Cappuccino',price=320,category='coffee'),
- dict(id='latte',name='Latte',price=350,category='coffee',temperature=True,iced_surcharge=20),
- dict(id='flatwhite',name='Flat White',price=450,category='coffee'),
- dict(id='americanocream',name='Iced Americano with Cream',price=450,category='coffee'),
- dict(id='tonic',name='Tonic Coffee',price=420,category='special'),
- dict(id='bumble',name='Bumble Coffee',price=450,category='special'),
- dict(id='strawberrymatcha',name='Strawberry Matcha Latte',price=550,category='special'),
- dict(id='matchalatte',name='Matcha Latte',price=480,category='special',temperature=True,iced_surcharge=20),
- dict(id='dirtymatcha',name='Dirty Matcha Latte',price=550,category='special',temperature=True,iced_surcharge=20),
- dict(id='pumpkinlatte',name='Pumpkin Latte',price=480,category='special',temperature=True,iced_surcharge=20,tag='AUTUMN SPECIAL'),
- dict(id='kuvanovino',name='Kuvano Vino',price=400,category='special',tag='WINTER SPECIAL'),
+
+# =========================================================
+# TAKE AWAY V4 — CONFIGURATION
+# =========================================================
+
+app = Flask(__name__)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s"
+)
+
+TOKEN = os.getenv("BOT_TOKEN", "").strip()
+
+URL = os.getenv(
+    "APP_URL",
+    "https://takeaway-telegram.onrender.com"
+).rstrip("/")
+
+ADMIN = os.getenv("ORDER_CHAT_ID", "").strip()
+
+DB = os.getenv("DATABASE_PATH", "orders.db")
+
+WEBHOOK_SECRET = os.getenv("WEBHOOK_SECRET", "").strip()
+
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "")
+
+TZ = ZoneInfo("Europe/Belgrade")
+
+OPEN_HOUR = 7
+CLOSE_HOUR = 17
+MIN_PREP_MINUTES = 10
+
+MAX_ITEM_QUANTITY = 10
+MAX_ORDER_QUANTITY = 30
+
+
+# =========================================================
+# V4 MENU
+# =========================================================
+
+MENU = [
+    {
+        "id": "thai",
+        "name": "Classic Thai Milk Tea",
+        "price": 450,
+        "category": "tea",
+        "boba": True,
+        "temperature": True,
+    },
+    {
+        "id": "green",
+        "name": "Thai Green Milk Tea",
+        "price": 450,
+        "category": "tea",
+        "boba": True,
+        "temperature": True,
+    },
+    {
+        "id": "espresso",
+        "name": "Espresso",
+        "price": 200,
+        "category": "coffee",
+    },
+    {
+        "id": "americano",
+        "name": "Americano",
+        "price": 250,
+        "category": "coffee",
+        "temperature": True,
+        "iced_surcharge": 20,
+    },
+    {
+        "id": "cappuccino",
+        "name": "Cappuccino",
+        "price": 320,
+        "category": "coffee",
+    },
+    {
+        "id": "latte",
+        "name": "Latte",
+        "price": 350,
+        "category": "coffee",
+        "temperature": True,
+        "iced_surcharge": 20,
+    },
+    {
+        "id": "flatwhite",
+        "name": "Flat White",
+        "price": 450,
+        "category": "coffee",
+    },
+    {
+        "id": "americanocream",
+        "name": "Iced Americano with Cream",
+        "price": 450,
+        "category": "coffee",
+    },
+    {
+        "id": "tonic",
+        "name": "Tonic Coffee",
+        "price": 420,
+        "category": "special",
+    },
+    {
+        "id": "bumble",
+        "name": "Bumble Coffee",
+        "price": 450,
+        "category": "special",
+    },
+    {
+        "id": "strawberrymatcha",
+        "name": "Strawberry Matcha Latte",
+        "price": 550,
+        "category": "special",
+    },
+    {
+        "id": "matchalatte",
+        "name": "Matcha Latte",
+        "price": 480,
+        "category": "special",
+        "temperature": True,
+        "iced_surcharge": 20,
+    },
+    {
+        "id": "dirtymatcha",
+        "name": "Dirty Matcha Latte",
+        "price": 550,
+        "category": "special",
+        "temperature": True,
+        "iced_surcharge": 20,
+    },
+    {
+        "id": "pumpkinlatte",
+        "name": "Pumpkin Latte",
+        "price": 480,
+        "category": "special",
+        "temperature": True,
+        "iced_surcharge": 20,
+        "tag": "AUTUMN SPECIAL",
+    },
+    {
+        "id": "kuvanovino",
+        "name": "Kuvano Vino",
+        "price": 400,
+        "category": "special",
+        "tag": "WINTER SPECIAL",
+    },
 ]
-MENU_BY_ID={p['id']:p for p in MENU}
-RETIRED={'lime':'Thai Iced Lime Tea','peanutlatte':'Peanut Latte'}
-COFFEE_IDS={'espresso','americano','cappuccino','latte','flatwhite','americanocream','tonic','bumble','pumpkinlatte','dirtymatcha'}
-SYRUP_ALLOWED_IDS=set(COFFEE_IDS)
-SYRUPS={'vanilla':'Vanilla','salted_caramel':'Salted Caramel','strawberry':'Strawberry'}
-TEMPERATURE_IDS={p['id'] for p in MENU if p.get('temperature')}
-LEGACY_ITEM_MAP={'icedamericano':('americano','iced'),'icedlatte':('latte','iced')}
 
-def now_local(): return datetime.now(TZ)
-def now_iso(): return now_local().isoformat()
-def safe_int(v,default=0):
- try: return int(v)
- except (ValueError,TypeError): return default
+MENU_BY_ID = {p["id"]: p for p in MENU}
 
-def get_db():
- db=sqlite3.connect(DB,timeout=20,check_same_thread=False)
- db.row_factory=sqlite3.Row
- return db
+RETIRED = {
+    "lime": "Thai Iced Lime Tea",
+    "peanutlatte": "Peanut Latte",
+}
 
-def ensure_column(db,table,name,definition):
- if name not in {r['name'] for r in db.execute(f'PRAGMA table_info({table})')}:
-  db.execute(f'ALTER TABLE {table} ADD COLUMN {name} {definition}')
+COFFEE_IDS = {
+    "espresso",
+    "americano",
+    "cappuccino",
+    "latte",
+    "flatwhite",
+    "americanocream",
+    "tonic",
+    "bumble",
+    "pumpkinlatte",
+}
 
-def init_db():
- db=get_db()
- try:
-  db.execute('''CREATE TABLE IF NOT EXISTS orders (id INTEGER PRIMARY KEY AUTOINCREMENT,telegram_id INTEGER NOT NULL,username TEXT,first_name TEXT,last_name TEXT,items TEXT NOT NULL,total INTEGER NOT NULL DEFAULT 0,pickup TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'new',created_at TEXT NOT NULL,updated_at TEXT NOT NULL)''')
-  for name,definition in [('payment_method',"TEXT DEFAULT 'pickup'"),('payment_status',"TEXT DEFAULT 'pending'"),('reward_used','INTEGER DEFAULT 0'),('reward_item_index','INTEGER'),('reward_processed','INTEGER DEFAULT 0')]: ensure_column(db,'orders',name,definition)
-  db.execute('''CREATE TABLE IF NOT EXISTS loyalty_accounts (telegram_id INTEGER PRIMARY KEY,stamps INTEGER NOT NULL DEFAULT 0,free_drinks INTEGER NOT NULL DEFAULT 0,updated_at TEXT NOT NULL)''')
-  db.execute('''CREATE TABLE IF NOT EXISTS analytics_visitors (telegram_id INTEGER PRIMARY KEY,username TEXT,first_name TEXT,last_name TEXT,first_seen TEXT NOT NULL,last_seen TEXT NOT NULL,opens INTEGER NOT NULL DEFAULT 1,source TEXT)''')
-  db.execute('''CREATE TABLE IF NOT EXISTS analytics_events (id INTEGER PRIMARY KEY AUTOINCREMENT,telegram_id INTEGER,event_type TEXT NOT NULL,source TEXT,created_at TEXT NOT NULL)''')
-  for index,table,col in [('idx_orders_telegram','orders','telegram_id'),('idx_orders_created','orders','created_at'),('idx_orders_status','orders','status'),('idx_analytics_events_created','analytics_events','created_at'),('idx_analytics_events_type','analytics_events','event_type')]: db.execute(f'CREATE INDEX IF NOT EXISTS {index} ON {table}({col})')
-  db.commit()
- finally: db.close()
-init_db()
+SYRUP_ALLOWED_IDS = set(COFFEE_IDS)
+
+SYRUPS = {
+    "vanilla": "Vanilla",
+    "salted_caramel": "Salted Caramel",
+    "strawberry": "Strawberry",
+}
+
+TEMPERATURE_IDS = {
+    p["id"]
+    for p in MENU
+    if p.get("temperature")
+}
+
+LEGACY_ITEM_MAP = {
+    "icedamericano": ("americano", "iced"),
+    "icedlatte": ("latte", "iced"),
+}
+
+
+# =========================================================
+# TIME HELPERS
+# =========================================================
+
+def now_local():
+    return datetime.now(TZ)
+
+
+def now_iso():
+    return now_local().isoformat()
+
+
+def safe_int(value, default=0):
+    try:
+        return int(value)
+    except (ValueError, TypeError):
+        return default
+
 
 def parse_datetime(value):
- try:
-  dt=datetime.fromisoformat(str(value).replace('Z','+00:00'))
-  return (dt if dt.tzinfo else dt.replace(tzinfo=TZ)).astimezone(TZ)
- except (ValueError,TypeError): return None
+    try:
+        dt = datetime.fromisoformat(
+            str(value).replace("Z", "+00:00")
+        )
 
-def verify_init_data(init_data):
- if not TOKEN or not init_data:return None
- try:
-  fields=dict(parse_qsl(init_data,keep_blank_values=True)); digest=fields.pop('hash',None)
-  auth=safe_int(fields.get('auth_date'))
-  if not digest or not auth or abs(int(time.time())-auth)>86400:return None
-  check='\n'.join(f'{k}={fields[k]}' for k in sorted(fields))
-  key=hmac.new(b'WebAppData',TOKEN.encode(),hashlib.sha256).digest()
-  expected=hmac.new(key,check.encode(),hashlib.sha256).hexdigest()
-  if not hmac.compare_digest(expected,digest):return None
-  user=json.loads(fields['user'])
-  return user if user.get('id') else None
- except (ValueError,KeyError,TypeError):return None
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=TZ)
 
-def request_user():
- data=request.get_json(silent=True) or {}
- return data,verify_init_data(data.get('initData',''))
+        return dt.astimezone(TZ)
 
-def details(row):
- try: return json.loads(row['items'] or '[]')
- except (ValueError,TypeError):return []
+    except (ValueError, TypeError):
+        return None
 
-def ensure_loyalty_account(db,telegram_id):
- db.execute('INSERT OR IGNORE INTO loyalty_accounts (telegram_id,stamps,free_drinks,updated_at) VALUES (?,0,0,?)',(telegram_id,now_iso()))
- return db.execute('SELECT * FROM loyalty_accounts WHERE telegram_id=?',(telegram_id,)).fetchone()
-
-def get_rewards(telegram_id):
- db=get_db()
- try:
-  row=ensure_loyalty_account(db,telegram_id); db.commit()
-  return {'stamps':safe_int(row['stamps']),'free_drinks':safe_int(row['free_drinks'])}
- finally:db.close()
-
-def consume_reward(db,telegram_id):
- ensure_loyalty_account(db,telegram_id)
- cur=db.execute('UPDATE loyalty_accounts SET free_drinks=free_drinks-1,updated_at=? WHERE telegram_id=? AND free_drinks>0',(now_iso(),telegram_id))
- return cur.rowcount==1
-
-def restore_reward(db,telegram_id):
- ensure_loyalty_account(db,telegram_id)
- db.execute('UPDATE loyalty_accounts SET free_drinks=free_drinks+1,updated_at=? WHERE telegram_id=?',(now_iso(),telegram_id))
-
-def add_loyalty_drinks(db,telegram_id,quantity):
- if quantity<=0:return
- row=ensure_loyalty_account(db,telegram_id); total=safe_int(row['stamps'])+quantity
- db.execute('UPDATE loyalty_accounts SET stamps=?,free_drinks=?,updated_at=? WHERE telegram_id=?',(total%9,safe_int(row['free_drinks'])+total//9,now_iso(),telegram_id))
-
-def get_order(order_id):
- db=get_db()
- try:return db.execute('SELECT * FROM orders WHERE id=?',(order_id,)).fetchone()
- finally:db.close()
-
-def mark_paid_and_completed(order_id):
- db=get_db()
- try:
-  db.execute('BEGIN IMMEDIATE')
-  row=db.execute('SELECT * FROM orders WHERE id=?',(order_id,)).fetchone()
-  if not row or row['status']!='ready':db.rollback();return False
-  if not safe_int(row['reward_processed']):
-   paid=sum(safe_int(x.get('qty')) for x in details(row) if not x.get('reward_free'))
-   add_loyalty_drinks(db,safe_int(row['telegram_id']),paid)
-  db.execute("UPDATE orders SET status='completed',payment_status='paid',reward_processed=1,updated_at=? WHERE id=?",(now_iso(),order_id))
-  db.commit();return True
- except Exception:db.rollback();raise
- finally:db.close()
-
-def calculate_item(raw,reward_free=False):
- raw_id=str(raw.get('id') or '').strip(); item_id,forced=LEGACY_ITEM_MAP.get(raw_id,(raw_id,raw.get('temperature')))
- product=MENU_BY_ID.get(item_id)
- if not product:raise ValueError(f'Unknown drink: {raw_id}')
- qty=safe_int(raw.get('qty'),1)
- if qty<1 or qty>MAX_ITEM_QUANTITY:raise ValueError('Invalid drink quantity (1–10).')
- if reward_free and qty!=1:raise ValueError('A free reward must be one drink.')
- temperature=str(forced or 'hot').lower() if item_id in TEMPERATURE_IDS else None
- if temperature not in ('hot','iced',None):raise ValueError('Invalid temperature')
- extra_shot=item_id in COFFEE_IDS and raw.get('extra_shot') is True
- boba=item_id in ('thai','green') and raw.get('boba') is True
- syrup=str(raw.get('syrup') or '').lower() if item_id in SYRUP_ALLOWED_IDS else ''
- syrup=syrup if syrup in SYRUPS else None
- iced=safe_int(product.get('iced_surcharge')) if temperature=='iced' else 0
- base=product['price']; extra=(150 if extra_shot else 0)+(100 if boba else 0)+iced
- unit=base+extra
- return dict(id=item_id,name=product['name'],qty=qty,base_price=base,unit_price=unit,line_total=(extra if reward_free else unit)*qty,extra_shot=extra_shot,boba=boba,syrup=syrup,temperature=temperature,reward_free=bool(reward_free))
-
-def calculate_order_items(raw_items,reward_item_index=None):
- if not isinstance(raw_items,list) or not raw_items:raise ValueError('Order is empty')
- reward_index=None
- if reward_item_index is not None:
-  if isinstance(reward_item_index,bool):raise ValueError('Invalid reward selection')
-  try:reward_index=int(reward_item_index)
-  except (TypeError,ValueError):raise ValueError('Invalid reward selection')
-  if reward_index<0 or reward_index>=len(raw_items):raise ValueError('Invalid reward selection')
- items=[calculate_item(raw,i==reward_index) if isinstance(raw,dict) else (_ for _ in ()).throw(ValueError('Invalid item')) for i,raw in enumerate(raw_items)]
- if sum(x['qty'] for x in items)>MAX_ORDER_QUANTITY:raise ValueError('Maximum 30 drinks per order.')
- return items,sum(x['line_total'] for x in items),reward_index
-
-def validate_pickup(value):
- pickup=parse_datetime(value)
- if not pickup:return None,'Invalid pickup time.'
- now=now_local()
- if pickup.date()!=now.date():return None,'Pickup is available today only.'
- if pickup<now+timedelta(minutes=MIN_PREP_MINUTES-2):return None,'Please allow at least 10 minutes for preparation.'
- if not OPEN_HOUR<=pickup.hour<CLOSE_HOUR:return None,f'Pickup is available between {OPEN_HOUR:02d}:00 and {CLOSE_HOUR:02d}:00.'
- return pickup,None
 
 def pretty_pickup(value):
- dt=parse_datetime(value);return dt.strftime('%H:%M') if dt else str(value or '')
+    dt = parse_datetime(value)
+    return dt.strftime("%H:%M") if dt else str(value or "")
+
+
 def pretty_created(value):
- dt=parse_datetime(value);return dt.strftime('%d.%m.%Y %H:%M') if dt else str(value or '')
+    dt = parse_datetime(value)
+    return dt.strftime("%d.%m.%Y %H:%M") if dt else str(value or "")
+
+
+# =========================================================
+# DATABASE — PRESERVE EXISTING DATA
+# =========================================================
+
+def get_db():
+    db = sqlite3.connect(
+        DB,
+        timeout=20,
+        check_same_thread=False
+    )
+
+    db.row_factory = sqlite3.Row
+
+    return db
+
+
+def ensure_column(db, table, name, definition):
+    columns = {
+        row["name"]
+        for row in db.execute(
+            f"PRAGMA table_info({table})"
+        )
+    }
+
+    if name not in columns:
+        db.execute(
+            f"ALTER TABLE {table} ADD COLUMN {name} {definition}"
+        )
+
+
+def init_db():
+    db = get_db()
+
+    try:
+        db.execute("""
+            CREATE TABLE IF NOT EXISTS orders (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                telegram_id INTEGER NOT NULL,
+                username TEXT,
+                first_name TEXT,
+                last_name TEXT,
+                items TEXT NOT NULL,
+                total INTEGER NOT NULL DEFAULT 0,
+                pickup TEXT NOT NULL,
+                status TEXT NOT NULL DEFAULT 'new',
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL
+            )
+        """)
+
+        extra_columns = [
+            ("payment_method", "TEXT DEFAULT 'pickup'"),
+            ("payment_status", "TEXT DEFAULT 'pending'"),
+            ("reward_used", "INTEGER DEFAULT 0"),
+            ("reward_item_index", "INTEGER"),
+            ("reward_processed", "INTEGER DEFAULT 0"),
+        ]
+
+        for name, definition in extra_columns:
+            ensure_column(
+                db,
+                "orders",
+                name,
+                definition
+            )
+
+        db.execute("""
+            CREATE TABLE IF NOT EXISTS loyalty_accounts (
+                telegram_id INTEGER PRIMARY KEY,
+                stamps INTEGER NOT NULL DEFAULT 0,
+                free_drinks INTEGER NOT NULL DEFAULT 0,
+                updated_at TEXT NOT NULL
+            )
+        """)
+
+        db.execute("""
+            CREATE TABLE IF NOT EXISTS analytics_visitors (
+                telegram_id INTEGER PRIMARY KEY,
+                username TEXT,
+                first_name TEXT,
+                last_name TEXT,
+                first_seen TEXT NOT NULL,
+                last_seen TEXT NOT NULL,
+                opens INTEGER NOT NULL DEFAULT 1,
+                source TEXT
+            )
+        """)
+
+        db.execute("""
+            CREATE TABLE IF NOT EXISTS analytics_events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                telegram_id INTEGER,
+                event_type TEXT NOT NULL,
+                source TEXT,
+                created_at TEXT NOT NULL
+            )
+        """)
+
+        indexes = [
+            ("idx_orders_telegram", "orders", "telegram_id"),
+            ("idx_orders_created", "orders", "created_at"),
+            ("idx_orders_status", "orders", "status"),
+            (
+                "idx_analytics_events_created",
+                "analytics_events",
+                "created_at"
+            ),
+            (
+                "idx_analytics_events_type",
+                "analytics_events",
+                "event_type"
+            ),
+        ]
+
+        for index, table, column in indexes:
+            db.execute(
+                f"CREATE INDEX IF NOT EXISTS {index} "
+                f"ON {table}({column})"
+            )
+
+        db.commit()
+
+    finally:
+        db.close()
+
+
+init_db()
+
+
+# =========================================================
+# TELEGRAM AUTHENTICATION
+# =========================================================
+
+def verify_init_data(init_data):
+    if not TOKEN or not init_data:
+        return None
+
+    try:
+        fields = dict(
+            parse_qsl(
+                init_data,
+                keep_blank_values=True
+            )
+        )
+
+        received_hash = fields.pop("hash", None)
+
+        auth_date = safe_int(
+            fields.get("auth_date")
+        )
+
+        if not received_hash or not auth_date:
+            return None
+
+        if abs(int(time.time()) - auth_date) > 86400:
+            return None
+
+        check_string = "\n".join(
+            f"{key}={fields[key]}"
+            for key in sorted(fields)
+        )
+
+        secret_key = hmac.new(
+            b"WebAppData",
+            TOKEN.encode(),
+            hashlib.sha256
+        ).digest()
+
+        expected_hash = hmac.new(
+            secret_key,
+            check_string.encode(),
+            hashlib.sha256
+        ).hexdigest()
+
+        if not hmac.compare_digest(
+            expected_hash,
+            received_hash
+        ):
+            return None
+
+        user = json.loads(fields["user"])
+
+        return user if user.get("id") else None
+
+    except (ValueError, KeyError, TypeError):
+        return None
+
+
+def request_user():
+    data = request.get_json(silent=True) or {}
+
+    user = verify_init_data(
+        data.get("initData", "")
+    )
+
+    return data, user
+
+
+# =========================================================
+# ORDER HELPERS
+# =========================================================
+
+def details(row):
+    try:
+        return json.loads(
+            row["items"] or "[]"
+        )
+    except (ValueError, TypeError):
+        return []
+
+
+def get_order(order_id):
+    db = get_db()
+
+    try:
+        return db.execute(
+            "SELECT * FROM orders WHERE id=?",
+            (order_id,)
+        ).fetchone()
+
+    finally:
+        db.close()
+
+
 def serialize_order(row):
- return dict(id=row['id'],items=details(row),total=safe_int(row['total']),pickup=pretty_pickup(row['pickup']),pickup_iso=row['pickup'],status=row['status'],payment_method=row['payment_method'],payment_status=row['payment_status'],reward_used=bool(row['reward_used']),created=pretty_created(row['created_at']),created_at=row['created_at'])
+    return {
+        "id": row["id"],
+        "items": details(row),
+        "total": safe_int(row["total"]),
+        "pickup": pretty_pickup(row["pickup"]),
+        "pickup_iso": row["pickup"],
+        "status": row["status"],
+        "payment_method": row["payment_method"],
+        "payment_status": row["payment_status"],
+        "reward_used": bool(row["reward_used"]),
+        "created": pretty_created(row["created_at"]),
+        "created_at": row["created_at"],
+    }
 
-def telegram_api(method,payload=None,timeout=20):
- if not TOKEN:return {'ok':False,'description':'BOT_TOKEN missing'}
- try:
-  r=requests.post(f'https://api.telegram.org/bot{TOKEN}/{method}',json=payload or {},timeout=timeout)
-  result=r.json()
-  if not r.ok or not result.get('ok'):logging.error('Telegram %s failed: %s',method,result)
-  return result
- except Exception:logging.exception('Telegram %s failed',method);return {'ok':False}
 
-def send_message(chat_id,text,reply_markup=None):
- if not chat_id:return None
- payload=dict(chat_id=chat_id,text=text,parse_mode='HTML',disable_web_page_preview=True)
- if reply_markup is not None:payload['reply_markup']=reply_markup
- return telegram_api('sendMessage',payload)
+# =========================================================
+# LOYALTY SYSTEM
+# =========================================================
 
-def answer_callback(callback_id,text='',show_alert=False):
- if callback_id:telegram_api('answerCallbackQuery',dict(callback_query_id=callback_id,text=text,show_alert=show_alert))
+def ensure_loyalty_account(db, telegram_id):
+    db.execute("""
+        INSERT OR IGNORE INTO loyalty_accounts (
+            telegram_id,
+            stamps,
+            free_drinks,
+            updated_at
+        )
+        VALUES (?, 0, 0, ?)
+    """, (
+        telegram_id,
+        now_iso()
+    ))
 
-def admin_keyboard(order_id,status='new'):
- options={'new':[('✅ ACCEPT','accept'),('❌ CANCEL','cancel')],'preparing':[('☕ READY','ready'),('❌ CANCEL','cancel')],'ready':[('💳 PAID / PICKED UP','complete'),('❌ CANCEL','cancel')]}.get(status,[])
- return {'inline_keyboard':[[{'text':label,'callback_data':f'{action}:{order_id}'}] for label,action in options]}
+    return db.execute("""
+        SELECT *
+        FROM loyalty_accounts
+        WHERE telegram_id=?
+    """, (
+        telegram_id,
+    )).fetchone()
 
-def barista_text(order_id,user,items,total,pickup):
- name=html.escape(' '.join(filter(None,[user.get('first_name'),user.get('last_name')])) or 'Customer')
- lines=['☕ <b>NEW TAKE AWAY ORDER</b>','',f'🧾 <b>Order #{order_id}</b>',f'👤 {name}']
- if user.get('username'):lines.append('📱 @'+html.escape(str(user['username'])))
- lines+= [f'🕒 Pickup: <b>{pretty_pickup(pickup)}</b>','💳 Payment: <b>PAY AT PICKUP</b>','','<b>DRINKS</b>']
- for item in items:
-  lines.append(f"{'🎁' if item['reward_free'] else '•'} <b>{item['qty']} × {html.escape(item['name'])}</b> — {item['line_total']} RSD")
-  if item['temperature']:lines.append('☕ HOT' if item['temperature']=='hot' else '🧊 ICED'+(f" +{MENU_BY_ID[item['id']].get('iced_surcharge',0)} RSD" if MENU_BY_ID[item['id']].get('iced_surcharge') else ''))
-  if item['extra_shot']:lines.append('➕ Extra shot +150 RSD')
-  if item['boba']:lines.append('🧋 Boba +100 RSD')
-  if item['syrup']:lines.append('🍯 '+SYRUPS[item['syrup']]+' · FREE')
-  if item['reward_free']:lines.append('🎁 FREE DRINK REWARD')
- lines+=['',f'💰 <b>TOTAL: {total} RSD</b>','Payment at café by card or cash.']
- return '\n'.join(lines)
 
-def customer_status_message(order_id,status):
- messages={'preparing':'Your order has been accepted and is being prepared.','ready':'Your order is ready! Pay at the café by card or cash.','completed':'Thank you for choosing TAKE AWAY!','cancelled':'Your order was cancelled. Please contact TAKE AWAY if you need help.'}
- return f'☕ <b>Order #{order_id}</b>\n\n'+messages.get(status,status)
+def get_rewards(telegram_id):
+    db = get_db()
 
-def set_order_status(order_id,new_status,allowed_from):
- db=get_db()
- try:
-  db.execute('BEGIN IMMEDIATE');row=db.execute('SELECT * FROM orders WHERE id=?',(order_id,)).fetchone()
-  if not row or row['status'] not in allowed_from:db.rollback();return False
-  db.execute('UPDATE orders SET status=?,updated_at=? WHERE id=?',(new_status,now_iso(),order_id));db.commit();return True
- except Exception:db.rollback();raise
- finally:db.close()
+    try:
+        row = ensure_loyalty_account(
+            db,
+            telegram_id
+        )
+
+        db.commit()
+
+        return {
+            "stamps": safe_int(row["stamps"]),
+            "free_drinks": safe_int(row["free_drinks"]),
+        }
+
+    finally:
+        db.close()
+
+
+def consume_reward(db, telegram_id):
+    ensure_loyalty_account(
+        db,
+        telegram_id
+    )
+
+    cursor = db.execute("""
+        UPDATE loyalty_accounts
+        SET free_drinks=free_drinks-1,
+            updated_at=?
+        WHERE telegram_id=?
+          AND free_drinks>0
+    """, (
+        now_iso(),
+        telegram_id
+    ))
+
+    return cursor.rowcount == 1
+
+
+def restore_reward(db, telegram_id):
+    ensure_loyalty_account(
+        db,
+        telegram_id
+    )
+
+    db.execute("""
+        UPDATE loyalty_accounts
+        SET free_drinks=free_drinks+1,
+            updated_at=?
+        WHERE telegram_id=?
+    """, (
+        now_iso(),
+        telegram_id
+    ))
+
+
+def add_loyalty_drinks(db, telegram_id, quantity):
+    if quantity <= 0:
+        return
+
+    row = ensure_loyalty_account(
+        db,
+        telegram_id
+    )
+
+    total_stamps = (
+        safe_int(row["stamps"]) + quantity
+    )
+
+    new_stamps = total_stamps % 9
+    new_rewards = total_stamps // 9
+
+    db.execute("""
+        UPDATE loyalty_accounts
+        SET stamps=?,
+            free_drinks=?,
+            updated_at=?
+        WHERE telegram_id=?
+    """, (
+        new_stamps,
+        safe_int(row["free_drinks"]) + new_rewards,
+        now_iso(),
+        telegram_id
+    ))
+
+
+def mark_paid_and_completed(order_id):
+    db = get_db()
+
+    try:
+        db.execute("BEGIN IMMEDIATE")
+
+        row = db.execute(
+            "SELECT * FROM orders WHERE id=?",
+            (order_id,)
+        ).fetchone()
+
+        if not row or row["status"] != "ready":
+            db.rollback()
+            return False
+
+        if not safe_int(row["reward_processed"]):
+            paid_quantity = 0
+
+            for item in details(row):
+                quantity = safe_int(
+                    item.get("qty")
+                )
+
+                if item.get("reward_free"):
+                    paid_quantity += max(0, quantity - 1)
+                else:
+                    paid_quantity += quantity
+
+            add_loyalty_drinks(
+                db,
+                safe_int(row["telegram_id"]),
+                paid_quantity
+            )
+
+        db.execute("""
+            UPDATE orders
+            SET status='completed',
+                payment_status='paid',
+                reward_processed=1,
+                updated_at=?
+            WHERE id=?
+        """, (
+            now_iso(),
+            order_id
+        ))
+
+        db.commit()
+        return True
+
+    except Exception:
+        db.rollback()
+        logging.exception(
+            "Could not complete order #%s",
+            order_id
+        )
+        return False
+
+    finally:
+        db.close()
+
+
+# =========================================================
+# DRINK PRICING
+# =========================================================
+
+def calculate_item(raw, reward_free=False):
+    raw_id = str(
+        raw.get("id") or ""
+    ).strip()
+
+    item_id, forced_temperature = LEGACY_ITEM_MAP.get(
+        raw_id,
+        (raw_id, raw.get("temperature"))
+    )
+
+    product = MENU_BY_ID.get(item_id)
+
+    if not product:
+        raise ValueError(
+            f"Unknown drink: {raw_id}"
+        )
+
+    qty = safe_int(
+        raw.get("qty"),
+        1
+    )
+
+    if qty < 1 or qty > MAX_ITEM_QUANTITY:
+        raise ValueError(
+            "Invalid drink quantity (1–10)."
+        )
+
+    temperature = None
+
+    if item_id in TEMPERATURE_IDS:
+        temperature = str(
+            forced_temperature or "hot"
+        ).lower()
+
+        if temperature not in ("hot", "iced"):
+            raise ValueError(
+                "Invalid temperature."
+            )
+
+    extra_shot = (
+        item_id in COFFEE_IDS
+        and raw.get("extra_shot") is True
+    )
+
+    boba = (
+        item_id in ("thai", "green")
+        and raw.get("boba") is True
+    )
+
+    syrup = None
+
+    if item_id in SYRUP_ALLOWED_IDS:
+        requested_syrup = str(
+            raw.get("syrup") or ""
+        ).lower()
+
+        if requested_syrup in SYRUPS:
+            syrup = requested_syrup
+
+    iced_surcharge = (
+        safe_int(product.get("iced_surcharge"))
+        if temperature == "iced"
+        else 0
+    )
+
+    extra_price = (
+        (150 if extra_shot else 0)
+        + (100 if boba else 0)
+        + iced_surcharge
+    )
+
+    base_price = product["price"]
+
+    unit_price = base_price + extra_price
+
+    # One reward covers the base price of ONE drink.
+    # Other drinks in the same line remain paid.
+    line_total = unit_price * qty
+
+    if reward_free:
+        line_total -= base_price
+
+    return {
+        "id": item_id,
+        "name": product["name"],
+        "qty": qty,
+        "base_price": base_price,
+        "unit_price": unit_price,
+        "line_total": line_total,
+        "extra_shot": extra_shot,
+        "boba": boba,
+        "syrup": syrup,
+        "temperature": temperature,
+        "reward_free": bool(reward_free),
+    }
+
+
+def calculate_order_items(
+    raw_items,
+    reward_item_index=None
+):
+    if not isinstance(raw_items, list) or not raw_items:
+        raise ValueError("Order is empty.")
+
+    reward_index = None
+
+    if reward_item_index is not None:
+        if isinstance(reward_item_index, bool):
+            raise ValueError(
+                "Invalid reward selection."
+            )
+
+        try:
+            reward_index = int(reward_item_index)
+        except (TypeError, ValueError):
+            raise ValueError(
+                "Invalid reward selection."
+            )
+
+        if (
+            reward_index < 0
+            or reward_index >= len(raw_items)
+        ):
+            raise ValueError(
+                "Invalid reward selection."
+            )
+
+    items = []
+
+    for index, raw in enumerate(raw_items):
+        if not isinstance(raw, dict):
+            raise ValueError(
+                "Invalid item."
+            )
+
+        item = calculate_item(
+            raw,
+            reward_free=(index == reward_index)
+        )
+
+        items.append(item)
+
+    total_quantity = sum(
+        item["qty"]
+        for item in items
+    )
+
+    if total_quantity > MAX_ORDER_QUANTITY:
+        raise ValueError(
+            "Maximum 30 drinks per order."
+        )
+
+    total = sum(
+        item["line_total"]
+        for item in items
+    )
+
+    return items, total, reward_index
+
+
+# =========================================================
+# PICKUP VALIDATION
+# =========================================================
+
+def validate_pickup(value):
+    pickup = parse_datetime(value)
+
+    if not pickup:
+        return None, "Invalid pickup time."
+
+    current = now_local()
+
+    if pickup.date() != current.date():
+        return (
+            None,
+            "Pickup is available today only."
+        )
+
+    earliest = current + timedelta(
+        minutes=MIN_PREP_MINUTES
+    )
+
+    if pickup < earliest - timedelta(minutes=2):
+        return (
+            None,
+            "Please allow at least 10 minutes for preparation."
+        )
+
+    if not OPEN_HOUR <= pickup.hour < CLOSE_HOUR:
+        return (
+            None,
+            f"Pickup is available between "
+            f"{OPEN_HOUR:02d}:00 and {CLOSE_HOUR:02d}:00."
+        )
+
+    return pickup, None
+
+
+# =========================================================
+# TELEGRAM API
+# =========================================================
+
+def telegram_api(method, payload=None, timeout=20):
+    if not TOKEN:
+        return {
+            "ok": False,
+            "description": "BOT_TOKEN missing"
+        }
+
+    try:
+        response = requests.post(
+            f"https://api.telegram.org/bot{TOKEN}/{method}",
+            json=payload or {},
+            timeout=timeout
+        )
+
+        result = response.json()
+
+        if not response.ok or not result.get("ok"):
+            logging.error(
+                "Telegram %s failed: %s",
+                method,
+                result
+            )
+
+        return result
+
+    except Exception:
+        logging.exception(
+            "Telegram API error: %s",
+            method
+        )
+
+        return {"ok": False}
+
+
+def send_message(chat_id, text, reply_markup=None):
+    if not chat_id:
+        return None
+
+    payload = {
+        "chat_id": chat_id,
+        "text": text,
+        "parse_mode": "HTML",
+        "disable_web_page_preview": True,
+    }
+
+    if reply_markup is not None:
+        payload["reply_markup"] = reply_markup
+
+    return telegram_api(
+        "sendMessage",
+        payload
+    )
+
+
+def answer_callback(
+    callback_id,
+    text="",
+    show_alert=False
+):
+    if callback_id:
+        telegram_api(
+            "answerCallbackQuery",
+            {
+                "callback_query_id": callback_id,
+                "text": text,
+                "show_alert": show_alert,
+            }
+        )
+
+
+# =========================================================
+# BARISTA BUTTONS
+# =========================================================
+
+def admin_keyboard(order_id, status="new"):
+    options = {
+        "new": [
+            ("✅ ACCEPT", "accept"),
+            ("❌ CANCEL", "cancel"),
+        ],
+        "preparing": [
+            ("☕ READY", "ready"),
+            ("❌ CANCEL", "cancel"),
+        ],
+        "ready": [
+            ("💳 PAID / PICKED UP", "complete"),
+            ("❌ CANCEL", "cancel"),
+        ],
+    }.get(status, [])
+
+    return {
+        "inline_keyboard": [
+            [
+                {
+                    "text": label,
+                    "callback_data": f"{action}:{order_id}",
+                }
+            ]
+            for label, action in options
+        ]
+    }
+
+
+def barista_text(
+    order_id,
+    user,
+    items,
+    total,
+    pickup
+):
+    customer = " ".join(
+        filter(
+            None,
+            [
+                user.get("first_name"),
+                user.get("last_name"),
+            ]
+        )
+    ) or "Customer"
+
+    lines = [
+        "☕ <b>NEW TAKE AWAY ORDER</b>",
+        "",
+        f"🧾 <b>Order #{order_id}</b>",
+        f"👤 {html.escape(customer)}",
+    ]
+
+    if user.get("username"):
+        lines.append(
+            "📱 @" + html.escape(
+                str(user["username"])
+            )
+        )
+
+    lines.extend([
+        f"🕒 Pickup: <b>{pretty_pickup(pickup)}</b>",
+        "💳 Payment: <b>PAY AT PICKUP</b>",
+        "",
+        "<b>DRINKS</b>",
+    ])
+
+    for item in items:
+        prefix = (
+            "🎁" if item["reward_free"] else "•"
+        )
+
+        lines.append(
+            f"{prefix} <b>{item['qty']} × "
+            f"{html.escape(item['name'])}</b> "
+            f"— {item['line_total']} RSD"
+        )
+
+        if item["temperature"]:
+            if item["temperature"] == "hot":
+                lines.append("☕ HOT")
+            else:
+                lines.append("🧊 ICED")
+
+                surcharge = MENU_BY_ID[
+                    item["id"]
+                ].get("iced_surcharge", 0)
+
+                if surcharge:
+                    lines.append(
+                        f"   +{surcharge} RSD iced"
+                    )
+
+        if item["extra_shot"]:
+            lines.append(
+                "➕ Extra shot +150 RSD"
+            )
+
+        if item["boba"]:
+            lines.append(
+                "🧋 Boba +100 RSD"
+            )
+
+        if item["syrup"]:
+            lines.append(
+                "🍯 "
+                + SYRUPS[item["syrup"]]
+                + " · FREE"
+            )
+
+        if item["reward_free"]:
+            lines.append(
+                "🎁 ONE FREE DRINK REWARD"
+            )
+
+    lines.extend([
+        "",
+        f"💰 <b>TOTAL: {total} RSD</b>",
+        "",
+        "Payment at café by card or cash.",
+    ])
+
+    return "\n".join(lines)
+
+
+def customer_status_message(order_id, status):
+    messages = {
+        "preparing": (
+            "Your order has been accepted "
+            "and is being prepared."
+        ),
+        "ready": (
+            "Your order is ready! "
+            "Pay at the café by card or cash."
+        ),
+        "completed": (
+            "Thank you for choosing TAKE AWAY!"
+        ),
+        "cancelled": (
+            "Your order was cancelled. "
+            "Please contact TAKE AWAY if you need help."
+        ),
+    }
+
+    return (
+        f"☕ <b>Order #{order_id}</b>\n\n"
+        + messages.get(status, status)
+    )
+
+
+# =========================================================
+# ORDER STATUS UPDATES
+# =========================================================
+
+def set_order_status(
+    order_id,
+    new_status,
+    allowed_from
+):
+    db = get_db()
+
+    try:
+        db.execute("BEGIN IMMEDIATE")
+
+        row = db.execute(
+            "SELECT * FROM orders WHERE id=?",
+            (order_id,)
+        ).fetchone()
+
+        if (
+            not row
+            or row["status"] not in allowed_from
+        ):
+            db.rollback()
+            return False
+
+        db.execute("""
+            UPDATE orders
+            SET status=?,
+                updated_at=?
+            WHERE id=?
+        """, (
+            new_status,
+            now_iso(),
+            order_id
+        ))
+
+        db.commit()
+        return True
+
+    except Exception:
+        db.rollback()
+        logging.exception(
+            "Could not update order status"
+        )
+        return False
+
+    finally:
+        db.close()
+
 
 def cancel_order(order_id):
- db=get_db()
- try:
-  db.execute('BEGIN IMMEDIATE');row=db.execute('SELECT * FROM orders WHERE id=?',(order_id,)).fetchone()
-  if not row or row['status'] in ('completed','cancelled'):db.rollback();return False
-  if safe_int(row['reward_used']):restore_reward(db,safe_int(row['telegram_id']))
-  db.execute("UPDATE orders SET status='cancelled',reward_used=0,updated_at=? WHERE id=?",(now_iso(),order_id));db.commit();return True
- except Exception:db.rollback();raise
- finally:db.close()
+    db = get_db()
+
+    try:
+        db.execute("BEGIN IMMEDIATE")
+
+        row = db.execute(
+            "SELECT * FROM orders WHERE id=?",
+            (order_id,)
+        ).fetchone()
+
+        if not row:
+            db.rollback()
+            return False
+
+        if row["status"] in ("completed", "cancelled"):
+            db.rollback()
+            return False
+
+        if safe_int(row["reward_used"]):
+            restore_reward(
+                db,
+                safe_int(row["telegram_id"])
+            )
+
+        db.execute("""
+            UPDATE orders
+            SET status='cancelled',
+                reward_used=0,
+                updated_at=?
+            WHERE id=?
+        """, (
+            now_iso(),
+            order_id
+        ))
+
+        db.commit()
+        return True
+
+    except Exception:
+        db.rollback()
+        logging.exception(
+            "Could not cancel order"
+        )
+        return False
+
+    finally:
+        db.close()
+
 
 def handle_admin_callback(callback):
- cid=callback.get('id');data=str(callback.get('data') or '');message=callback.get('message') or {};chat=message.get('chat') or {};chat_id=chat.get('id');message_id=message.get('message_id')
- if not ADMIN or str(chat_id)!=str(ADMIN):answer_callback(cid,'Not authorized',True);return
- try:action,raw_id=data.split(':',1);order_id=int(raw_id)
- except (ValueError,TypeError):answer_callback(cid,'Invalid action',True);return
- if action not in ('accept','ready','complete','cancel'):answer_callback(cid,'Unknown action',True);return
- order=get_order(order_id)
- if not order:answer_callback(cid,'Order not found',True);return
- current=order['status'];new={'accept':'preparing','ready':'ready','complete':'completed','cancel':'cancelled'}[action]
- allowed={'accept':'new','ready':'preparing','complete':'ready'}
- if action in allowed and current!=allowed[action]:answer_callback(cid,f'Order is {current}',True);return
- if action=='cancel' and current in ('cancelled','completed'):answer_callback(cid,f'Order is {current}',True);return
- try:
-  success=mark_paid_and_completed(order_id) if action=='complete' else cancel_order(order_id) if action=='cancel' else set_order_status(order_id,new,{allowed[action]})
- except Exception:logging.exception('Order status failed');answer_callback(cid,'Could not update order',True);return
- if not success:answer_callback(cid,'Order status changed; refresh',True);return
- send_message(order['telegram_id'],customer_status_message(order_id,new))
- if chat_id and message_id:telegram_api('editMessageReplyMarkup',dict(chat_id=chat_id,message_id=message_id,reply_markup=admin_keyboard(order_id,new)))
- answer_callback(cid,f'Order {new}')
+    callback_id = callback.get("id")
 
-@app.route('/')
-def index():return render_template('index.html')
-@app.route('/health')
-def health():return jsonify(ok=True,service='TAKE AWAY',payment_mode='pickup',bot_configured=bool(TOKEN),admin_configured=bool(ADMIN),app_url=URL,time=now_iso())
-@app.route('/api/menu')
-def api_menu():return jsonify(MENU)
+    data = str(
+        callback.get("data") or ""
+    )
 
-def clean_source(value):return (str(value or '').strip() or 'direct')[:100]
-@app.route('/api/analytics/open',methods=['POST'])
+    message = callback.get("message") or {}
+    chat = message.get("chat") or {}
+
+    chat_id = chat.get("id")
+    message_id = message.get("message_id")
+
+    if not ADMIN or str(chat_id) != str(ADMIN):
+        answer_callback(
+            callback_id,
+            "Not authorized",
+            True
+        )
+        return
+
+    try:
+        action, raw_id = data.split(":", 1)
+        order_id = int(raw_id)
+
+    except (ValueError, TypeError):
+        answer_callback(
+            callback_id,
+            "Invalid action",
+            True
+        )
+        return
+
+    if action not in (
+        "accept",
+        "ready",
+        "complete",
+        "cancel"
+    ):
+        answer_callback(
+            callback_id,
+            "Unknown action",
+            True
+        )
+        return
+
+    order = get_order(order_id)
+
+    if not order:
+        answer_callback(
+            callback_id,
+            "Order not found",
+            True
+        )
+        return
+
+    current = order["status"]
+
+    new_status = {
+        "accept": "preparing",
+        "ready": "ready",
+        "complete": "completed",
+        "cancel": "cancelled",
+    }[action]
+
+    allowed = {
+        "accept": "new",
+        "ready": "preparing",
+        "complete": "ready",
+    }
+
+    if action in allowed:
+        if current != allowed[action]:
+            answer_callback(
+                callback_id,
+                f"Order is {current}",
+                True
+            )
+            return
+
+    if action == "cancel":
+        if current in ("cancelled", "completed"):
+            answer_callback(
+                callback_id,
+                f"Order is {current}",
+                True
+            )
+            return
+
+    if action == "complete":
+        success = mark_paid_and_completed(order_id)
+
+    elif action == "cancel":
+        success = cancel_order(order_id)
+
+    else:
+        success = set_order_status(
+            order_id,
+            new_status,
+            {allowed[action]}
+        )
+
+    if not success:
+        answer_callback(
+            callback_id,
+            "Could not update order",
+            True
+        )
+        return
+
+    send_message(
+        order["telegram_id"],
+        customer_status_message(
+            order_id,
+            new_status
+        )
+    )
+
+    if chat_id and message_id:
+        telegram_api(
+            "editMessageReplyMarkup",
+            {
+                "chat_id": chat_id,
+                "message_id": message_id,
+                "reply_markup": admin_keyboard(
+                    order_id,
+                    new_status
+                ),
+            }
+        )
+
+    answer_callback(
+        callback_id,
+        f"Order {new_status}"
+    )
+
+
+# =========================================================
+# MAIN ROUTES
+# =========================================================
+
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+
+@app.route("/health")
+def health():
+    return jsonify({
+        "ok": True,
+        "service": "TAKE AWAY V4",
+        "payment_mode": "pickup",
+        "bot_configured": bool(TOKEN),
+        "admin_configured": bool(ADMIN),
+        "app_url": URL,
+        "time": now_iso(),
+    })
+
+
+@app.route("/api/menu")
+def api_menu():
+    return jsonify(MENU)
+
+
+# =========================================================
+# ANALYTICS
+# =========================================================
+
+def clean_source(value):
+    return (
+        str(value or "").strip() or "direct"
+    )[:100]
+
+
+@app.route(
+    "/api/analytics/open",
+    methods=["POST"]
+)
 def analytics_open():
- data,user=request_user()
- if not user:return jsonify(error='Invalid Telegram session'),401
- uid=safe_int(user['id']);source=clean_source(data.get('source'));now=now_iso();db=get_db()
- try:
-  db.execute('''INSERT INTO analytics_visitors (telegram_id,username,first_name,last_name,first_seen,last_seen,opens,source) VALUES (?,?,?,?,?,?,1,?) ON CONFLICT(telegram_id) DO UPDATE SET username=excluded.username,first_name=excluded.first_name,last_name=excluded.last_name,last_seen=excluded.last_seen,opens=analytics_visitors.opens+1,source=CASE WHEN excluded.source!='direct' THEN excluded.source ELSE analytics_visitors.source END''',(uid,user.get('username'),user.get('first_name'),user.get('last_name'),now,now,source))
-  db.execute("INSERT INTO analytics_events (telegram_id,event_type,source,created_at) VALUES (?,'open',?,?)",(uid,source,now));db.commit()
- finally:db.close()
- return jsonify(success=True)
-@app.route('/api/analytics/directions',methods=['POST'])
+    data, user = request_user()
+
+    if not user:
+        return jsonify(
+            error="Invalid Telegram session"
+        ), 401
+
+    uid = safe_int(user["id"])
+    source = clean_source(data.get("source"))
+    current = now_iso()
+
+    db = get_db()
+
+    try:
+        db.execute("""
+            INSERT INTO analytics_visitors (
+                telegram_id,
+                username,
+                first_name,
+                last_name,
+                first_seen,
+                last_seen,
+                opens,
+                source
+            )
+            VALUES (?, ?, ?, ?, ?, ?, 1, ?)
+            ON CONFLICT(telegram_id)
+            DO UPDATE SET
+                username=excluded.username,
+                first_name=excluded.first_name,
+                last_name=excluded.last_name,
+                last_seen=excluded.last_seen,
+                opens=analytics_visitors.opens+1,
+                source=CASE
+                    WHEN excluded.source!='direct'
+                    THEN excluded.source
+                    ELSE analytics_visitors.source
+                END
+        """, (
+            uid,
+            user.get("username"),
+            user.get("first_name"),
+            user.get("last_name"),
+            current,
+            current,
+            source,
+        ))
+
+        db.execute("""
+            INSERT INTO analytics_events (
+                telegram_id,
+                event_type,
+                source,
+                created_at
+            )
+            VALUES (?, 'open', ?, ?)
+        """, (
+            uid,
+            source,
+            current
+        ))
+
+        db.commit()
+
+    finally:
+        db.close()
+
+    return jsonify(success=True)
+
+
+@app.route(
+    "/api/analytics/directions",
+    methods=["POST"]
+)
 def analytics_directions():
- data,user=request_user()
- if not user:return jsonify(error='Invalid Telegram session'),401
- db=get_db()
- try:db.execute("INSERT INTO analytics_events (telegram_id,event_type,source,created_at) VALUES (?,'directions',?,?)",(safe_int(user['id']),clean_source(data.get('source')),now_iso()));db.commit()
- finally:db.close()
- return jsonify(success=True)
+    data, user = request_user()
+
+    if not user:
+        return jsonify(
+            error="Invalid Telegram session"
+        ), 401
+
+    db = get_db()
+
+    try:
+        db.execute("""
+            INSERT INTO analytics_events (
+                telegram_id,
+                event_type,
+                source,
+                created_at
+            )
+            VALUES (?, 'directions', ?, ?)
+        """, (
+            safe_int(user["id"]),
+            clean_source(data.get("source")),
+            now_iso(),
+        ))
+
+        db.commit()
+
+    finally:
+        db.close()
+
+    return jsonify(success=True)
+
 
 def admin_authorized():
- auth=request.authorization
- return bool(ADMIN_PASSWORD and auth and secrets.compare_digest(auth.password or '',ADMIN_PASSWORD))
-def admin_login_required():return Response('Authentication required',401,{'WWW-Authenticate':'Basic realm="TAKE AWAY Analytics"'})
+    auth = request.authorization
+
+    return bool(
+        ADMIN_PASSWORD
+        and auth
+        and secrets.compare_digest(
+            auth.password or "",
+            ADMIN_PASSWORD
+        )
+    )
+
+
+def admin_login_required():
+    return Response(
+        "Authentication required",
+        401,
+        {
+            "WWW-Authenticate":
+                'Basic realm="TAKE AWAY Analytics"'
+        }
+    )
+
 
 def analytics_data():
- db=get_db()
- try:
-  def scalar(query,args=()):return db.execute(query,args).fetchone()[0]
-  today=now_local().date().isoformat()
-  visitors=scalar('SELECT COUNT(*) FROM analytics_visitors');unique=scalar('SELECT COUNT(DISTINCT telegram_id) FROM orders')
-  popular={}
-  for row in db.execute("SELECT items FROM orders WHERE status='completed'"):
-   for item in details(row):
-    pid=item.get('id');pid=LEGACY_ITEM_MAP.get(pid,(pid,None))[0];name=(MENU_BY_ID.get(pid) or {}).get('name') or RETIRED.get(pid) or item.get('name')
-    if name:popular[name]=popular.get(name,0)+safe_int(item.get('qty'))
-  return dict(visitors=visitors,opens=scalar('SELECT COALESCE(SUM(opens),0) FROM analytics_visitors'),returning_visitors=scalar('SELECT COUNT(*) FROM analytics_visitors WHERE opens>1'),unique_customers=unique,conversion=round(100*unique/visitors,1) if visitors else 0,orders=scalar('SELECT COUNT(*) FROM orders'),completed=scalar("SELECT COUNT(*) FROM orders WHERE status='completed'"),directions=scalar("SELECT COUNT(*) FROM analytics_events WHERE event_type='directions'"),revenue=scalar("SELECT COALESCE(SUM(total),0) FROM orders WHERE status='completed'"),today=dict(visitors=scalar('SELECT COUNT(*) FROM analytics_visitors WHERE substr(last_seen,1,10)=?',(today,)),orders=scalar('SELECT COUNT(*) FROM orders WHERE substr(created_at,1,10)=?',(today,)),revenue=scalar("SELECT COALESCE(SUM(total),0) FROM orders WHERE substr(created_at,1,10)=? AND status='completed'",(today,))),sources=[dict(source=r[0] or 'direct',count=r[1]) for r in db.execute("SELECT COALESCE(NULLIF(source,''),'direct'),COUNT(*) FROM analytics_visitors GROUP BY 1 ORDER BY 2 DESC LIMIT 20")],popular_drinks=[dict(name=k,quantity=v) for k,v in sorted(popular.items(),key=lambda x:-x[1])[:10]],recent_visitors=[dict(r) for r in db.execute('SELECT telegram_id,username,first_name,last_name,first_seen,last_seen,opens,source FROM analytics_visitors ORDER BY last_seen DESC LIMIT 30')])
- finally:db.close()
+    db = get_db()
 
-@app.route('/api/admin/analytics')
-def api_admin_analytics():return jsonify(analytics_data()) if admin_authorized() else admin_login_required()
-@app.route('/admin/analytics')
+    try:
+        def scalar(query, args=()):
+            return db.execute(
+                query,
+                args
+            ).fetchone()[0]
+
+        today = now_local().date().isoformat()
+
+        visitors = scalar(
+            "SELECT COUNT(*) FROM analytics_visitors"
+        )
+
+        unique_customers = scalar(
+            "SELECT COUNT(DISTINCT telegram_id) FROM orders"
+        )
+
+        popular = {}
+
+        rows = db.execute("""
+            SELECT items
+            FROM orders
+            WHERE status='completed'
+        """).fetchall()
+
+        for row in rows:
+            for item in details(row):
+                pid = item.get("id")
+
+                pid = LEGACY_ITEM_MAP.get(
+                    pid,
+                    (pid, None)
+                )[0]
+
+                name = (
+                    MENU_BY_ID.get(pid) or {}
+                ).get("name")
+
+                if not name:
+                    name = (
+                        RETIRED.get(pid)
+                        or item.get("name")
+                    )
+
+                if name:
+                    popular[name] = (
+                        popular.get(name, 0)
+                        + safe_int(item.get("qty"))
+                    )
+
+        popular_drinks = [
+            {
+                "name": name,
+                "quantity": quantity,
+            }
+            for name, quantity in sorted(
+                popular.items(),
+                key=lambda x: -x[1]
+            )[:10]
+        ]
+
+        sources = [
+            {
+                "source": row[0] or "direct",
+                "count": row[1],
+            }
+            for row in db.execute("""
+                SELECT
+                    COALESCE(NULLIF(source,''),'direct'),
+                    COUNT(*)
+                FROM analytics_visitors
+                GROUP BY 1
+                ORDER BY 2 DESC
+                LIMIT 20
+            """)
+        ]
+
+        recent = [
+            dict(row)
+            for row in db.execute("""
+                SELECT
+                    telegram_id,
+                    username,
+                    first_name,
+                    last_name,
+                    first_seen,
+                    last_seen,
+                    opens,
+                    source
+                FROM analytics_visitors
+                ORDER BY last_seen DESC
+                LIMIT 30
+            """)
+        ]
+
+        return {
+            "visitors": visitors,
+            "opens": scalar(
+                "SELECT COALESCE(SUM(opens),0) "
+                "FROM analytics_visitors"
+            ),
+            "returning_visitors": scalar(
+                "SELECT COUNT(*) FROM analytics_visitors "
+                "WHERE opens>1"
+            ),
+            "unique_customers": unique_customers,
+            "conversion": (
+                round(
+                    100 * unique_customers / visitors,
+                    1
+                )
+                if visitors else 0
+            ),
+            "orders": scalar(
+                "SELECT COUNT(*) FROM orders"
+            ),
+            "completed": scalar(
+                "SELECT COUNT(*) FROM orders "
+                "WHERE status='completed'"
+            ),
+            "directions": scalar(
+                "SELECT COUNT(*) FROM analytics_events "
+                "WHERE event_type='directions'"
+            ),
+            "revenue": scalar(
+                "SELECT COALESCE(SUM(total),0) "
+                "FROM orders WHERE status='completed'"
+            ),
+            "today": {
+                "visitors": scalar(
+                    "SELECT COUNT(*) FROM analytics_visitors "
+                    "WHERE substr(last_seen,1,10)=?",
+                    (today,)
+                ),
+                "orders": scalar(
+                    "SELECT COUNT(*) FROM orders "
+                    "WHERE substr(created_at,1,10)=?",
+                    (today,)
+                ),
+                "revenue": scalar(
+                    "SELECT COALESCE(SUM(total),0) "
+                    "FROM orders "
+                    "WHERE substr(created_at,1,10)=? "
+                    "AND status='completed'",
+                    (today,)
+                ),
+            },
+            "sources": sources,
+            "popular_drinks": popular_drinks,
+            "recent_visitors": recent,
+        }
+
+    finally:
+        db.close()
+
+
+@app.route("/api/admin/analytics")
+def api_admin_analytics():
+    if not admin_authorized():
+        return admin_login_required()
+
+    return jsonify(analytics_data())
+
+
+@app.route("/admin/analytics")
 def admin_analytics():
- if not admin_authorized():return admin_login_required()
- d=analytics_data();esc=lambda x:html.escape(str(x))
- cards=''.join(f'<div class="card"><b>{esc(value)}</b><small>{esc(label)}</small></div>' for label,value in [('Visitors',d['visitors']),('Opens',d['opens']),('Returning',d['returning_visitors']),('Customers',d['unique_customers']),('Conversion %',d['conversion']),('Orders',d['orders']),('Completed',d['completed']),('Directions',d['directions']),('Revenue RSD',d['revenue']),('Today visitors',d['today']['visitors']),('Today orders',d['today']['orders']),('Today revenue',d['today']['revenue'])])
- def table(title,heads,rows):return '<h2>'+esc(title)+'</h2><table><tr>'+''.join('<th>'+esc(h)+'</th>' for h in heads)+'</tr>'+''.join('<tr>'+''.join('<td>'+esc(v)+'</td>' for v in row)+'</tr>' for row in rows)+'</table>'
- body=table('Traffic sources',['Source','Visitors'],[(x['source'],x['count']) for x in d['sources']])+table('Popular drinks',['Drink','Quantity'],[(x['name'],x['quantity']) for x in d['popular_drinks']])+table('Recent visitors',['Name','Username','Opens','Source','Last seen'],[(x['first_name'],x['username'],x['opens'],x['source'],x['last_seen']) for x in d['recent_visitors']])
- return Response('<!doctype html><html><meta name="viewport" content="width=device-width,initial-scale=1"><title>TAKE AWAY Analytics</title><style>body{font-family:Arial;background:#032c1b;color:white;padding:24px}h1{font-family:Georgia}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}.card{padding:20px;background:#ffffff18;border-radius:15px}.card b{font-size:26px;display:block}.card small{color:#d6b36a}table{width:100%;border-collapse:collapse;margin-bottom:30px}td,th{padding:10px;text-align:left;border-bottom:1px solid #ffffff25}</style><h1>TAKE AWAY · Analytics</h1><div class="grid">'+cards+'</div>'+body+'</html>',mimetype='text/html')
+    if not admin_authorized():
+        return admin_login_required()
 
-@app.route('/api/rewards',methods=['POST'])
+    data = analytics_data()
+
+    def esc(value):
+        return html.escape(str(value))
+
+    cards = [
+        ("Visitors", data["visitors"]),
+        ("App opens", data["opens"]),
+        ("Returning", data["returning_visitors"]),
+        ("Customers", data["unique_customers"]),
+        ("Conversion %", data["conversion"]),
+        ("Orders", data["orders"]),
+        ("Completed", data["completed"]),
+        ("Directions", data["directions"]),
+        ("Revenue RSD", data["revenue"]),
+        ("Today visitors", data["today"]["visitors"]),
+        ("Today orders", data["today"]["orders"]),
+        ("Today revenue", data["today"]["revenue"]),
+    ]
+
+    cards_html = "".join(
+        f'<div class="card">'
+        f'<b>{esc(value)}</b>'
+        f'<small>{esc(label)}</small>'
+        f'</div>'
+        for label, value in cards
+    )
+
+    def table(title, headers, rows):
+        head = "".join(
+            f"<th>{esc(h)}</th>"
+            for h in headers
+        )
+
+        body = "".join(
+            "<tr>"
+            + "".join(
+                f"<td>{esc(value)}</td>"
+                for value in row
+            )
+            + "</tr>"
+            for row in rows
+        )
+
+        return (
+            f"<h2>{esc(title)}</h2>"
+            f"<table><tr>{head}</tr>{body}</table>"
+        )
+
+    sources_html = table(
+        "Traffic sources",
+        ["Source", "Visitors"],
+        [
+            (x["source"], x["count"])
+            for x in data["sources"]
+        ]
+    )
+
+    popular_html = table(
+        "Popular drinks",
+        ["Drink", "Quantity"],
+        [
+            (x["name"], x["quantity"])
+            for x in data["popular_drinks"]
+        ]
+    )
+
+    visitors_html = table(
+        "Recent visitors",
+        [
+            "Name",
+            "Username",
+            "Opens",
+            "Source",
+            "Last seen",
+        ],
+        [
+            (
+                x["first_name"],
+                x["username"],
+                x["opens"],
+                x["source"],
+                x["last_seen"],
+            )
+            for x in data["recent_visitors"]
+        ]
+    )
+
+    page = """
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TAKE AWAY Analytics</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background:#032c1b;
+    color:white;
+    padding:24px;
+}
+h1 { font-family:Georgia,serif; }
+.grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:12px;
+}
+.card {
+    padding:20px;
+    background:#ffffff18;
+    border-radius:15px;
+}
+.card b {
+    font-size:26px;
+    display:block;
+}
+.card small { color:#d6b36a; }
+table {
+    width:100%;
+    border-collapse:collapse;
+    margin-bottom:30px;
+}
+td,th {
+    padding:10px;
+    text-align:left;
+    border-bottom:1px solid #ffffff25;
+}
+</style>
+</head>
+<body>
+<h1>TAKE AWAY · Analytics</h1>
+<div class="grid">
+""" + cards_html + """
+</div>
+""" + sources_html + popular_html + visitors_html + """
+</body>
+</html>
+"""
+
+    return Response(
+        page,
+        mimetype="text/html"
+    )
+
+
+# =========================================================
+# REWARDS API
+# =========================================================
+
+@app.route("/api/rewards", methods=["POST"])
 def api_rewards():
- _,user=request_user()
- if not user:return jsonify(error='Invalid Telegram session'),401
- return jsonify(get_rewards(safe_int(user['id'])))
-@app.route('/api/orders',methods=['POST'])
+    _, user = request_user()
+
+    if not user:
+        return jsonify(
+            error="Invalid Telegram session"
+        ), 401
+
+    return jsonify(
+        get_rewards(
+            safe_int(user["id"])
+        )
+    )
+
+
+# =========================================================
+# ORDERS API
+# =========================================================
+
+@app.route("/api/orders", methods=["POST"])
 def api_orders():
- _,user=request_user()
- if not user:return jsonify(error='Invalid Telegram session'),401
- db=get_db()
- try:return jsonify(orders=[serialize_order(r) for r in db.execute('SELECT * FROM orders WHERE telegram_id=? ORDER BY id DESC LIMIT 50',(safe_int(user['id']),))])
- finally:db.close()
-@app.route('/api/profile',methods=['POST'])
+    _, user = request_user()
+
+    if not user:
+        return jsonify(
+            error="Invalid Telegram session"
+        ), 401
+
+    db = get_db()
+
+    try:
+        rows = db.execute("""
+            SELECT *
+            FROM orders
+            WHERE telegram_id=?
+            ORDER BY id DESC
+            LIMIT 50
+        """, (
+            safe_int(user["id"]),
+        )).fetchall()
+
+        return jsonify({
+            "orders": [
+                serialize_order(row)
+                for row in rows
+            ]
+        })
+
+    finally:
+        db.close()
+
+
+# =========================================================
+# PROFILE API
+# =========================================================
+
+@app.route("/api/profile", methods=["POST"])
 def api_profile():
- _,user=request_user()
- if not user:return jsonify(error='Invalid Telegram session'),401
- db=get_db()
- try:
-  rows=db.execute('SELECT * FROM orders WHERE telegram_id=? ORDER BY id ASC',(safe_int(user['id']),)).fetchall()
-  completed=[r for r in rows if r['status']=='completed'];favorites={}
-  for r in completed:
-   for item in details(r):
-    pid=LEGACY_ITEM_MAP.get(item.get('id'),(item.get('id'),None))[0]
-    if pid in MENU_BY_ID or pid in RETIRED:favorites[pid]=favorites.get(pid,0)+safe_int(item.get('qty'))
-  favorite_id=max(favorites,key=favorites.get) if favorites else None
-  first=user.get('first_name') or '';last=user.get('last_name') or ''
-  return jsonify(telegram_id=user['id'],first_name=first,last_name=last,name=(first+' '+last).strip() or 'TAKE AWAY Member',username=user.get('username'),orders=len(rows),drinks=sum(sum(safe_int(i.get('qty')) for i in details(r) if not i.get('reward_free')) for r in completed),favorite=dict(id=favorite_id,quantity=favorites[favorite_id]) if favorite_id else None,first_order=pretty_created(rows[0]['created_at']).split(' ')[0] if rows else None)
- finally:db.close()
+    _, user = request_user()
 
-@app.route('/api/order',methods=['POST'])
+    if not user:
+        return jsonify(
+            error="Invalid Telegram session"
+        ), 401
+
+    telegram_id = safe_int(user["id"])
+
+    db = get_db()
+
+    try:
+        rows = db.execute("""
+            SELECT *
+            FROM orders
+            WHERE telegram_id=?
+            ORDER BY id ASC
+        """, (
+            telegram_id,
+        )).fetchall()
+
+        completed = [
+            row
+            for row in rows
+            if row["status"] == "completed"
+        ]
+
+        favorites = {}
+
+        for row in completed:
+            for item in details(row):
+                pid = item.get("id")
+
+                pid = LEGACY_ITEM_MAP.get(
+                    pid,
+                    (pid, None)
+                )[0]
+
+                if (
+                    pid in MENU_BY_ID
+                    or pid in RETIRED
+                ):
+                    favorites[pid] = (
+                        favorites.get(pid, 0)
+                        + safe_int(item.get("qty"))
+                    )
+
+        favorite_id = (
+            max(favorites, key=favorites.get)
+            if favorites else None
+        )
+
+        first_name = user.get("first_name") or ""
+        last_name = user.get("last_name") or ""
+
+        full_name = (
+            first_name + " " + last_name
+        ).strip()
+
+        drink_count = sum(
+            sum(
+                safe_int(item.get("qty"))
+                for item in details(row)
+            )
+            for row in completed
+        )
+
+        return jsonify({
+            "telegram_id": telegram_id,
+            "first_name": first_name,
+            "last_name": last_name,
+            "name": full_name or "TAKE AWAY Member",
+            "username": user.get("username"),
+            "orders": len(rows),
+            "drinks": drink_count,
+            "favorite": (
+                {
+                    "id": favorite_id,
+                    "quantity": favorites[favorite_id],
+                }
+                if favorite_id else None
+            ),
+            "first_order": (
+                pretty_created(
+                    rows[0]["created_at"]
+                ).split(" ")[0]
+                if rows else None
+            ),
+        })
+
+    finally:
+        db.close()
+
+
+# =========================================================
+# CREATE ORDER
+# =========================================================
+
+@app.route("/api/order", methods=["POST"])
 def create_order():
- data,user=request_user()
- if not user:return jsonify(success=False,error='Please open TAKE AWAY inside Telegram.'),401
- if str(data.get('payment_method','pickup')).lower()!='pickup':return jsonify(success=False,error='Choose Pay at pickup.'),400
- try:items,total,reward_index=calculate_order_items(data.get('items') or [],data.get('reward_item_index'))
- except ValueError as e:return jsonify(success=False,error=str(e)),400
- pickup,error=validate_pickup(data.get('pickup'))
- if error:return jsonify(success=False,error=error),400
- uid=safe_int(user['id']);db=get_db()
- try:
-  db.execute('BEGIN IMMEDIATE')
-  if reward_index is not None and not consume_reward(db,uid):db.rollback();return jsonify(success=False,error='Your free drink is no longer available. Please refresh Rewards.'),409
-  now=now_iso()
-  cur=db.execute('''INSERT INTO orders (telegram_id,username,first_name,last_name,items,total,pickup,status,created_at,updated_at,payment_method,payment_status,reward_used,reward_item_index,reward_processed) VALUES (?,?,?,?,?,?,?,'new',?,?,'pickup','pending',?,?,0)''',(uid,user.get('username'),user.get('first_name'),user.get('last_name'),json.dumps(items,ensure_ascii=False),total,pickup.isoformat(),now,now,1 if reward_index is not None else 0,reward_index))
-  order_id=cur.lastrowid;db.commit()
- except Exception:db.rollback();logging.exception('Create order failed');return jsonify(success=False,error='Could not create order. Please try again.'),500
- finally:db.close()
- if ADMIN:send_message(ADMIN,barista_text(order_id,user,items,total,pickup.isoformat()),admin_keyboard(order_id,'new'))
- else:logging.error('ORDER_CHAT_ID missing for order #%s',order_id)
- send_message(uid,f'☕ <b>TAKE AWAY order #{order_id}</b>\n\nPickup: <b>{pretty_pickup(pickup.isoformat())}</b>\nTotal: <b>{total} RSD</b>\n\nYour order has been received. Pay at pickup by card or cash.')
- return jsonify(success=True,order_id=order_id,total=total,pickup=pickup.isoformat(),payment_method='pickup',payment_status='pending',reward_used=reward_index is not None)
+    data, user = request_user()
 
-def bot_start_text():return '☕ <b>WELCOME TO TAKE AWAY</b>\n<i>Thai Tea & Coffee · Belgrade</i>\n\n🫖 Authentic Thai Tea\n☕ Specialty Coffee\n✦ Signature Drinks\n\n📍 Savski trg 1a\n\n<b>Order ahead & skip the wait ↓</b>\n\n🇷🇸 <b>DOBRO DOŠLI U TAKE AWAY</b>\nPoruči unapred, bez čekanja ↓'
-def web_app_keyboard():return {'inline_keyboard':[[{'text':'☕ OPEN TAKE AWAY','web_app':{'url':URL}}]]}
+    if not user:
+        return jsonify({
+            "success": False,
+            "error": (
+                "Please open TAKE AWAY inside Telegram."
+            ),
+        }), 401
+
+    payment_method = str(
+        data.get("payment_method", "pickup")
+    ).strip().lower()
+
+    if payment_method != "pickup":
+        return jsonify({
+            "success": False,
+            "error": "Choose Pay at pickup.",
+        }), 400
+
+    try:
+        items, total, reward_index = (
+            calculate_order_items(
+                data.get("items") or [],
+                data.get("reward_item_index")
+            )
+        )
+
+    except ValueError as exc:
+        return jsonify({
+            "success": False,
+            "error": str(exc),
+        }), 400
+
+    pickup, error = validate_pickup(
+        data.get("pickup")
+    )
+
+    if error:
+        return jsonify({
+            "success": False,
+            "error": error,
+        }), 400
+
+    telegram_id = safe_int(user["id"])
+
+    db = get_db()
+
+    try:
+        db.execute("BEGIN IMMEDIATE")
+
+        if reward_index is not None:
+            if not consume_reward(db, telegram_id):
+                db.rollback()
+
+                return jsonify({
+                    "success": False,
+                    "error": (
+                        "Your free drink is no longer "
+                        "available. Please refresh Rewards."
+                    ),
+                }), 409
+
+        current = now_iso()
+
+        cursor = db.execute("""
+            INSERT INTO orders (
+                telegram_id,
+                username,
+                first_name,
+                last_name,
+                items,
+                total,
+                pickup,
+                status,
+                created_at,
+                updated_at,
+                payment_method,
+                payment_status,
+                reward_used,
+                reward_item_index,
+                reward_processed
+            )
+            VALUES (
+                ?, ?, ?, ?, ?, ?, ?,
+                'new', ?, ?,
+                'pickup', 'pending',
+                ?, ?, 0
+            )
+        """, (
+            telegram_id,
+            user.get("username"),
+            user.get("first_name"),
+            user.get("last_name"),
+            json.dumps(
+                items,
+                ensure_ascii=False
+            ),
+            total,
+            pickup.isoformat(),
+            current,
+            current,
+            1 if reward_index is not None else 0,
+            reward_index,
+        ))
+
+        order_id = cursor.lastrowid
+
+        db.commit()
+
+    except Exception:
+        db.rollback()
+
+        logging.exception(
+            "Could not create order"
+        )
+
+        return jsonify({
+            "success": False,
+            "error": (
+                "Could not create order. Please try again."
+            ),
+        }), 500
+
+    finally:
+        db.close()
+
+    if ADMIN:
+        send_message(
+            ADMIN,
+            barista_text(
+                order_id,
+                user,
+                items,
+                total,
+                pickup.isoformat()
+            ),
+            admin_keyboard(
+                order_id,
+                "new"
+            )
+        )
+
+    else:
+        logging.error(
+            "ORDER_CHAT_ID missing for order #%s",
+            order_id
+        )
+
+    send_message(
+        telegram_id,
+        (
+            f"☕ <b>TAKE AWAY order #{order_id}</b>\n\n"
+            f"Pickup: <b>{pretty_pickup(pickup.isoformat())}</b>\n"
+            f"Total: <b>{total} RSD</b>\n\n"
+            "Your order has been received.\n"
+            "Pay at pickup by card or cash."
+        )
+    )
+
+    return jsonify({
+        "success": True,
+        "order_id": order_id,
+        "total": total,
+        "pickup": pickup.isoformat(),
+        "payment_method": "pickup",
+        "payment_status": "pending",
+        "reward_used": reward_index is not None,
+    })
+
+
+# =========================================================
+# TELEGRAM BOT
+# =========================================================
+
+def bot_start_text():
+    return (
+        "☕ <b>WELCOME TO TAKE AWAY</b>\n"
+        "<i>Thai Tea & Coffee · Belgrade</i>\n\n"
+        "A little taste of Thailand in Belgrade. 🇹🇭\n\n"
+        "🫖 Authentic Thai Tea\n"
+        "☕ Specialty Coffee\n"
+        "✦ Signature Drinks\n\n"
+        "📍 Savski trg 1a\n\n"
+        "<b>Order ahead & skip the wait ↓</b>\n\n"
+        "━━━━━━━━━━━━━━\n\n"
+        "🇷🇸 <b>DOBRO DOŠLI U TAKE AWAY</b>\n\n"
+        "Ukus Tajlanda u srcu Beograda.\n\n"
+        "<b>Poruči unapred, bez čekanja ↓</b>"
+    )
+
+
+def web_app_keyboard():
+    return {
+        "inline_keyboard": [
+            [
+                {
+                    "text": "☕ OPEN TAKE AWAY",
+                    "web_app": {
+                        "url": URL
+                    },
+                }
+            ]
+        ]
+    }
+
+
 def handle_bot_message(message):
- chat_id=(message.get('chat') or {}).get('id');raw=str(message.get('text') or '').strip();cmd=raw.split(None,1)[0].split('@',1)[0].lower() if raw.startswith('/') else ''
- if not chat_id:return
- if cmd in ('/start','/menu'):send_message(chat_id,bot_start_text(),web_app_keyboard())
- elif cmd=='/help':send_message(chat_id,'☕ <b>TAKE AWAY Help</b>\nOpen the ordering app, choose drinks and pickup time. Pay at the café.',web_app_keyboard())
+    chat = message.get("chat") or {}
+    chat_id = chat.get("id")
 
-@app.route('/webhook',methods=['POST'])
+    raw_text = str(
+        message.get("text") or ""
+    ).strip()
+
+    if not chat_id:
+        return
+
+    command = ""
+
+    if raw_text.startswith("/"):
+        command = (
+            raw_text.split(None, 1)[0]
+            .split("@", 1)[0]
+            .lower()
+        )
+
+    if command in ("/start", "/menu"):
+        send_message(
+            chat_id,
+            bot_start_text(),
+            web_app_keyboard()
+        )
+
+    elif command == "/help":
+        send_message(
+            chat_id,
+            (
+                "☕ <b>TAKE AWAY Help</b>\n\n"
+                "Open the ordering app.\n"
+                "Choose drinks and pickup time.\n"
+                "Pay at the café by card or cash."
+            ),
+            web_app_keyboard()
+        )
+
+
+# =========================================================
+# TELEGRAM WEBHOOK
+# =========================================================
+
+@app.route("/webhook", methods=["POST"])
 def webhook():
- if WEBHOOK_SECRET and not secrets.compare_digest(request.headers.get('X-Telegram-Bot-Api-Secret-Token',''),WEBHOOK_SECRET):return jsonify(ok=False,error='Invalid webhook secret'),403
- update=request.get_json(silent=True) or {}
- try:
-  if update.get('callback_query'):handle_admin_callback(update['callback_query'])
-  elif update.get('message'):handle_bot_message(update['message'])
- except Exception:logging.exception('Webhook processing failed')
- return jsonify(ok=True)
-@app.route('/webhook-status')
+    if WEBHOOK_SECRET:
+        supplied = request.headers.get(
+            "X-Telegram-Bot-Api-Secret-Token",
+            ""
+        )
+
+        if not secrets.compare_digest(
+            supplied,
+            WEBHOOK_SECRET
+        ):
+            return jsonify({
+                "ok": False,
+                "error": "Invalid webhook secret",
+            }), 403
+
+    update = request.get_json(silent=True) or {}
+
+    try:
+        callback = update.get("callback_query")
+        message = update.get("message")
+
+        if callback:
+            handle_admin_callback(callback)
+
+        elif message:
+            handle_bot_message(message)
+
+    except Exception:
+        logging.exception(
+            "Webhook processing failed"
+        )
+
+    return jsonify(ok=True)
+
+
+# =========================================================
+# WEBHOOK ADMIN ROUTES
+# =========================================================
+
+@app.route("/webhook-status")
 def webhook_status():
- if not admin_authorized():return admin_login_required()
- return jsonify(success=True,expected_webhook=f'{URL}/webhook',bot=telegram_api('getMe'),webhook=telegram_api('getWebhookInfo'),admin_chat_id_configured=bool(ADMIN),webhook_secret_configured=bool(WEBHOOK_SECRET))
-@app.route('/setup-webhook')
+    if not admin_authorized():
+        return admin_login_required()
+
+    return jsonify({
+        "success": True,
+        "expected_webhook": f"{URL}/webhook",
+        "bot": telegram_api("getMe"),
+        "webhook": telegram_api("getWebhookInfo"),
+        "admin_chat_id_configured": bool(ADMIN),
+        "webhook_secret_configured": bool(WEBHOOK_SECRET),
+    })
+
+
+@app.route("/setup-webhook")
 def setup_webhook():
- if not admin_authorized():return admin_login_required()
- if not TOKEN:return jsonify(success=False,error='BOT_TOKEN missing'),500
- payload=dict(url=f'{URL}/webhook',allowed_updates=['message','callback_query'],drop_pending_updates=False,max_connections=40)
- if WEBHOOK_SECRET:payload['secret_token']=WEBHOOK_SECRET
- result=telegram_api('setWebhook',payload)
- return jsonify(success=bool(result.get('ok')),set_webhook=result,webhook_info=telegram_api('getWebhookInfo'))
-@app.route('/telegram-test')
+    if not admin_authorized():
+        return admin_login_required()
+
+    if not TOKEN:
+        return jsonify({
+            "success": False,
+            "error": "BOT_TOKEN missing",
+        }), 500
+
+    payload = {
+        "url": f"{URL}/webhook",
+        "allowed_updates": [
+            "message",
+            "callback_query",
+        ],
+        "drop_pending_updates": False,
+        "max_connections": 40,
+    }
+
+    if WEBHOOK_SECRET:
+        payload["secret_token"] = WEBHOOK_SECRET
+
+    result = telegram_api(
+        "setWebhook",
+        payload
+    )
+
+    return jsonify({
+        "success": bool(result.get("ok")),
+        "set_webhook": result,
+        "webhook_info": telegram_api(
+            "getWebhookInfo"
+        ),
+    })
+
+
+@app.route("/telegram-test")
 def telegram_test():
- if not admin_authorized():return admin_login_required()
- info=telegram_api('getMe');test=send_message(ADMIN,'🧪 <b>TAKE AWAY BOT TEST</b>\nTelegram connection is working.') if ADMIN else None
- return jsonify(success=bool(info.get('ok')),bot=info,webhook=telegram_api('getWebhookInfo'),admin_test=test)
-if __name__=='__main__':app.run(host='0.0.0.0',port=safe_int(os.getenv('PORT','1
+    if not admin_authorized():
+        return admin_login_required()
+
+    bot_info = telegram_api("getMe")
+
+    admin_test = None
+
+    if ADMIN:
+        admin_test = send_message(
+            ADMIN,
+            (
+                "🧪 <b>TAKE AWAY BOT TEST</b>\n\n"
+                "Telegram connection is working."
+            )
+        )
+
+    return jsonify({
+        "success": bool(bot_info.get("ok")),
+        "bot": bot_info,
+        "webhook": telegram_api("getWebhookInfo"),
+        "admin_test": admin_test,
+    })
+
+
+# =========================================================
+# START APPLICATION
+# =========================================================
+
+if __name__ == "__main__":
+    port = safe_int(
+        os.getenv("PORT", "10000"),
+        10000
+    )
+
+    app.run(
+        host="0.0.0.0",
+        port=port,
+        debug=False
+    )
