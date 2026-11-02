@@ -1,2834 +1,1159 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
 <head>
-<meta charset="UTF-8">
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"
->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#043923">
-
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-<title>TAKE AWAY — Thai Tea & Coffee</title>
+<title>TAKE AWAY</title>
 
 <style>
 :root {
-  --green:#043923;
-  --dark:#032c1b;
-  --light:#0b5136;
-  --gold:#d6b36a;
-  --cream:#f6f0e5;
-  --white:#fff;
-  --muted:rgba(255,255,255,.64);
-  --ease:cubic-bezier(.2,.8,.2,1);
+  --green: #043923;
+  --dark: #032c1b;
+  --gold: #d6b36a;
+  --cream: #f6f0e5;
+  --muted: #ffffffa8;
 }
 
 * {
-  box-sizing:border-box;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html {
-  scroll-behavior:smooth;
+  background: var(--dark);
 }
 
 body {
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-  color:var(--white);
-  background:var(--green);
-  min-height:100vh;
-  padding-bottom:105px;
+  margin: 0;
+  padding-bottom: calc(160px + env(safe-area-inset-bottom));
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  color: white;
+  background:
+    radial-gradient(circle at 100% 0%, #116342, transparent 35%),
+    linear-gradient(#063d27, #032c1b);
+  min-height: 100vh;
 }
 
-button,
-input,
-select {
-  font:inherit;
+button, select {
+  font: inherit;
 }
 
 button {
-  cursor:pointer;
+  border: 0;
+  cursor: pointer;
+}
+
+button:active {
+  transform: scale(.98);
 }
 
 button:disabled {
-  opacity:.45;
-  cursor:not-allowed;
+  opacity: .45;
 }
 
-button,
-input,
-select {
-  -webkit-tap-highlight-color:transparent;
+.shell {
+  max-width: 600px;
+  margin: auto;
 }
-
-.hidden {
-  display:none!important;
-}
-
-#app {
-  max-width:560px;
-  margin:auto;
-  min-height:100vh;
-  position:relative;
-  overflow:hidden;
-}
-
-/* HEADER */
 
 .header {
-  position:sticky;
-  top:0;
-  z-index:50;
-  background:rgba(4,57,35,.96);
-  backdrop-filter:blur(18px);
-  border-bottom:1px solid rgba(214,179,106,.15);
-  padding:14px 18px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+  padding: 12px 16px 5px;
+}
+
+.topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.greeting {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.greeting strong {
+  display: block;
+  color: white;
+  font: 20px Georgia, serif;
+  margin-top: 4px;
+}
+
+.languages {
+  display: flex;
+  gap: 3px;
+  background: #0003;
+  border-radius: 14px;
+  padding: 4px;
+}
+
+.lang {
+  padding: 7px;
+  border-radius: 10px;
+  background: transparent;
+  color: white;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.lang.active {
+  background: white;
+  color: var(--green);
 }
 
 .brand {
-  display:flex;
-  align-items:center;
-  gap:10px;
+  text-align: center;
 }
 
-.brand img {
-  width:44px;
-  height:44px;
-  object-fit:contain;
+.walking-logo {
+  width: 66px;
+  height: 66px;
+  margin: auto;
 }
 
-.brand-name {
-  font-size:17px;
-  font-weight:900;
-  letter-spacing:2px;
-  color:var(--gold);
+.walking-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
-.brand-subtitle {
-  font-size:9px;
-  letter-spacing:1.6px;
-  color:var(--muted);
-  margin-top:3px;
+.logo {
+  font: 25px Georgia, serif;
+  letter-spacing: 6px;
 }
 
-.language-select {
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(214,179,106,.3);
-  border-radius:12px;
-  color:white;
-  padding:9px;
-  outline:none;
+.subtitle {
+  font: 9px Georgia, serif;
+  letter-spacing: 3px;
+  margin-top: 5px;
 }
 
-.language-select option {
-  background:var(--dark);
+.brand-line {
+  width: 32px;
+  height: 1px;
+  background: white;
+  margin: 8px auto;
 }
 
-/* HERO */
+.tagline {
+  font: 9px Georgia, serif;
+  color: var(--gold);
+  letter-spacing: 2px;
+}
 
 .hero {
-  padding:36px 24px 28px;
-  text-align:center;
-  background:
-    radial-gradient(
-      circle at 50% 15%,
-      rgba(214,179,106,.14),
-      transparent 60%
-    ),
-    linear-gradient(
-      160deg,
-      #06452b,
-      #032c1b
-    );
+  height: 184px;
+  position: relative;
+  overflow: hidden;
+  margin-top: 5px;
 }
 
-.hero-logo {
-  width:132px;
-  height:132px;
-  object-fit:contain;
-  margin-bottom:15px;
-  animation:float 4s ease-in-out infinite;
+.hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: left center;
+  filter: brightness(.78);
+  mask-image: linear-gradient(
+    transparent,
+    #000 18%,
+    #000 75%,
+    transparent
+  );
 }
 
-@keyframes float {
-  0%,100% {
-    transform:translateY(0);
-  }
-  50% {
-    transform:translateY(-8px);
-  }
+.hero-label {
+  position: absolute;
+  bottom: 22px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  letter-spacing: 4px;
+  font: 10px Georgia, serif;
 }
 
-.hero h1 {
-  font-size:35px;
-  letter-spacing:4px;
-  margin:0;
-  font-weight:900;
-  color:var(--gold);
+.page {
+  display: none;
 }
 
-.hero p {
-  margin:12px 0 0;
-  font-size:12px;
-  letter-spacing:2px;
-  color:var(--muted);
+.page.active {
+  display: block;
 }
 
-.hero-divider {
-  width:55px;
-  height:2px;
-  background:var(--gold);
-  margin:23px auto;
+.tabs-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #032c1bd9;
+  backdrop-filter: blur(20px);
+  padding: 9px 12px;
 }
-
-.hero-address {
-  font-size:12px;
-  color:#e5e6d8;
-  line-height:1.8;
-}
-
-.hero-hours {
-  margin-top:12px;
-  font-size:12px;
-  font-weight:700;
-  color:var(--gold);
-}
-
-.hero-belgrade {
-  width:100%;
-  max-height:125px;
-  object-fit:contain;
-  margin-top:20px;
-  opacity:.75;
-}
-
-/* SECTIONS */
-
-.section {
-  padding:24px 17px;
-}
-
-.section-title {
-  font-size:23px;
-  font-weight:800;
-  letter-spacing:.3px;
-  margin:0 0 7px;
-}
-
-.section-subtitle {
-  font-size:12px;
-  color:var(--muted);
-  margin-bottom:22px;
-}
-
-.gold-line {
-  width:42px;
-  height:2px;
-  background:var(--gold);
-  margin-bottom:20px;
-}
-
-/* CATEGORY TABS */
 
 .tabs {
-  display:flex;
-  gap:8px;
-  overflow-x:auto;
-  padding:3px 0 18px;
-  scrollbar-width:none;
-}
-
-.tabs::-webkit-scrollbar {
-  display:none;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 4px;
+  gap: 4px;
+  background: #ffffff19;
+  border: 1px solid #ffffff30;
+  border-radius: 16px;
 }
 
 .tab {
-  flex-shrink:0;
-  border:1px solid rgba(214,179,106,.25);
-  border-radius:100px;
-  padding:11px 18px;
-  background:rgba(255,255,255,.045);
-  color:var(--muted);
-  font-size:12px;
-  font-weight:700;
-  transition:.25s;
+  background: transparent;
+  color: #fffc;
+  min-height: 42px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .tab.active {
-  background:var(--gold);
-  color:var(--dark);
-  border-color:var(--gold);
+  background: white;
+  color: var(--green);
 }
 
-/* PRODUCT GRID */
-
-.product-grid {
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:13px;
+.section {
+  padding: 19px 13px 8px;
 }
 
-.product-card {
-  position:relative;
-  min-width:0;
-  border:1px solid rgba(214,179,106,.15);
-  background:
-    linear-gradient(
-      155deg,
-      rgba(255,255,255,.09),
-      rgba(255,255,255,.025)
-    );
-  border-radius:20px;
-  padding:15px 12px;
-  overflow:hidden;
-  transition:
-    transform .25s var(--ease),
-    border-color .25s;
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
 }
 
-.product-card:active {
-  transform:scale(.98);
+.section-title {
+  font: 23px Georgia, serif;
+  letter-spacing: 3px;
 }
 
-.product-card:hover {
-  border-color:rgba(214,179,106,.45);
+.section-icon {
+  font-size: 20px;
+  color: var(--gold);
 }
 
-.product-image {
-  height:145px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  margin-bottom:10px;
+.section-line {
+  height: 1px;
+  background: var(--gold);
+  flex: 1;
+}
+
+.products {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.product,
+.pickup,
+.payment-note,
+.location-card,
+.order-card,
+.profile-card,
+.rewards-card {
+  border: 1px solid #ffffff30;
+  border-radius: 22px;
+  background: linear-gradient(
+    145deg,
+    #ffffff27,
+    #ffffff0c 70%
+  );
+  box-shadow: 0 12px 30px #0002;
+}
+
+.product {
+  padding: 12px 10px;
+  min-height: 264px;
+  position: relative;
+  overflow: hidden;
 }
 
 .product-name {
-  font-size:13px;
-  font-weight:800;
-  min-height:35px;
-  line-height:1.35;
+  font: 15px/1.2 Georgia, serif;
+  text-align: center;
+  min-height: 37px;
 }
 
-.product-description {
-  font-size:10px;
-  color:var(--muted);
-  margin-top:6px;
-  min-height:28px;
-  line-height:1.5;
+.product-desc {
+  font-size: 10px;
+  line-height: 1.3;
+  text-align: center;
+  color: var(--muted);
+  min-height: 38px;
+  margin-top: 5px;
 }
 
-.product-bottom {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:6px;
-  margin-top:15px;
+.product-price {
+  text-align: center;
+  font: 19px Georgia, serif;
+  margin-top: 6px;
 }
 
-.price {
-  color:var(--gold);
-  font-weight:900;
-  font-size:16px;
-  white-space:nowrap;
+.product-hint {
+  text-align: center;
+  color: var(--gold);
+  font-size: 10px;
+  min-height: 16px;
+  margin-top: 3px;
 }
 
-.add-button {
-  border:0;
-  border-radius:11px;
-  background:var(--gold);
-  color:var(--dark);
-  font-size:21px;
-  font-weight:900;
-  width:36px;
-  height:36px;
+.tag {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 5px 6px;
+  border-radius: 7px;
+  background: var(--gold);
+  color: var(--green);
+  font-size: 8px;
+  font-weight: 900;
 }
 
-.season-label {
-  position:absolute;
-  top:10px;
-  right:10px;
-  padding:5px 7px;
-  background:rgba(214,179,106,.18);
-  color:var(--gold);
-  border-radius:6px;
-  font-size:8px;
-  font-weight:800;
-  letter-spacing:.5px;
+.add {
+  width: 100%;
+  margin-top: 8px;
+  padding: 11px;
+  border-radius: 12px;
+  background: white;
+  color: var(--green);
+  font-weight: 850;
+  font-size: 12px;
 }
-
-/* DRINK ILLUSTRATIONS */
 
 .drink {
-  width:84px;
-  height:115px;
-  position:relative;
-  filter:drop-shadow(0 12px 12px rgba(0,0,0,.25));
+  height: 110px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  margin-bottom: 8px;
 }
 
 .cup {
-  position:absolute;
-  left:8px;
-  bottom:4px;
-  width:68px;
-  height:94px;
-  border-radius:7px 7px 15px 15px;
-  border:2px solid rgba(255,255,255,.55);
-  overflow:hidden;
-  background:rgba(255,255,255,.08);
-  transform:perspective(160px) rotateX(-4deg);
+  position: relative;
+  width: 72px;
+  height: 88px;
+  border: 2px solid #ffffffdd;
+  border-radius: 8px 8px 20px 20px;
+  box-shadow:
+    inset 5px 0 8px #ffffff30,
+    0 12px 18px #0005;
+  background: #ffffff23;
+}
+
+.cup:before {
+  content: '';
+  position: absolute;
+  z-index: 4;
+  left: -4px;
+  right: -4px;
+  top: -2px;
+  height: 8px;
+  background: #ffffffb9;
+  border-radius: 5px;
 }
 
 .liquid {
-  position:absolute;
-  inset:4px;
-  border-radius:3px 3px 11px 11px;
-  background:#a77b4f;
-}
-
-.lid {
-  position:absolute;
-  width:80px;
-  height:8px;
-  left:2px;
-  top:13px;
-  background:linear-gradient(#fff,#d9d9d9);
-  border-radius:10px;
-  z-index:3;
-}
-
-.straw {
-  position:absolute;
-  width:6px;
-  height:34px;
-  left:53px;
-  top:-5px;
-  border-radius:4px;
-  background:rgba(255,255,255,.85);
-  transform:rotate(9deg);
-  z-index:2;
-}
-
-.cup.thai .liquid {
-  background:linear-gradient(
-    #fff0d9 0 25%,
-    #df842f 25% 100%
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  bottom: 3px;
+  height: 72px;
+  border-radius: 4px 4px 15px 15px;
+  background: linear-gradient(
+    #fff1dc 0 25%,
+    #ef731c 25%
   );
 }
 
 .cup.green .liquid {
-  background:linear-gradient(
-    #f1f0d8 0 26%,
-    #77954c 26% 100%
+  background: linear-gradient(
+    #fff1dc 0 25%,
+    #789537 25%
   );
 }
 
+.cup.espresso {
+  width: 54px;
+  height: 58px;
+  margin-bottom: 4px;
+}
+
 .cup.espresso .liquid {
-  background:linear-gradient(
-    #c48d4b 0 17%,
-    #422218 17% 100%
+  height: 36px;
+  background: linear-gradient(
+    #c17a3f,
+    #542714 35%,
+    #25120b 60%
   );
 }
 
 .cup.americano .liquid {
-  background:linear-gradient(
-    #7c4b32,
-    #2c1c16
+  background: linear-gradient(
+    #9a6139,
+    #3a2113 32%,
+    #1c100a 70%
   );
 }
 
 .cup.cappuccino .liquid {
-  background:linear-gradient(
-    #f4e8d4 0 38%,
-    #a66c43 38% 100%
+  background: linear-gradient(
+    #fff8ea 0 27%,
+    #d7b58f 27% 50%,
+    #5a2c19 75%
   );
 }
 
 .cup.latte .liquid {
-  background:linear-gradient(
-    #f5ebdc 0 22%,
-    #c18b5c 22% 55%,
-    #f1e4d0 55% 100%
+  background: linear-gradient(
+    #fff6e8 0 12%,
+    #f1e0c5 12% 43%,
+    #d5ae84 43% 62%,
+    #64331d 90%
   );
 }
 
 .cup.flatwhite .liquid {
-  background:linear-gradient(
-    #f2e8d8 0 30%,
-    #95633f 30% 100%
+  background: linear-gradient(
+    #f1dfc5 0 10%,
+    #c89a70 10% 28%,
+    #552817 65%
   );
 }
 
 .cup.americanocream .liquid {
-  background:linear-gradient(
-    #f6ebd9 0 30%,
-    #38251e 30% 100%
+  background: linear-gradient(
+    #fff4e6 0 24%,
+    #e7d0ad 24% 30%,
+    #3b1d10 30%
   );
 }
 
 .cup.tonic .liquid {
-  background:linear-gradient(
-    #5d3826 0 30%,
-    #d7bf78 30% 100%
+  background: linear-gradient(
+    #542a17 0 35%,
+    #d9b55b 35% 52%,
+    #e7e1cc 52%
   );
 }
 
 .cup.bumble .liquid {
-  background:linear-gradient(
-    #57301f 0 28%,
-    #f4a12d 28% 100%
+  background: linear-gradient(
+    #4d2416 0 46%,
+    #f08b1d 46%
   );
 }
 
 .cup.strawberrymatcha .liquid {
-  background:linear-gradient(
-    #799b53 0 33%,
-    #f2e7d7 33% 62%,
-    #db7184 62% 100%
+  background: linear-gradient(
+    #6e954a 0 31%,
+    #f1e9da 31% 57%,
+    #df6074 57%
   );
 }
 
 .cup.matchalatte .liquid {
-  background:linear-gradient(
-    #779c4c 0 35%,
-    #f1e7d8 35% 100%
+  background: linear-gradient(
+    #5b8540 0 29%,
+    #f1e9da 29% 100%
   );
 }
 
 .cup.dirtymatcha .liquid {
-  background:linear-gradient(
-    #4d2a1b 0 25%,
-    #73984a 25% 55%,
-    #f1e8d7 55% 100%
+  background: linear-gradient(
+    #512a19 0 27%,
+    #6f9847 27% 56%,
+    #f1e9da 56%
   );
 }
 
 .cup.pumpkinlatte .liquid {
-  background:linear-gradient(
-    #fff0d9 0 20%,
-    #b87643 20% 40%,
-    #ed9c3c 40% 73%,
-    #f2dfc4 73% 100%
+  background: linear-gradient(
+    #fff1df 0 22%,
+    #b77b45 22% 43%,
+    #f39832 43% 70%,
+    #f6e3c8 70%
   );
 }
 
 .cup.kuvanovino .liquid {
-  background:linear-gradient(
-    #a33c4a,
-    #641b2b
+  background: linear-gradient(
+    #a8373c 0 14%,
+    #762126 14% 100%
+  );
+}.cup .garnish {
+  position: absolute;
+  z-index: 5;
+  right: -13px;
+  top: 7px;
+  border: 3px solid #ad6b32;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    #ddab60 0 38%,
+    #9b5828 40% 70%,
+    #e1b579 72%
   );
 }
 
-.cup.kuvanovino {
-  border-color:rgba(255,255,255,.7);
+.cart-section {
+  display: none;
+  margin: 16px 13px;
 }
 
-/* BOTTOM NAVIGATION */
-
-.bottom-nav {
-  position:fixed;
-  bottom:0;
-  left:50%;
-  transform:translateX(-50%);
-  width:100%;
-  max-width:560px;
-  display:flex;
-  background:#032b1b;
-  border-top:1px solid rgba(214,179,106,.2);
-  z-index:70;
-  padding:9px 6px calc(9px + env(safe-area-inset-bottom));
+.cart-section.show {
+  display: block;
 }
 
-.nav-item {
-  flex:1;
-  border:0;
-  background:none;
-  color:var(--muted);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:5px;
-  font-size:10px;
-  font-weight:700;
-  padding:5px;
+.cart-title {
+  font: 21px Georgia, serif;
+  margin-bottom: 10px;
 }
-
-.nav-item.active {
-  color:var(--gold);
-}
-
-.nav-icon {
-  font-size:21px;
-}
-
-.nav-cart {
-  position:relative;
-}
-
-.cart-badge {
-  position:absolute;
-  top:-5px;
-  right:-9px;
-  background:var(--gold);
-  color:var(--dark);
-  border-radius:100px;
-  min-width:17px;
-  height:17px;
-  font-size:10px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-/* MODALS */
-
-.overlay {
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.65);
-  z-index:100;
-  display:flex;
-  align-items:flex-end;
-  justify-content:center;
-}
-
-.modal {
-  width:100%;
-  max-width:560px;
-  max-height:90vh;
-  overflow-y:auto;
-  background:#07402a;
-  border-radius:25px 25px 0 0;
-  padding:24px 20px 35px;
-  box-shadow:0 -15px 50px rgba(0,0,0,.35);
-}
-
-.modal-header {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-  margin-bottom:22px;
-}
-
-.modal-title {
-  font-size:21px;
-  font-weight:800;
-}
-
-.close-button {
-  width:35px;
-  height:35px;
-  border:1px solid rgba(255,255,255,.2);
-  border-radius:100px;
-  background:rgba(255,255,255,.08);
-  color:white;
-  font-size:22px;
-}
-
-.option-title {
-  font-size:12px;
-  font-weight:800;
-  color:var(--gold);
-  margin:19px 0 10px;
-}
-
-.option-row {
-  display:flex;
-  gap:9px;
-  flex-wrap:wrap;
-}
-
-.option-button {
-  border:1px solid rgba(214,179,106,.3);
-  background:rgba(255,255,255,.05);
-  color:white;
-  border-radius:12px;
-  padding:11px 15px;
-  font-size:12px;
-}
-
-.option-button.active {
-  background:var(--gold);
-  color:var(--dark);
-  border-color:var(--gold);
-}
-
-.quantity-row {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin:25px 0;
-}
-
-.quantity-controls {
-  display:flex;
-  align-items:center;
-  gap:17px;
-}
-
-.quantity-button {
-  border:1px solid rgba(214,179,106,.35);
-  background:rgba(255,255,255,.08);
-  color:white;
-  border-radius:10px;
-  width:35px;
-  height:35px;
-  font-size:20px;
-}
-
-.primary-button {
-  width:100%;
-  padding:16px;
-  border:0;
-  border-radius:14px;
-  background:var(--gold);
-  color:var(--dark);
-  font-weight:900;
-  font-size:14px;
-}
-
-/* CART */
 
 .cart-item {
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  padding:17px 0;
-  border-bottom:1px solid rgba(255,255,255,.1);
+  padding: 12px;
+  margin-bottom: 8px;
+  border-radius: 14px;
+  background: #ffffff18;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
 }
 
-.cart-item-name {
-  font-size:14px;
-  font-weight:800;
+.cart-info {
+  flex: 1;
 }
 
-.cart-item-options {
-  font-size:11px;
-  color:var(--muted);
-  margin-top:6px;
-  line-height:1.6;
+.cart-extra {
+  color: var(--muted);
+  font-size: 10px;
+  margin-top: 5px;
 }
 
-.cart-item-price {
-  color:var(--gold);
-  font-weight:900;
-  white-space:nowrap;
+.cart-right {
+  display: flex;
+  align-items: center;
+  gap: 7px;
 }
 
-.remove-button {
-  background:none;
-  border:0;
-  color:#f2a1a1;
-  font-size:11px;
-  margin-top:8px;
+.qty {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
-.cart-total {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin:25px 0;
-  font-size:18px;
-  font-weight:900;
+.qty button,
+.remove {
+  width: 29px;
+  height: 29px;
+  border-radius: 9px;
+  background: #ffffff2a;
+  color: white;
+  font-size: 18px;
 }
 
-.cart-total span:last-child {
-  color:var(--gold);
+.cart-price {
+  min-width: 65px;
+  text-align: right;
+  font-weight: 800;
 }
 
-.pickup-box {
-  padding:17px;
-  background:rgba(255,255,255,.055);
-  border:1px solid rgba(214,179,106,.15);
-  border-radius:15px;
-  margin-bottom:20px;
+.free-label {
+  color: var(--gold);
+  font-size: 10px;
+  font-weight: 900;
 }
 
-.pickup-box label {
-  display:block;
-  font-size:12px;
-  font-weight:800;
-  margin-bottom:12px;
+.old-price {
+  color: #ffffff77;
+  text-decoration: line-through;
+  display: block;
+  font-size: 9px;
 }
 
-.pickup-box select {
-  width:100%;
-  background:var(--dark);
-  color:white;
-  border:1px solid rgba(214,179,106,.3);
-  padding:13px;
-  border-radius:10px;
+.pickup,
+.payment-note,
+.location-card {
+  margin: 16px 13px 12px;
+  padding: 17px;
 }
 
-.reward-box {
-  border:1px solid rgba(214,179,106,.35);
-  border-radius:15px;
-  padding:15px;
-  margin:15px 0;
-  background:rgba(214,179,106,.07);
+.pickup h2 {
+  font: 20px Georgia, serif;
+  margin: 0 0 5px;
 }
 
-.reward-box label {
-  display:flex;
-  align-items:center;
-  gap:10px;
-  font-size:12px;
-  line-height:1.5;
+.sub {
+  color: var(--muted);
+  font-size: 11px;
+  margin: 5px 0 14px;
 }
 
-/* PROFILE */
-
-.profile-card {
-  border:1px solid rgba(214,179,106,.2);
-  border-radius:20px;
-  padding:22px;
-  margin-bottom:15px;
-  background:rgba(255,255,255,.05);
+.pickup-modes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  margin-bottom: 10px;
 }
 
-.profile-name {
-  font-size:22px;
-  font-weight:900;
-  color:var(--gold);
+.pickup-mode,
+.time {
+  background: #0002;
+  color: white;
+  border: 1px solid #ffffff30;
+  border-radius: 12px;
+  font-weight: 700;
+  min-height: 43px;
+  font-size: 12px;
 }
 
-.profile-subtitle {
-  color:var(--muted);
-  font-size:12px;
-  margin-top:6px;
+.pickup-mode.active,
+.time.selected {
+  background: white;
+  color: var(--green);
 }
 
-.stamps {
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:12px;
-  margin-top:22px;
+.times {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
 }
 
-.stamp {
-  aspect-ratio:1;
-  border-radius:50%;
-  border:1px solid rgba(214,179,106,.3);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:20px;
-  background:rgba(255,255,255,.04);
+.exact-box {
+  display: none;
 }
 
-.stamp.active {
-  background:var(--gold);
-  color:var(--dark);
+.exact-box.show {
+  display: block;
 }
 
-.stat-grid {
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:12px;
+.exact-select {
+  width: 100%;
+  padding: 13px;
+  border: 0;
+  border-radius: 12px;
+  color: var(--green);
+  background: white;
 }
 
-.stat {
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(214,179,106,.15);
-  border-radius:15px;
-  padding:18px;
+.pickup-info {
+  margin-top: 11px;
+  font-size: 11px;
 }
 
-.stat-number {
-  color:var(--gold);
-  font-size:24px;
-  font-weight:900;
+.payment-note {
+  border-color: #d6b36a66;
+  background: #d6b36a13;
 }
 
-.stat-label {
-  font-size:11px;
-  color:var(--muted);
-  margin-top:7px;
+.payment-note-title {
+  color: var(--gold);
+  font-weight: 800;
+  font-size: 12px;
 }
 
-/* ORDERS */
-
-.order-card {
-  padding:17px;
-  border:1px solid rgba(214,179,106,.2);
-  border-radius:16px;
-  margin-bottom:12px;
-  background:rgba(255,255,255,.04);
+.payment-note-text {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 7px;
+  line-height: 1.5;
 }
 
-.order-top {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:12px;
+.location-title {
+  font: 21px Georgia, serif;
+  color: var(--gold);
+}
+
+.location-text {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 12px 0;
+}
+
+.directions-button,
+.use-reward-button {
+  width: 100%;
+  padding: 16px;
+  border-radius: 13px;
+  background: var(--gold);
+  color: var(--green);
+  font-weight: 900;
+}
+
+.message {
+  display: none;
+  padding: 13px;
+  margin: 12px;
+  border-radius: 14px;
+  font-size: 12px;
+}
+
+.message.error {
+  display: block;
+  background: #f4ded9;
+  color: #702d27;
+}
+
+.message.success {
+  display: block;
+  background: #dcecdc;
+  color: #244c2b;
+}
+
+.app-page {
+  padding: 16px 13px;
+}
+
+.page-heading h1 {
+  font: 29px Georgia, serif;
+  margin: 5px 0;
+}
+
+.page-heading p {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 7px 0 18px;
+}
+
+.order-card,
+.profile-card,
+.rewards-card {
+  padding: 17px;
+  margin-bottom: 12px;
+}
+
+.order-top,
+.order-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
 }
 
 .order-number {
-  font-weight:900;
+  font: 19px Georgia, serif;
 }
 
-.order-status {
-  font-size:10px;
-  font-weight:800;
-  color:var(--gold);
-  text-transform:uppercase;
+.order-date {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 5px;
 }
 
-.order-detail {
-  font-size:12px;
-  color:var(--muted);
-  line-height:1.8;
+.status {
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  background: #ffffff25;
+  border-radius: 9px;
+  padding: 7px;
 }
 
-.order-price {
-  margin-top:12px;
-  color:var(--gold);
-  font-weight:900;
+.status.ready {
+  background: #e6f0df;
+  color: #234c2b;
 }
 
-/* EMPTY STATE */
-
-.empty {
-  text-align:center;
-  padding:55px 15px;
-  color:var(--muted);
+.status.preparing {
+  background: #f1e4bd;
+  color: #6d5315;
 }
 
-.empty-icon {
-  font-size:45px;
-  margin-bottom:15px;
+.status.cancelled {
+  background: #ead1ce;
+  color: #712e28;
 }
 
-.empty h3 {
-  color:white;
+.order-products {
+  border-top: 1px solid #ffffff24;
+  margin-top: 14px;
+  padding-top: 12px;
 }
 
-/* TOAST */
-
-.toast {
-  position:fixed;
-  left:50%;
-  transform:translateX(-50%);
-  bottom:100px;
-  background:var(--gold);
-  color:var(--dark);
-  border-radius:12px;
-  padding:12px 20px;
-  z-index:200;
-  font-size:12px;
-  font-weight:800;
-  box-shadow:0 10px 30px rgba(0,0,0,.3);
-  max-width:90%;
-  text-align:center;
+.order-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 9px;
+  font-size: 12px;
 }
 
-/* FOOTER */
-
-.footer {
-  padding:35px 20px;
-  text-align:center;
-  color:var(--muted);
-  font-size:11px;
-  line-height:2;
+.order-bottom {
+  margin-top: 13px;
 }
 
-.footer strong {
-  color:var(--gold);
+.order-total {
+  font: 19px Georgia, serif;
 }
 
-/* RESPONSIVE */
-
-@media(max-width:360px) {
-  .product-grid {
-    gap:9px;
-  }
-
-  .product-card {
-    padding:12px 9px;
-  }
-
-  .product-name {
-    font-size:12px;
-  }
-
-  .price {
-    font-size:14px;
-  }
-
-  .hero h1 {
-    font-size:29px;
-  }
-}
-</style>
-</head>
-
-<body>
-
-<div id="app">
-
-  <!-- HEADER -->
-
-  <header class="header">
-    <div class="brand">
-      <img
-        src="/static/logo.png"
-        alt="TAKE AWAY"
-        onerror="this.style.display='none'"
-      >
-      <div>
-        <div class="brand-name">TAKE AWAY</div>
-        <div class="brand-subtitle">THAI TEA & COFFEE</div>
-      </div>
-    </div>
-
-    <select
-      id="languageSelect"
-      class="language-select"
-      onchange="setLanguage(this.value)"
-    >
-      <option value="en">EN</option>
-      <option value="sr">SR</option>
-      <option value="ru">RU</option>
-    </select>
-  </header>
-
-  <!-- HOME -->
-
-  <main id="homePage">
-
-    <section class="hero">
-
-      <img
-        class="hero-logo"
-        src="/static/logo.png"
-        alt="TAKE AWAY"
-        onerror="this.style.display='none'"
-      >
-
-      <h1>TAKE AWAY</h1>
-
-      <p>THAI TEA & COFFEE</p>
-
-      <div class="hero-divider"></div>
-
-      <div class="hero-address">
-        Savski trg 1a<br>
-        Belgrade, Serbia
-      </div>
-
-      <div class="hero-hours">
-        OPEN DAILY · 08:00–17:00
-      </div>
-
-      <img
-        class="hero-belgrade"
-        src="/static/belgrade.png"
-        alt="Belgrade"
-        onerror="this.style.display='none'"
-      >
-
-    </section>
-
-    <section class="section">
-
-      <h2
-        class="section-title"
-        id="menuTitle"
-      >
-        Our Menu
-      </h2>
-
-      <div
-        class="section-subtitle"
-        id="menuSubtitle"
-      >
-        Crafted with love. Served fresh.
-      </div>
-
-      <div class="gold-line"></div>
-
-      <div class="tabs">
-
-        <button
-          class="tab active"
-          data-category="all"
-          onclick="setCategory('all')"
-        >
-          All Drinks
-        </button>
-
-        <button
-          class="tab"
-          data-category="tea"
-          onclick="setCategory('tea')"
-        >
-          Thai Tea
-        </button>
-
-        <button
-          class="tab"
-          data-category="coffee"
-          onclick="setCategory('coffee')"
-        >
-          Coffee
-        </button>
-
-        <button
-          class="tab"
-          data-category="special"
-          onclick="setCategory('special')"
-        >
-          Specials
-        </button>
-
-      </div>
-
-      <div
-        class="product-grid"
-        id="productGrid"
-      ></div>
-
-    </section>
-
-    <footer class="footer">
-      <strong>TAKE AWAY</strong><br>
-      Savski trg 1a · Belgrade<br>
-      Thai Tea & Coffee<br>
-      08:00–17:00
-    </footer>
-
-  </main>
-
-  <!-- ORDERS -->
-
-  <main
-    id="ordersPage"
-    class="section hidden"
-  >
-    <h2 class="section-title" id="ordersTitle">
-      My Orders
-    </h2>
-
-    <div class="gold-line"></div>
-
-    <div id="ordersList"></div>
-  </main>
-
-  <!-- PROFILE -->
-
-  <main
-    id="profilePage"
-    class="section hidden"
-  >
-    <h2 class="section-title" id="profileTitle">
-      My Profile
-    </h2>
-
-    <div class="gold-line"></div>
-
-    <div id="profileContent"></div>
-  </main>
-
-</div>
-
-<!-- BOTTOM NAV -->
-
-<nav class="bottom-nav">
-
-  <button
-    class="nav-item active"
-    data-page="home"
-    onclick="navigate('home')"
-  >
-    <span class="nav-icon">⌂</span>
-    <span id="navHome">Home</span>
-  </button>
-
-  <button
-    class="nav-item"
-    data-page="orders"
-    onclick="navigate('orders')"
-  >
-    <span class="nav-icon">▤</span>
-    <span id="navOrders">Orders</span>
-  </button>
-
-  <button
-    class="nav-item nav-cart"
-    onclick="openCart()"
-  >
-    <span class="nav-icon">🛍</span>
-    <span id="navCart">Cart</span>
-    <span
-      class="cart-badge hidden"
-      id="cartBadge"
-    >0</span>
-  </button>
-
-  <button
-    class="nav-item"
-    data-page="profile"
-    onclick="navigate('profile')"
-  >
-    <span class="nav-icon">♙</span>
-    <span id="navProfile">Profile</span>
-  </button>
-
-</nav>
-
-<!-- PRODUCT MODAL -->
-
-<div
-  id="productOverlay"
-  class="overlay hidden"
-  onclick="closeProductOnBackdrop(event)"
->
-
-  <div class="modal">
-
-    <div class="modal-header">
-      <div
-        class="modal-title"
-        id="modalProductName"
-      ></div>
-
-      <button
-        class="close-button"
-        onclick="closeProduct()"
-      >×</button>
-    </div>
-
-    <div
-      id="productOptions"
-    ></div>
-
-    <div class="quantity-row">
-
-      <strong id="quantityLabel">
-        Quantity
-      </strong>
-
-      <div class="quantity-controls">
-
-        <button
-          class="quantity-button"
-          onclick="changeQuantity(-1)"
-        >−</button>
-
-        <strong id="modalQuantity">1</strong>
-
-        <button
-          class="quantity-button"
-          onclick="changeQuantity(1)"
-        >+</button>
-
-      </div>
-
-    </div>
-
-    <button
-      class="primary-button"
-      onclick="addToCart()"
-      id="addToCartButton"
-    >
-      Add to Cart
-    </button>
-
-  </div>
-</div>
-
-<!-- CART MODAL -->
-
-<div
-  id="cartOverlay"
-  class="overlay hidden"
-  onclick="closeCartOnBackdrop(event)"
->
-
-  <div class="modal">
-
-    <div class="modal-header">
-
-      <div
-        class="modal-title"
-        id="cartTitle"
-      >
-        Your Cart
-      </div>
-
-      <button
-        class="close-button"
-        onclick="closeCart()"
-      >×</button>
-
-    </div>
-
-    <div id="cartItems"></div>
-
-    <div
-      id="cartCheckout"
-      class="hidden"
-    >
-
-      <div class="cart-total">
-
-        <span id="totalLabel">Total</span>
-
-        <span id="cartTotal">0 RSD</span>
-
-      </div>
-
-      <div class="pickup-box">
-
-        <label id="pickupLabel">
-          Pickup Time
-        </label>
-
-        <select id="pickupTime"></select>
-
-      </div>
-
-      <div
-        class="reward-box hidden"
-        id="rewardBox"
-      >
-
-        <label>
-
-          <input
-            type="checkbox"
-            id="useReward"
-            onchange="renderCart()"
-          >
-
-          <span id="rewardLabel">
-            Use my free drink reward
-          </span>
-
-        </label>
-
-      </div>
-
-      <button
-        class="primary-button"
-        id="placeOrderButton"
-        onclick="placeOrder()"
-      >
-        Place Order · Pay at Pickup
-      </button>
-
-    </div>
-
-  </div>
-</div>
-
-<div
-  class="toast hidden"
-  id="toast"
-></div>
-
-<script>
-"use strict";
-
-/* ============================================================
-   TELEGRAM
-============================================================ */
-
-const tg = window.Telegram?.WebApp || null;
-
-if (tg) {
-  tg.ready();
-  tg.expand();
+.reorder {
+  background: white;
+  color: var(--green);
+  padding: 11px;
+  border-radius: 11px;
+  font-size: 11px;
+  font-weight: 800;
 }
 
-const initData = tg?.initData || "";
-
-/* ============================================================
-   STATE
-============================================================ */
-
-let language =
-  localStorage.getItem("takeaway_language") || "en";
-
-let menu = [];
-
-let category = "all";
-
-let cart = [];
-
-let selectedProduct = null;
-
-let selectedTemperature = "hot";
-
-let selectedBoba = false;
-
-let selectedExtraShot = false;
-
-let selectedSyrup = null;
-
-let modalQuantity = 1;
-
-let rewards = {
-  stamps:0,
-  rewards:0,
-  total_drinks:0
-};
-
-let currentPage = "home";
-
-let orderSubmitting = false;
-
-/* ============================================================
-   TRANSLATIONS
-============================================================ */
-
-const TEXT = {
-
-  en: {
-    menu:"Our Menu",
-    subtitle:"Crafted with love. Served fresh.",
-    all:"All Drinks",
-    tea:"Thai Tea",
-    coffee:"Coffee",
-    special:"Specials",
-    home:"Home",
-    orders:"Orders",
-    cart:"Cart",
-    profile:"Profile",
-    hot:"Hot",
-    iced:"Iced",
-    temperature:"Temperature",
-    boba:"Add Boba",
-    extra:"Extra Espresso Shot",
-    syrup:"Syrup",
-    none:"None",
-    free:"FREE",
-    quantity:"Quantity",
-    add:"Add to Cart",
-    total:"Total",
-    pickup:"Pickup Time",
-    place:"Place Order · Pay at Pickup",
-    empty:"Your cart is empty",
-    emptyOrders:"No orders yet",
-    reward:"Use my free drink reward",
-    stamps:"Loyalty Stamps",
-    rewards:"Free Drinks",
-    spent:"Total Spent",
-    totalOrders:"Orders",
-    login:"Open inside Telegram to view your account",
-    unavailable:"No pickup times available today",
-    success:"Order placed successfully!",
-    error:"Something went wrong",
-    removed:"Removed from cart",
-    myOrders:"My Orders",
-    myProfile:"My Profile",
-    remove:"Remove",
-    preparing:"Preparing",
-    ready:"Ready",
-    pending:"Pending",
-    completed:"Completed",
-    cancelled:"Cancelled"
-  },
-
-  sr: {
-    menu:"Naš meni",
-    subtitle:"Pripremljeno s ljubavlju. Uvek sveže.",
-    all:"Sva pića",
-    tea:"Tajlandski čaj",
-    coffee:"Kafa",
-    special:"Specijaliteti",
-    home:"Početna",
-    orders:"Porudžbine",
-    cart:"Korpa",
-    profile:"Profil",
-    hot:"Toplo",
-    iced:"Hladno",
-    temperature:"Temperatura",
-    boba:"Dodaj bobu",
-    extra:"Dodatni espresso",
-    syrup:"Sirup",
-    none:"Bez",
-    free:"BESPLATNO",
-    quantity:"Količina",
-    add:"Dodaj u korpu",
-    total:"Ukupno",
-    pickup:"Vreme preuzimanja",
-    place:"Poruči · Plaćanje pri preuzimanju",
-    empty:"Korpa je prazna",
-    emptyOrders:"Još nema porudžbina",
-    reward:"Iskoristi besplatno piće",
-    stamps:"Pečati",
-    rewards:"Besplatna pića",
-    spent:"Ukupno potrošeno",
-    totalOrders:"Porudžbine",
-    login:"Otvorite u Telegramu za pristup nalogu",
-    unavailable:"Danas nema dostupnih termina",
-    success:"Porudžbina je uspešno poslata!",
-    error:"Došlo je do greške",
-    removed:"Uklonjeno iz korpe",
-    myOrders:"Moje porudžbine",
-    myProfile:"Moj profil",
-    remove:"Ukloni",
-    preparing:"U pripremi",
-    ready:"Spremno",
-    pending:"Na čekanju",
-    completed:"Završeno",
-    cancelled:"Otkazano"
-  },
-
-  ru: {
-    menu:"Наше меню",
-    subtitle:"С любовью. Всегда свежее.",
-    all:"Все напитки",
-    tea:"Тайский чай",
-    coffee:"Кофе",
-    special:"Особые напитки",
-    home:"Главная",
-    orders:"Заказы",
-    cart:"Корзина",
-    profile:"Профиль",
-    hot:"Горячий",
-    iced:"Холодный",
-    temperature:"Температура",
-    boba:"Добавить бобу",
-    extra:"Дополнительный эспрессо",
-    syrup:"Сироп",
-    none:"Без",
-    free:"БЕСПЛАТНО",
-    quantity:"Количество",
-    add:"В корзину",
-    total:"Итого",
-    pickup:"Время получения",
-    place:"Заказать · Оплата при получении",
-    empty:"Корзина пуста",
-    emptyOrders:"Заказов пока нет",
-    reward:"Использовать бесплатный напиток",
-    stamps:"Бонусные отметки",
-    rewards:"Бесплатные напитки",
-    spent:"Всего потрачено",
-    totalOrders:"Заказы",
-    login:"Откройте в Telegram для доступа к профилю",
-    unavailable:"Сегодня нет доступного времени",
-    success:"Заказ успешно оформлен!",
-    error:"Произошла ошибка",
-    removed:"Удалено из корзины",
-    myOrders:"Мои заказы",
-    myProfile:"Мой профиль",
-    remove:"Удалить",
-    preparing:"Готовится",
-    ready:"Готов",
-    pending:"Ожидает",
-    completed:"Завершён",
-    cancelled:"Отменён"
-  }
-
-};
-
-/* ============================================================
-   PRODUCT TRANSLATIONS
-============================================================ */
-
-const PRODUCT_TEXT = {
-
-  thai:{
-    en:["Classic Thai Milk Tea","Traditional Thai tea with creamy milk"],
-    sr:["Klasični tajlandski mlečni čaj","Tradicionalni tajlandski čaj sa mlekom"],
-    ru:["Классический тайский чай","Тайский чай с молоком"]
-  },
-
-  green:{
-    en:["Thai Green Milk Tea","Fragrant green Thai tea with milk"],
-    sr:["Tajlandski zeleni mlečni čaj","Aromatični zeleni čaj sa mlekom"],
-    ru:["Зелёный тайский чай","Ароматный зелёный чай с молоком"]
-  },
-
-  espresso:{
-    en:["Espresso","Rich and aromatic coffee"],
-    sr:["Espresso","Bogata i aromatična kafa"],
-    ru:["Эспрессо","Насыщенный ароматный кофе"]
-  },
-
-  americano:{
-    en:["Americano","Espresso with water"],
-    sr:["Americano","Espresso sa vodom"],
-    ru:["Американо","Эспрессо с водой"]
-  },
-
-  cappuccino:{
-    en:["Cappuccino","Espresso with steamed milk"],
-    sr:["Cappuccino","Espresso sa mlečnom penom"],
-    ru:["Капучино","Эспрессо с молочной пеной"]
-  },
-
-  latte:{
-    en:["Latte","Smooth espresso and milk"],
-    sr:["Latte","Espresso sa mlekom"],
-    ru:["Латте","Эспрессо с молоком"]
-  },
-
-  flatwhite:{
-    en:["Flat White","Double espresso with silky milk"],
-    sr:["Flat White","Dupli espresso sa mlekom"],
-    ru:["Флэт уайт","Двойной эспрессо с молоком"]
-  },
-
-  americanocream:{
-    en:["Iced Americano with Cream","Cold coffee topped with cream"],
-    sr:["Ledeni Americano sa kremom","Hladna kafa sa kremom"],
-    ru:["Айс американо со сливками","Холодный кофе со сливками"]
-  },
-
-  tonic:{
-    en:["Tonic Coffee","Espresso, tonic and dried orange"],
-    sr:["Tonic Coffee","Espresso, tonik i sušena pomorandža"],
-    ru:["Тоник кофе","Эспрессо, тоник и сушёный апельсин"]
-  },
-
-  bumble:{
-    en:["Bumble Coffee","Espresso with orange juice"],
-    sr:["Bumble Coffee","Espresso sa sokom od pomorandže"],
-    ru:["Бамбл кофе","Эспрессо с апельсиновым соком"]
-  },
-
-  strawberrymatcha:{
-    en:["Strawberry Matcha Latte","Matcha, milk and strawberry"],
-    sr:["Strawberry Matcha Latte","Mača, mleko i jagoda"],
-    ru:["Клубничный матча латте","Матча, молоко и клубника"]
-  },
-
-  matchalatte:{
-    en:["Matcha Latte","Japanese matcha with fresh milk"],
-    sr:["Matcha Latte","Japanska mača sa svežim mlekom"],
-    ru:["Матча латте","Японская матча с молоком"]
-  },
-
-  dirtymatcha:{
-    en:["Dirty Matcha Latte","Matcha, milk and espresso"],
-    sr:["Dirty Matcha Latte","Mača, mleko i espresso"],
-    ru:["Дёрти матча латте","Матча, молоко и эспрессо"]
-  },
-
-  pumpkinlatte:{
-    en:["Pumpkin Latte","Real pumpkin, espresso and milk"],
-    sr:["Pumpkin Latte","Prava bundeva, espresso i mleko"],
-    ru:["Тыквенный латте","Натуральная тыква, эспрессо и молоко"]
-  },
-
-  kuvanovino:{
-    en:["Kuvano Vino","Warm mulled wine with winter spices"],
-    sr:["Kuvano vino","Toplo vino sa zimskim začinima"],
-    ru:["Глинтвейн","Горячее вино с зимними специями"]
-  }
-
-};
-
-/* ============================================================
-   HELPERS
-============================================================ */
-
-function t(key) {
-  return TEXT[language]?.[key] || TEXT.en[key] || key;
+.profile-card,
+.rewards-card {
+  text-align: center;
 }
 
-function escapeHTML(value) {
-  return String(value ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+.avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #ffffff25;
+  display: grid;
+  place-items: center;
+  font: 29px Georgia, serif;
+  margin: 0 auto 12px;
 }
 
-function productName(product) {
-  return (
-    PRODUCT_TEXT[product.id]?.[language]?.[0]
-    || product.name
+.profile-name {
+  font: 24px Georgia, serif;
+}
+
+.member {
+  display: inline-block;
+  margin-top: 12px;
+  border: 1px solid var(--gold);
+  border-radius: 20px;
+  color: var(--gold);
+  padding: 8px 12px;
+  font-size: 10px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 13px 0;
+}
+
+.stat {
+  background: #ffffff13;
+  border-radius: 17px;
+  padding: 17px;
+  text-align: center;
+}
+
+.stat-number {
+  font: 26px Georgia, serif;
+}
+
+.stat-label {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+
+.profile-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px;
+  border-bottom: 1px solid #ffffff18;
+  font-size: 12px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 45px 20px;
+  color: var(--muted);
+}
+
+.empty-title {
+  color: white;
+  font: 20px Georgia, serif;
+}
+
+.rewards-card h2 {
+  font: 26px Georgia, serif;
+}
+
+.rewards-card p {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.stamps {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.stamp {
+  aspect-ratio: 1;
+  border: 1px dashed #d6b36a88;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #d6b36a88;
+  font-size: 21px;
+}
+
+.stamp.filled {
+  background: var(--gold);
+  color: var(--green);
+}
+
+.rewards-note {
+  background: #0003;
+  border-radius: 13px;
+  padding: 15px;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 15px;
+}
+
+.reward-ready,
+.reward-banner {
+  padding: 16px;
+  border: 1px solid var(--gold);
+  border-radius: 17px;
+  background: #d6b36a18;
+  color: var(--gold);
+  margin: 12px 13px;
+}
+
+.reward-banner {
+  display: none;
+}
+
+.reward-banner.show {
+  display: block;
+}
+
+.reward-banner button {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 9px;
+  background: #ffffff20;
+  color: white;
+}
+
+.order-bar {
+  position: fixed;
+  z-index: 35;
+  bottom: calc(79px + env(safe-area-inset-bottom));
+  left: 9px;
+  right: 9px;
+  max-width: 580px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 10px 10px 15px;
+  border-radius: 19px;
+  background: #164c36ee;
+  border: 1px solid #ffffff30;
+  backdrop-filter: blur(20px);
+}
+
+.order-bar.hidden {
+  display: none;
+}
+
+.order-bar small {
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.total {
+  font-size: 18px;
+  font-weight: 800;
+  margin-top: 3px;
+}
+
+.order-button {
+  background: white;
+  color: var(--green);
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.bottom-nav {
+  position: fixed;
+  z-index: 40;
+  bottom: calc(9px + env(safe-area-inset-bottom));
+  left: 9px;
+  right: 9px;
+  max-width: 580px;
+  margin: auto;
+  height: 61px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-radius: 22px;
+  background: #164c36f5;
+  border: 1px solid #ffffff30;
+  overflow: hidden;
+}
+
+.nav-button {
+  background: transparent;
+  color: #ffffff90;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+}
+
+.nav-button.active {
+  color: var(--gold);
+}
+
+.nav-icon {
+  font-size: 19px;
+}
+
+.modal-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: #000a;
+  display: none;
+  align-items: flex-end;
+}
+
+.modal-bg.open {
+  display: flex;
+}
+
+.modal {
+  width: 100%;
+  max-width: 600px;
+  margin: auto auto 0;
+  background: linear-gradient(
+    145deg,
+    #fbf8f0,
+    #e5ede7
   );
+  border-radius: 26px 26px 0 0;
+  color: #13291f;
+  padding: 23px 17px calc(28px + env(safe-area-inset-bottom));
+  max-height: 90dvh;
+  overflow-y: auto;
 }
 
-function productDescription(product) {
-  return (
-    PRODUCT_TEXT[product.id]?.[language]?.[1]
-    || ""
-  );
+.modal-handle {
+  width: 38px;
+  height: 4px;
+  background: #c9c9c0;
+  border-radius: 4px;
+  margin: -8px auto 19px;
 }
 
-function money(value) {
-  return `${Math.round(value)} RSD`;
+.modal h2 {
+  font: 24px Georgia, serif;
+  margin: 0;
 }
 
-function showToast(message) {
-  const element = document.getElementById("toast");
-
-  element.textContent = message;
-  element.classList.remove("hidden");
-
-  clearTimeout(showToast.timer);
-
-  showToast.timer = setTimeout(() => {
-    element.classList.add("hidden");
-  },2500);
+.modal-price {
+  margin: 7px 0 16px;
+  color: #66736c;
 }
 
-function vibrate() {
-  try {
-    tg?.HapticFeedback?.impactOccurred("light");
-  } catch(e) {}
+.variant-block {
+  display: none;
 }
 
-async function api(path,data={}) {
-  const response = await fetch(path,{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json"
-    },
-    body:JSON.stringify({
-      initData,
-      ...data
-    })
-  });
-
-  const result = await response.json();
-
-  if (!response.ok || result.ok === false) {
-    throw new Error(result.error || t("error"));
-  }
-
-  return result;
+.variant-block.show {
+  display: block;
 }
 
-/* ============================================================
-   LANGUAGE
-============================================================ */
-
-function setLanguage(value) {
-  if (!TEXT[value]) return;
-
-  language = value;
-
-  localStorage.setItem(
-    "takeaway_language",
-    language
-  );
-
-  document.documentElement.lang = language;
-
-  document.getElementById("languageSelect").value = language;
-
-  document.getElementById("menuTitle").textContent = t("menu");
-  document.getElementById("menuSubtitle").textContent = t("subtitle");
-
-  document.getElementById("navHome").textContent = t("home");
-  document.getElementById("navOrders").textContent = t("orders");
-  document.getElementById("navCart").textContent = t("cart");
-  document.getElementById("navProfile").textContent = t("profile");
-
-  document.getElementById("ordersTitle").textContent = t("myOrders");
-  document.getElementById("profileTitle").textContent = t("myProfile");
-
-  document.getElementById("cartTitle").textContent = t("cart");
-  document.getElementById("totalLabel").textContent = t("total");
-  document.getElementById("pickupLabel").textContent = t("pickup");
-  document.getElementById("rewardLabel").textContent = t("reward");
-  document.getElementById("quantityLabel").textContent = t("quantity");
-
-  document.querySelector('[data-category="all"]').textContent = t("all");
-  document.querySelector('[data-category="tea"]').textContent = t("tea");
-  document.querySelector('[data-category="coffee"]').textContent = t("coffee");
-  document.querySelector('[data-category="special"]').textContent = t("special");
-
-  renderMenu();
-  renderCart();
+.variant-label {
+  font-size: 11px;
+  color: #66736c;
+  margin-bottom: 8px;
 }
 
-/* ============================================================
-   MENU
-============================================================ */
-
-async function loadMenu() {
-  try {
-    const response = await fetch("/api/menu");
-
-    if (!response.ok) {
-      throw new Error("Menu unavailable");
-    }
-
-    const data = await response.json();
-
-    menu = Array.isArray(data.menu) ? data.menu : [];
-
-    renderMenu();
-
-  } catch(error) {
-    console.error(error);
-    showToast(t("error"));
-  }
+.variant-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 13px;
 }
 
-function setCategory(value) {
-  category = value;
-
-  document.querySelectorAll(".tab").forEach(button => {
-    button.classList.toggle(
-      "active",
-      button.dataset.category === value
-    );
-  });
-
-  renderMenu();
-  vibrate();
+.variant-button,
+.addon {
+  border: 1px solid #ddd4c5;
+  border-radius: 13px;
+  background: white;
+  color: #183326;
+  min-height: 50px;
+  padding: 11px;
+  font-weight: 800;
 }
 
-function drinkHTML(id) {
-  return `
-    <div class="drink">
-      <div class="straw"></div>
-      <div class="lid"></div>
-      <div class="cup ${escapeHTML(id)}">
-        <div class="liquid"></div>
-      </div>
-    </div>
-  `;
+.variant-button.selected,
+.addon.selected {
+  background: #e5eee8;
+  border-color: var(--green);
 }
 
-function renderMenu() {
-  const grid = document.getElementById("productGrid");
-
-  const products = menu.filter(product => {
-    return category === "all" || product.category === category;
-  });
-
-  grid.innerHTML = products.map(product => {
-    let badge = "";
-
-    if (product.id === "pumpkinlatte") {
-      badge = '<span class="season-label">AUTUMN SPECIAL</span>';
-    }
-
-    if (product.id === "kuvanovino") {
-      badge = '<span class="season-label">WINTER SPECIAL</span>';
-    }
-
-    return `
-      <article class="product-card">
-
-        ${badge}
-
-        <div class="product-image">
-          ${drinkHTML(product.id)}
-        </div>
-
-        <div class="product-name">
-          ${escapeHTML(productName(product))}
-        </div>
-
-        <div class="product-description">
-          ${escapeHTML(productDescription(product))}
-        </div>
-
-        <div class="product-bottom">
-
-          <span class="price">
-            ${money(product.price)}
-          </span>
-
-          <button
-            class="add-button"
-            onclick="openProduct('${product.id}')"
-            aria-label="Add drink"
-          >+</button>
-
-        </div>
-
-      </article>
-    `;
-  }).join("");
+.variant-price {
+  display: block;
+  font-size: 9px;
+  margin-top: 3px;
+  color: #66736c;
 }
 
-/* ============================================================
-   PRODUCT OPTIONS
-============================================================ */
-
-function hasTemperature(product) {
-  return !!product.temperature;
+.addon {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 8px;
+  font-size: 12px;
 }
 
-function canExtra(product) {
-  return [
-    "espresso",
-    "americano",
-    "cappuccino",
-    "latte",
-    "flatwhite",
-    "americanocream",
-    "tonic",
-    "bumble",
-    "dirtymatcha",
-    "pumpkinlatte"
-  ].includes(product.id);
+.addon-free {
+  color: var(--green);
 }
 
-function canSyrup(product) {
-  return canExtra(product);
+.syrup-heading {
+  font-size: 11px;
+  color: #66736c;
+  margin: 16px 0 9px;
 }
 
-function icedSurcharge(product,temperature) {
-  if (temperature !== "iced") return 0;
-
-  return Number(product.iced_surcharge || 0);
+.quantity-label {
+  text-align: center;
+  font-size: 11px;
+  color: #66736c;
+  margin-top: 16px;
 }
 
-function openProduct(id) {
-  selectedProduct = menu.find(product => product.id === id);
-
-  if (!selectedProduct) return;
-
-  selectedTemperature = "hot";
-  selectedBoba = false;
-  selectedExtraShot = false;
-  selectedSyrup = null;
-  modalQuantity = 1;
-
-  document.getElementById("modalProductName").textContent =
-    productName(selectedProduct);
-
-  document.getElementById("modalQuantity").textContent = "1";
-
-  renderProductOptions();
-
-  document.getElementById("productOverlay").classList.remove("hidden");
-
-  vibrate();
+.quantity-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  margin: 10px 0 15px;
 }
 
-function closeProduct() {
-  document.getElementById("productOverlay").classList.add("hidden");
+.qty-btn {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: var(--green);
+  color: white;
+  font-size: 25px;
 }
 
-function closeProductOnBackdrop(event) {
-  if (event.target.id === "productOverlay") {
-    closeProduct();
-  }
+.qty-number {
+  font-size: 24px;
+  font-weight: 800;
 }
-
-function optionButton(label,active,handler) {
-  return `
-    <button
-      class="option-button ${active ? "active" : ""}"
-      onclick="${handler}"
-    >
-      ${label}
-    </button>
-  `;
-}
-
-function renderProductOptions() {
-  if (!selectedProduct) return;
-
-  const product = selectedProduct;
-
-  let html = "";
-
-  if (hasTemperature(product)) {
-    html += `
-      <div class="option-title">${t("temperature")}</div>
-      <div class="option-row">
-
-        ${optionButton(
-          t("hot"),
-          selectedTemperature === "hot",
-          "selectTemperature('hot')"
-        )}
-
-        ${optionButton(
-          t("iced") +
-          (product.iced_surcharge ? " +20 RSD" : ""),
-          selectedTemperature === "iced",
-          "selectTemperature('iced')"
-        )}
-
-      </div>
-    `;
-  }
-
-  if (product.boba) {
-    html += `
-      <div class="option-title">${t("boba")}</div>
-      <div class="option-row">
-
-        ${optionButton(
-          t("none"),
-          !selectedBoba,
-          "selectBoba(false)"
-        )}
-
-        ${optionButton(
-          "+100 RSD",
-          selectedBoba,
-          "selectBoba(true)"
-        )}
-
-      </div>
-    `;
-  }
-
-  if (canExtra(product)) {
-    html += `
-      <div class="option-title">${t("extra")}</div>
-      <div class="option-row">
-
-        ${optionButton(
-          t("none"),
-          !selectedExtraShot,
-          "selectExtra(false)"
-        )}
-
-        ${optionButton(
-          "+150 RSD",
-          selectedExtraShot,
-          "selectExtra(true)"
-        )}
-
-      </div>
-    `;
-  }
-
-  if (canSyrup(product)) {
-    html += `
-      <div class="option-title">${t("syrup")} · ${t("free")}</div>
-      <div class="option-row">
-
-        ${optionButton(
-          t("none"),
-          !selectedSyrup,
-          "selectSyrup(null)"
-        )}
-
-        ${optionButton(
-          "Vanilla",
-          selectedSyrup === "vanilla",
-          "selectSyrup('vanilla')"
-        )}
-
-        ${optionButton(
-          "Salted Caramel",
-          selectedSyrup === "salted_caramel",
-          "selectSyrup('salted_caramel')"
-        )}
-
-        ${optionButton(
-          "Strawberry",
-          selectedSyrup === "strawberry",
-          "selectSyrup('strawberry')"
-        )}
-
-      </div>
-    `;
-  }
-
-  document.getElementById("productOptions").innerHTML = html;
-
-  updateModalPrice();
-}
-
-function selectTemperature(value) {
-  selectedTemperature = value;
-  renderProductOptions();
-}
-
-function selectBoba(value) {
-  selectedBoba = value;
-  renderProductOptions();
-}
-
-function selectExtra(value) {
-  selectedExtraShot = value;
-  renderProductOptions();
-}
-
-function selectSyrup(value) {
-  selectedSyrup = value;
-  renderProductOptions();
-}
-
-function changeQuantity(amount) {
-  modalQuantity = Math.max(
-    1,
-    Math.min(10,modalQuantity + amount)
-  );
-
-  document.getElementById("modalQuantity").textContent =
-    modalQuantity;
-
-  updateModalPrice();
-}
-
-function calculateUnitPrice(item) {
-  const product = menu.find(p => p.id === item.id);
-
-  if (!product) return 0;
-
-  let price = product.price;
-
-  if (item.boba && product.boba) {
-    price += 100;
-  }
-
-  if (item.extra_shot && canExtra(product)) {
-    price += 150;
-  }
-
-  if (item.temperature === "iced") {
-    price += Number(product.iced_surcharge || 0);
-  }
-
-  return price;
-}
-
-function updateModalPrice() {
-  if (!selectedProduct) return;
-
-  const item = {
-    id:selectedProduct.id,
-    temperature:selectedTemperature,
-    boba:selectedBoba,
-    extra_shot:selectedExtraShot,
-    syrup:selectedSyrup
-  };
-
-  const total = calculateUnitPrice(item) * modalQuantity;
-
-  document.getElementById("addToCartButton").textContent =
-    `${t("add")} · ${money(total)}`;
-}
-
-/* ============================================================
-   CART STORAGE
-============================================================ */
-
-function saveCart() {
-  localStorage.setItem(
-    "takeaway_cart_v2",
-    JSON.stringify(cart)
-  );
-}
-
-function restoreCart() {
-  try {
-    const saved = JSON.parse(
-      localStorage.getItem("takeaway_cart_v2") || "[]"
-    );
-
-    if (Array.isArray(saved)) {
-      cart = saved.filter(item =>
-        item &&
-        !["lime","peanutlatte"].includes(item.id)
-      );
-    }
-
-  } catch(error) {
-    cart = [];
-  }
-
-  updateCartBadge();
-}
-
-function addToCart() {
-  if (!selectedProduct) return;
-
-  const item = {
-    id:selectedProduct.id,
-    qty:modalQuantity,
-    temperature:hasTemperature(selectedProduct)
-      ? selectedTemperature
-      : null,
-    boba:selectedBoba,
-    extra_shot:selectedExtraShot,
-    syrup:selectedSyrup
-  };
-
-  const signature = JSON.stringify({
-    id:item.id,
-    temperature:item.temperature,
-    boba:item.boba,
-    extra_shot:item.extra_shot,
-    syrup:item.syrup
-  });
-
-  const existing = cart.find(entry =>
-    JSON.stringify({
-      id:entry.id,
-      temperature:entry.temperature,
-      boba:entry.boba,
-      extra_shot:entry.extra_shot,
-      syrup:entry.syrup
-    }) === signature
-  );
-
-  if (existing && existing.qty + item.qty <= 10) {
-    existing.qty += item.qty;
-  } else {
-    cart.push(item);
-  }
-
-  saveCart();
-  updateCartBadge();
-
-  closeProduct();
-  showToast(t("add"));
-
-  vibrate();
-}
-
-function updateCartBadge() {
-  const count = cart.reduce(
-    (sum,item) => sum + Number(item.qty || 0),
-    0
-  );
-
-  const badge = document.getElementById("cartBadge");
-
-  badge.textContent = count;
-  badge.classList.toggle("hidden",count === 0);
-}
-
-function removeCartItem(index) {
-  cart.splice(index,1);
-
-  saveCart();
-  updateCartBadge();
-  renderCart();
-
-  showToast(t("removed"));
-}
-
-/* ============================================================
-   CART
-============================================================ */
-
-function openCart() {
-  renderCart();
-
-  document.getElementById("cartOverlay").classList.remove("hidden");
-
-  loadRewards();
-}
-
-function closeCart() {
-  document.getElementById("cartOverlay").classList.add("hidden");
-}
-
-function closeCartOnBackdrop(event) {
-  if (event.target.id === "cartOverlay") {
-    closeCart();
-  }
-}
-
-function rewardIndex() {
-  if (!document.getElementById("useReward").checked) {
-    return -1;
-  }
-
-  if (rewards.rewards <= 0 || cart.length === 0) {
-    return -1;
-  }
-
-  // Apply reward to the first drink.
-  return 0;
-}
-
-function cartTotalValue() {
-  let total = cart.reduce((sum,item) => {
-    return sum + calculateUnitPrice(item) * item.qty;
-  },0);
-
-  const index = rewardIndex();
-
-  if (index >= 0) {
-    const product = menu.find(p => p.id === cart[index].id);
-
-    if (product) {
-      total -= product.price;
-    }
-  }
-
-  return Math.max(0,total);
-}
-
-function renderCart() {
-  const container = document.getElementById("cartItems");
-
-  const checkout = document.getElementById("cartCheckout");
-
-  if (!cart.length) {
-    container.innerHTML = `
-      <div class="empty">
-        <div class="empty-icon">🛍</div>
-        <h3>${t("empty")}</h3>
-      </div>
-    `;
-
-    checkout.classList.add("hidden");
-    return;
-  }
-
-  container.innerHTML = cart.map((item,index) => {
-    const product = menu.find(p => p.id === item.id);
-
-    if (!product) return "";
-
-    const options = [];
-
-    if (item.temperature) {
-      options.push(
-        item.temperature === "iced" ? t("iced") : t("hot")
-      );
-    }
-
-    if (item.boba) options.push("Boba +100");
-    if (item.extra_shot) options.push("Extra shot +150");
-    if (item.syrup) options.push(item.syrup);
-
-    return `
-      <div class="cart-item">
-
-        <div>
-          <div class="cart-item-name">
-            ${item.qty} × ${escapeHTML(productName(product))}
-          </div>
-
-          <div class="cart-item-options">
-            ${escapeHTML(options.join(" · "))}
-          </div>
-
-          <button
-            class="remove-button"
-            onclick="removeCartItem(${index})"
-          >
-            ${t("remove")}
-          </button>
-        </div>
-
-        <div class="cart-item-price">
-          ${money(calculateUnitPrice(item) * item.qty)}
-        </div>
-
-      </div>
-    `;
-  }).join("");
-
-  checkout.classList.remove("hidden");
-
-  const rewardBox = document.getElementById("rewardBox");
-
-  rewardBox.classList.toggle(
-    "hidden",
-    rewards.rewards <= 0
-  );
-
-  document.getElementById("cartTotal").textContent =
-    money(cartTotalValue());
-
-  document.getElementById("placeOrderButton").textContent =
-    t("place");
-
-  generatePickupTimes();
-}
-
-/* ============================================================
-   PICKUP — 08:00 TO 17:00
-============================================================ */
-
-function belgradeParts(date=new Date()) {
-  const formatter = new Intl.DateTimeFormat(
-    "en-GB",
-    {
-      timeZone:"Europe/Belgrade",
-      year:"numeric",
-      month:"2-digit",
-      day:"2-digit",
-      hour:"2-digit",
-      minute:"2-digit",
-      hourCycle:"h23"
-    }
-  );
-
-  const parts = Object.fromEntries(
-    formatter.formatToParts(date)
-      .filter(part => part.type !== "literal")
-      .map(part => [part.type,part.value])
-  );
-
-  return {
-    year:Number(parts.year),
-    month:Number(parts.month),
-    day:Number(parts.day),
-    hour:Number(parts.hour),
-    minute:Number(parts.minute)
-  };
-}
-
-function generatePickupTimes() {
-  const select = document.getElementById("pickupTime");
-
-  const current = belgradeParts();
-
-  const currentMinutes = current.hour * 60 + current.minute;
-
-  const earliest = Math.max(
-    8 * 60,
-    currentMinutes + 10
-  );
-
-  const roundedEarliest = Math.ceil(
-    earliest / 5
-  ) * 5;
-
-  const closing = 17 * 60;
-
-  let html = "";
-
-  for (
-    let minutes=roundedEarliest;
-    minutes<=closing;
-    minutes+=5
-  ) {
-    const hour = Math.floor(minutes / 60);
-    const minute = minutes % 60;
-
-    const label =
-      String(hour).padStart(2,"0") +
-      ":" +
-      String(minute).padStart(2,"0");
-
-    html += `
-      <option value="${label}">
-        ${label}
-      </option>
-    `;
-  }
-
-  if (!html) {
-    html = `<option value="">${t("unavailable")}</option>`;
-  }
-
-  select.innerHTML = html;
-
-  document.getElementById("placeOrderButton").disabled =
-    !select.value || orderSubmitting;
-}
-
-/*
- Convert the selected Belgrade wall-clock time
- to an ISO timestamp with the correct UTC offset.
-*/
-
-function pickupISO() {
-  const time = document.getElementById("pickupTime").value;
-
-  if (!time) return null;
-
-  const current = belgradeParts();
-
-  const [hour,minute] = time.split(":").map(Number);
-
-  const utcGuess = Date.UTC(
-    current.year,
-    current.month-1,
-    current.day,
-    hour,
-    minute
-  );
-
-  const candidate = new Date(utcGuess);
-
-  const offsetFormatter = new Intl.DateTimeFormat(
-    "en-US",
-    {
-      timeZone:"Europe/Belgrade",
-      timeZoneName:"longOffset"
-    }
-  );
-
-  const offsetPart = offsetFormatter.formatToParts(candidate)
-    .find(part => part.type === "timeZoneName");
-
-  const match = (offsetPart?.value || "").match(
-    /GMT([+-])(\d{2}):(\d{2})/
-  );
-
-  let offsetMinutes = 0;
-
-  if (match) {
-    const sign = match[1] === "+" ? 1 : -1;
-
-    offsetMinutes =
-      sign * (
-        Number(match[2])*60 +
-        Number(match[3])
-      );
-  }
-
-  return new Date(
-    utcGuess - offsetMinutes * 60000
-  ).toISOString();
-}
-
-/* ============================================================
-   ORDER SUBMISSION
-============================================================ */
-
-async function placeOrder() {
-  if (orderSubmitting || !cart.length) return;
-
-  if (!initData) {
-    showToast(t("login"));
-    return;
-  }
-
-  const pickup = pickupISO();
-
-  if (!pickup) {
-    showToast(t("unavailable"));
-    return;
-  }
-
-  orderSubmitting = true;
-
-  const button = document.getElementById("placeOrderButton");
-
-  button.disabled = true;
-  button.textContent = "...";
-
-  try {
-    const result = await api("/api/order",{
-      items:cart,
-      pickup,
-      payment_method:"pickup",
-      reward_item_index:rewardIndex()
-    });
-
-    cart = [];
-    saveCart();
-
-    document.getElementById("useReward").checked = false;
-
-    updateCartBadge();
-    closeCart();
-
-    showToast(
-      `${t("success")} #${result.order_id}`
-    );
-
-    await loadRewards();
-
-    navigate("orders");
-
-  } catch(error) {
-    showToast(error.message || t("error"));
-
-  } finally {
-    orderSubmitting = false;
-    button.disabled = false;
-    button.textContent = t("place");
-  }
-}
-
-/* ============================================================
-   REWARDS
-============================================================ */
-
-async function loadRewards() {
-  if (!initData) return;
-
-  try {
-    const data = await api("/api/rewards");
-
-    rewards = {
-      stamps:Number(data.stamps || 0),
-      rewards:Number(data.rewards || 0),
-      total_drinks:Number(data.total_drinks || 0)
-    };
-
-    if (
-      !document.getElementById("cartOverlay")
-        .classList.contains("hidden")
-    ) {
-      renderCart();
-    }
-
-  } catch(error) {
-    console.error(error);
-  }
-}
-
-/* ============================================================
-   ORDERS
-============================================================ */
-
-async function loadOrders() {
-  const container = document.getElementById("ordersList");
-
-  if (!initData) {
-    container.innerHTML = `
-      <div class="empty">
-        <div class="empty-icon">☕</div>
-        <h3>${t("login")}</h3>
-      </div>
-    `;
-    return;
-  }
-
-  try {
-    const data = await api("/api/orders");
-
-    if (!data.orders?.length) {
-      container.innerHTML = `
-        <div class="empty">
-          <div class="empty-icon">☕</div>
-          <h3>${t("emptyOrders")}</h3>
-        </div>
-      `;
-      return;
-    }
-
-    container.innerHTML = data.orders.map(order => {
-      const items = Array.isArray(order.items)
-        ? order.items
-        : [];
-
-      const names = items.map(item =>
-        `${item.qty} × ${escapeHTML(item.name)}`
-      ).join("<br>");
-
-      return `
-        <div class="order-card">
-
-          <div class="order-top">
-            <span class="order-number">
-              #${order.id}
-            </span>
-
-            <span class="order-status">
-              ${escapeHTML(order.status)}
-            </span>
-          </div>
-
-          <div class="order-detail">
-            ${names}
-          </div>
-
-          <div class="order-detail">
-            ${escapeHTML(order.pickup || "")}
-          </div>
-
-          <div class="order-price">
-            ${money(order.total)}
-          </div>
-
-        </div>
-      `;
-    }).join("");
-
-  } catch(error) {
-    container.innerHTML = `
-      <div class="empty">
-        ${escapeHTML(error.message)}
-      </div>
-    `;
-  }
-}
-
-/* ============================================================
-   PROFILE
-============================================================ */
-
-async function loadProfile() {
-  const container = document.getElementById("profileContent");
-
-  if (!initData) {
-    container.innerHTML = `
-      <div class="empty">
-        <div class="empty-icon">👤</div>
-        <h3>${t("login")}</h3>
-      </div>
-    `;
-    return;
-  }
-
-  try {
-    const data = await api("/api/profile");
-
-    const loyalty = data.rewards || rewards;
-
-    const stamps = Number(loyalty.stamps || 0);
-
-    const stampHTML = Array.from(
-      {length:9},
-      (_,index) => `
-        <div class="stamp ${index < stamps ? "active" : ""}">
-          ${index < stamps ? "★" : "☆"}
-        </div>
-      `
-    ).join("");
-
-    container.innerHTML = `
-      <div class="profile-card">
-
-        <div class="profile-name">
-          ${escapeHTML(data.user?.first_name || "Customer")}
-        </div>
-
-        <div class="profile-subtitle">
-          @${escapeHTML(data.user?.username || "takeaway")}
-        </div>
-
-      </div>
-
-      <div class="profile-card">
-
-        <strong>${t("stamps")}</strong>
-
-        <div class="stamps">
-          ${stampHTML}
-        </div>
-
-        <p class="profile-subtitle">
-          Every 10th drink is free.
-        </p>
-
-      </div>
-
-      <div class="stat-grid">
-
-        <div class="stat">
-          <div class="stat-number">
-            ${loyalty.rewards || 0}
-          </div>
-          <div class="stat-label">
-            ${t("rewards")}
-          </div>
-        </div>
-
-        <div class="stat">
-          <div class="stat-number">
-            ${data.total_orders || 0}
-          </div>
-          <div class="stat-label">
-            ${t("totalOrders")}
-          </div>
-        </div>
-
-        <div class="stat">
-          <div class="stat-number">
-            ${money(data.total_spent || 0)}
-          </div>
-          <div class="stat-label">
-            ${t("spent")}
-          </div>
-        </div>
-
-        <div class="stat">
-          <div class="stat-number">
-            ${loyalty.total_drinks || 0}
-          </div>
-          <div class="stat-label">
-            Drinks
-          </div>
-        </div>
-
-      </div>
-    `;
-
-  } catch(error) {
-    container.innerHTML = `
-      <div class="empty">
-        ${escapeHTML(error.message)}
-      </div>
-    `;
-  }
-}
-
-/* ============================================================
-   NAVIGATION
-============================================================ */
-
-function navigate(page) {
-  currentPage = page;
-
-  document.getElementById("homePage")
-    .classList.toggle("hidden",page !== "home");
-
-  document.getElementById("ordersPage")
-    .classList.toggle("hidden",page !== "orders");
-
-  document.getElementById("profilePage")
-    .classList.toggle("hidden",page !== "profile");
-
-  document.querySelectorAll(".nav-item[data-page]")
-    .forEach(button => {
-      button.classList.toggle(
-        "active",
-        button.dataset.page === page
-      );
-    });
-
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
-
-  if (page === "orders") {
-    loadOrders();
-  }
-
-  if (page === "profile") {
-    loadProfile();
-  }
-
-  vibrate();
-}
-
-/* ============================================================
-   ANALYTICS
-============================================================ */
-
-async function recordOpen() {
-  if (!initData) return;
-
-  try {
-    await api("/api/analytics/open");
-  } catch(error) {
-    console.log("Analytics unavailable");
-  }
-}
-
-/* ============================================================
-   INITIALIZATION
-============================================================ */
-
-async function initialize() {
-  restoreCart();
-
-  setLanguage(language);
-
-  await loadMenu();
-
-  await loadRewards();
-
-  recordOpen();
-
-  updateCartBadge();
-}
-
-initialize();
-
-</script>
-
-</body>
-</html>
